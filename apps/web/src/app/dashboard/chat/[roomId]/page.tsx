@@ -118,7 +118,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
     const newMsg: ChatMessage = {
       id: tempId,
       classroom_id: roomId,
-      sender_id: user.userId,
+      sender_id: user.id,
       sender_name: user.displayName || 'You',
       sender_role: 'student',
       content: prompt,
@@ -206,7 +206,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
             </div>
           ) : (
             messages.map((msg) => {
-              const isMe = msg.sender_id === user?.userId;
+              const isMe = msg.sender_id === user?.id;
               
               return (
               <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} w-full group`}>

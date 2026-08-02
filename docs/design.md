@@ -1,338 +1,178 @@
 ---
 name: Lumina AI Classroom
+theme: Dual Theme (Light & Dark)
 colors:
-  surface: '#131318'
-  surface-dim: '#131318'
-  surface-bright: '#39383e'
-  surface-container-lowest: '#0e0e13'
-  surface-container-low: '#1b1b20'
-  surface-container: '#1f1f25'
-  surface-container-high: '#2a292f'
-  surface-container-highest: '#35343a'
-  on-surface: '#e4e1e9'
-  on-surface-variant: '#cbc3d7'
-  inverse-surface: '#e4e1e9'
-  inverse-on-surface: '#303036'
-  outline: '#958ea0'
-  outline-variant: '#494454'
-  primary: '#d0bcff'
-  on-primary: '#3c0091'
-  primary-container: '#a078ff'
-  on-primary-container: '#340080'
-  inverse-primary: '#6d3bd7'
-  secondary: '#adc6ff'
-  on-secondary: '#002e6a'
-  secondary-container: '#0566d9'
-  on-secondary-container: '#e6ecff'
-  tertiary: '#fbabff'
-  on-tertiary: '#580065'
-  tertiary-container: '#e14ef6'
-  on-tertiary-container: '#4d0059'
-  error: '#ffb4ab'
-  on-error: '#690005'
-  error-container: '#93000a'
-  on-error-container: '#ffdad6'
-  background: '#131318'
-  on-background: '#e4e1e9'
-  surface-variant: '#35343a'
+  light:
+    background: '#f8fafc'
+    surface: '#ffffff'
+    surface-container: '#eaedff'
+    surface-card: 'rgba(255, 255, 255, 0.8)'
+    primary: '#4f46e5'
+    secondary: '#7c3aed'
+    tertiary: '#f43f5e'
+    on-surface: '#0f172a'
+    on-surface-variant: '#64748b'
+    border: 'rgba(15, 23, 42, 0.08)'
+  dark:
+    background: '#0a0a0f'
+    surface: '#131318'
+    surface-card: 'rgba(18, 18, 26, 0.8)'
+    primary: '#8b5cf6'
+    secondary: '#3b82f6'
+    tertiary: '#d946ef'
+    on-surface: '#e4e1e9'
+    on-surface-variant: '#cbc3d7'
+    border: 'rgba(255, 255, 255, 0.1)'
 typography:
-  display-lg:
-    fontFamily: Inter
-    fontSize: 48px
-    fontWeight: '700'
-    lineHeight: 56px
-    letterSpacing: -0.02em
-  display-lg-mobile:
-    fontFamily: Inter
-    fontSize: 32px
-    fontWeight: '700'
-    lineHeight: 40px
-    letterSpacing: -0.02em
-  headline-md:
-    fontFamily: Inter
-    fontSize: 24px
-    fontWeight: '600'
-    lineHeight: 32px
-    letterSpacing: -0.01em
-  body-lg:
-    fontFamily: Inter
-    fontSize: 18px
-    fontWeight: '400'
-    lineHeight: 28px
-  body-md:
-    fontFamily: Inter
-    fontSize: 16px
-    fontWeight: '400'
-    lineHeight: 24px
-  label-sm:
-    fontFamily: Inter
-    fontSize: 12px
-    fontWeight: '600'
-    lineHeight: 16px
-    letterSpacing: 0.05em
+  fontFamily: Inter
+  display-lg: 48px / 56px (Bold 700, -0.02em)
+  headline-md: 24px / 32px (SemiBold 600, -0.01em)
+  body-lg: 18px / 28px (Regular 400)
+  body-md: 16px / 24px (Regular 400)
+  label-sm: 14px / 20px (Medium 500)
+  caption: 12px / 16px (Regular 400)
 rounded:
-  sm: 0.25rem
-  DEFAULT: 0.5rem
-  md: 0.75rem
-  lg: 1rem
-  xl: 1.5rem
-  full: 9999px
+  cards: 24px (1.5rem)
+  buttons: 16px (1rem)
+  pills: 9999px (full)
 spacing:
-  sidebar-width: 280px
-  container-max-width: 1440px
+  edge-desktop: 40px
+  edge-mobile: 20px
   gutter: 24px
-  margin-mobile: 16px
-  stack-gap-lg: 32px
-  stack-gap-md: 16px
+  stack-lg: 32px
+  stack-md: 16px
+  stack-sm: 8px
 ---
 
-# Lumina AI Classroom — Design System
+# Lumina AI Classroom — Design System & Guidelines
 
-> **Stitch Project ID:** `14912175207854380484`
-> **Design System Asset:** `assets/2e54145992fd4721b840b348dbd26218`
-> **View in Stitch:** https://stitch.withgoogle.com
-
----
-
-## Brand & Style
-
-The design system is centered on a **Premium AI-Driven Educational** experience. It targets high-achievers and tech-forward students who value a focused, immersive environment.
-
-The aesthetic is a refined blend of **Modern Corporate** and **Glassmorphism**. It evokes a sense of _"Deep Space Discovery"_ — utilizing a very dark, high-density background to allow content to "float" via translucent glass layers. The emotional response should be one of **calm focus, high-tech capability, and academic prestige**. High-quality typography and vibrant, neon-tinted glow effects serve as the primary indicators of AI activity and system intelligence.
+> **Stitch Project ID:** `14912175207854380484`  
+> **Light Theme Asset:** `assets/5d074ebfcf984fbc994e42a1993737f9`  
+> **Dark Theme Asset:** `assets/2e54145992fd4721b840b348dbd26218`  
+> **View in Stitch:** [Stitch Project Dashboard](https://stitch.withgoogle.com)  
 
 ---
 
-## 🎨 Colors
+## 🌟 Concept & Brand Aesthetics
 
-| Role | Value | Usage |
+Lumina AI Classroom is built on **Glassmorphism**, **Pastel Mesh Gradients**, and **Digital Calm**. The interface bridges logic and creativity, balancing high utility for educators with an inspiring, ethereal experience for students.
+
+- **Light Mode Atmosphere:** An open, airy studio with a soft pastel mesh background (`#f8fafc` + floating indigo/violet/rose ambient light blobs), frosted glass panels (`rgba(255,255,255,0.8)`), 1px subtle strokes, and soft ambient drop-shadows.
+- **Dark Mode Atmosphere:** A deep space void (`#0a0a0f`) with floating dark glass layers, vibrant neon glow pulses (`#8B5CF6`, `#3B82F6`), and crisp high-contrast typography.
+
+---
+
+## 🎨 Color Palette & Tokens
+
+### Light Theme Palette
+
+| Role | Token / Hex | Description |
 |---|---|---|
-| **Background** | `#0a0a0f` | Page canvas — the void |
-| **Surface** | `#131318` | Cards, sidebar, panels |
-| **Surface Container** | `#1f1f25` | Input fields, nested elements |
-| **Primary (Violet)** | `#8B5CF6` | Primary actions, active nav, AI states |
-| **Primary Gradient** | `#8B5CF6 → #D946EF` | Hero CTAs, AI response indicators |
-| **Secondary (Blue)** | `#3B82F6` | Links, progress, secondary actions |
-| **On-Surface** | `#e4e1e9` | Main body text |
-| **On-Surface Variant** | `#cbc3d7` | Muted text, labels, captions |
-| **Outline** | `rgba(255,255,255,0.1)` | Card borders, dividers |
-| **Error** | `#ffb4ab` | Form errors, destructive states |
+| **Base Background** | `#f8fafc` | Cool slate-white canvas |
+| **Mesh Blobs** | `#7C3AED` / `#0EA5E9` / `#F43F5E` | Ambient background glow blobs |
+| **Primary (Indigo)** | `#4F46E5` | Active states, primary buttons |
+| **Secondary (Violet)** | `#7C3AED` | Gradient secondary accents |
+| **Tertiary (Rose)** | `#F43F5E` | AI Spark badges, live status pulses |
+| **Text Primary** | `#0F172A` | Crisp dark slate headlines |
+| **Text Secondary** | `#64748B` | Subheadings, metadata, captions |
+| **Glass Border** | `rgba(15, 23, 42, 0.08)` | Subtle card stroke |
+| **Ambient Shadow** | `0 20px 50px rgba(79, 70, 229, 0.06)` | Floating glass depth |
 
-### AI Glow Accents
-These are applied via `box-shadow` and `radial-gradient`:
-- **Purple Glow:** `0 0 30px rgba(139, 92, 246, 0.15)` — AI suggestions, active cards
-- **Blue Glow:** `0 0 20px rgba(59, 130, 246, 0.2)` — Focused inputs, links
-- **Fuchsia Pulse:** `0 0 40px rgba(217, 70, 239, 0.1)` — AI typing indicators
+### Dark Theme Palette
 
----
-
-## ✍️ Typography
-
-**Font Family:** [Inter](https://fonts.google.com/specimen/Inter) — exclusively used across all text.
-
-| Token | Size | Weight | Use |
-|---|---|---|---|
-| `display-lg` | 48px / 56px | 700 | Page titles, hero headings |
-| `display-lg-mobile` | 32px / 40px | 700 | Mobile hero headings |
-| `headline-md` | 24px / 32px | 600 | Section headers, card titles |
-| `body-lg` | 18px / 28px | 400 | Primary content, descriptions |
-| `body-md` | 16px / 24px | 400 | Standard UI text |
-| `label-sm` | 12px / 16px | 600 | Caps labels, tags, status text |
-
-**Rules:**
-- Headlines → `#ffffff` (full white)
-- Secondary text → `rgba(255,255,255,0.7)`
-- Muted/disabled → `rgba(255,255,255,0.4)`
-- Tighten `letter-spacing` on headings to `-0.02em` for a premium editorial feel
-
----
-
-## 📐 Layout & Spacing
-
-**Model:** Fixed Sidebar + Fluid Content Area
-
-| Breakpoint | Sidebar | Grid | Gutters |
-|---|---|---|---|
-| Desktop (1440px+) | 280px docked | 12 columns | 24px |
-| Tablet (768–1439px) | 80px icon rail | 8 columns | 24px |
-| Mobile (<767px) | Hidden drawer | 1 column | 16px |
-
-**Spacing Rhythm:** 8px base increments
-- `stack-gap-sm`: 8px — Tight inline elements
-- `stack-gap-md`: 16px — Within a card/component
-- `stack-gap-lg`: 32px — Section-level separation
-
----
-
-## 🪟 Elevation & Depth
-
-Depth is achieved via **Backdrop Blurs** and **Inner Glows** — NOT traditional box-shadows.
-
-| Level | Usage | CSS |
+| Role | Token / Hex | Description |
 |---|---|---|
-| **Base** | Page background | `background: #0a0a0f` |
-| **Level 1** | Cards, sidebar | `background: rgba(255,255,255,0.03)` + `backdrop-filter: blur(20px)` + `border: 1px solid rgba(255,255,255,0.1)` |
-| **Level 2** | Modals, dropdowns | `background: rgba(255,255,255,0.06)` + `backdrop-filter: blur(40px)` + `border: 1px solid rgba(255,255,255,0.2)` |
-| **AI Active** | AI suggestions, focus | Add `box-shadow: 0 0 30px rgba(139,92,246,0.15)` purple outer glow |
+| **Base Background** | `#0a0a0f` | Nocturnal canvas |
+| **Primary (Purple)** | `#8B5CF6` | Primary actions & glows |
+| **Secondary (Blue)** | `#3B82F6` | Links & secondary states |
+| **Text Primary** | `#E4E1E9` | Crisp bright text |
+| **Text Secondary** | `rgba(255, 255, 255, 0.7)` | Muted body text |
+| **Glass Border** | `rgba(255, 255, 255, 0.1)` | White frosted stroke |
 
 ---
 
-## 🧩 Components
+## 🖼️ Stitch Screen Previews
 
-### Buttons
+### 1. Light Theme Teacher Dashboard (New ✨)
+
+![Light Theme Dashboard](./designs/light_dashboard.png)
+
+**Highlights:**
+- **Hero Banner:** Vibrant Indigo-to-Violet gradient card (`#4F46E5` to `#7C3AED` with rose accent) featuring *"Welcome back, Prof. Sarah! 🚀"*, active streak pill, and quick action buttons.
+- **Floating Sidebar:** Detached glass rail with a gradient vertical pill indicator for active navigation.
+- **Top Header:** Search bar with keyboard shortcut pill (`⌘K`), light/dark switcher, user avatar.
+- **Classroom Cards:** Frosted glass panels with live student counters, status dots, and code snippet preview.
+- **Right Sidebar:** Live AI Assistant insights and student activity feed.
+
+---
+
+### 2. Dark Theme Teacher Dashboard
+
+![Dark Theme Dashboard](./designs/teacher_dashboard.png)
+
+---
+
+## ✍️ Typography Scale (Inter)
+
+| Style | Size / Line Height | Weight | Usage |
+|---|---|---|---|
+| `display-lg` | 48px / 56px | Bold (700) | Hero title, main page headings |
+| `headline-md` | 24px / 32px | SemiBold (600) | Card titles, section headers |
+| `body-lg` | 18px / 28px | Regular (400) | Lead descriptions |
+| `body-md` | 16px / 24px | Regular (400) | Standard UI content |
+| `label-sm` | 14px / 20px | Medium (500) | Buttons, form labels |
+| `caption` | 12px / 16px | Regular (400) | Metadata, timestamp |
+
+---
+
+## 🧩 Glass Component Specifications
+
+### Floating Glass Cards
 ```css
-/* Primary */
-background: linear-gradient(135deg, #8B5CF6, #D946EF);
-color: white;
-border: none;
-border-radius: 8px;
-padding: 12px 24px;
-font-weight: 600;
-
-/* Secondary / Ghost */
-background: rgba(255,255,255,0.04);
-border: 1px solid rgba(255,255,255,0.1);
-color: white;
-border-radius: 8px;
-```
-
-### Input Fields
-```css
-background: rgba(0,0,0,0.3);
-border: 1px solid rgba(255,255,255,0.1);
-border-radius: 8px;
-color: white;
-
-/* Focus state */
-border-color: #3B82F6;
-box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
-```
-
-### Cards
-```css
-background: rgba(255,255,255,0.03);
+/* Light Glass Card */
+background: rgba(255, 255, 255, 0.8);
 backdrop-filter: blur(20px);
-border: 1px solid rgba(255,255,255,0.1);
-border-radius: 16px;
-/* Optional gradient border highlight at top */
-background-image: linear-gradient(rgba(255,255,255,0.05), rgba(255,255,255,0));
+border: 1px solid rgba(15, 23, 42, 0.08);
+border-radius: 24px;
+box-shadow: 0 20px 50px rgba(79, 70, 229, 0.06);
 ```
 
-### Sidebar Navigation
-```css
-/* Active nav item */
-border-left: 3px solid #3B82F6;   /* vertical pill */
-color: white;
-background: rgba(59,130,246,0.08);
-
-/* Inactive */
-color: rgba(255,255,255,0.5);
+### AI Spark Chips
+```html
+<span class="spark-chip">
+  ✨ AI Insight: 85% Mastery in Recursion
+</span>
 ```
 
-### Activity Feed
-- Thin `1px rgba(255,255,255,0.1)` vertical line connecting timeline nodes
-- Circular dot indicators (12px) colored by type: green = online, gray = offline, purple = AI event
-
-### AI Interaction Nodes
+### Hero Gradient Card
 ```css
-/* Animated gradient border for AI-active state */
-border: 1px solid transparent;
-background: linear-gradient(#131318, #131318) padding-box,
-            linear-gradient(135deg, #8B5CF6, #D946EF, #3B82F6) border-box;
-box-shadow: 0 0 40px rgba(139, 92, 246, 0.1);
+background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #D946EF 100%);
+border-radius: 24px;
+color: #FFFFFF;
+box-shadow: 0 20px 50px rgba(124, 58, 237, 0.25);
 ```
 
 ---
 
-## 📱 Screens
+## 📱 Responsive Layout Grid
 
-| Screen | Status | Stitch ID |
-|---|---|---|
-| Teacher Dashboard | ✅ Generated | `12a946b7fc5e48f986697291d6b76265` |
-| Student Dashboard | 🔲 Planned | — |
-| Private Chat Room | 🔲 Planned | — |
-| Chat Lobby | 🔲 Planned | — |
-| Login / Register | 🔲 Planned | — |
-
-### Teacher Dashboard Preview
-![Teacher Dashboard](./designs/teacher_dashboard.png)
-
-**Key layout elements:**
-- Left sidebar: Logo, nav links with active-state vertical pill
-- Top header: Teacher name + Sign out button
-- Classroom grid (3 cols): Class name, student count, join code, status dot
-- Right panel: Live activity feed with AI event notifications
+- **Desktop (1440px+):** Fixed 280px sidebar, 40px outer margin, fluid 12-column content grid.
+- **Tablet (768–1439px):** 80px icon-only sidebar, 24px gutters.
+- **Mobile (<767px):** Bottom navigation sheet / glass drawer, 16px outer padding.
 
 ---
 
-## 🔧 CSS Variables Reference
-
-```css
-:root {
-  /* Surfaces */
-  --background:   #0a0a0f;
-  --surface:      #131318;
-  --surface-low:  #1b1b20;
-  --surface-mid:  #1f1f25;
-  --surface-high: #2a292f;
-
-  /* Brand */
-  --primary:      #8b5cf6;
-  --primary-end:  #d946ef;
-  --secondary:    #3b82f6;
-  --success:      #10b981;
-  --danger:       #ef4444;
-
-  /* Text */
-  --text-primary:   #e4e1e9;
-  --text-secondary: rgba(255,255,255,0.7);
-  --text-muted:     rgba(255,255,255,0.4);
-
-  /* Borders */
-  --border:         rgba(255,255,255,0.1);
-  --border-focus:   rgba(59,130,246,0.5);
-
-  /* Glows */
-  --glow-purple: 0 0 30px rgba(139, 92, 246, 0.15);
-  --glow-blue:   0 0 20px rgba(59, 130, 246, 0.2);
-
-  /* Spacing */
-  --sidebar-width: 280px;
-  --gutter: 24px;
-  --radius: 8px;
-  --radius-lg: 16px;
-}
-```
-
----
-
-## 📦 Project Structure
+## 📦 File Inventory
 
 ```
 final/
 ├── apps/
-│   ├── web/                    # Next.js 16 frontend
-│   │   └── src/
-│   │       ├── app/            # Pages and routing
-│   │       ├── components/     # Reusable UI components
-│   │       ├── hooks/          # React hooks (useAuth, etc.)
-│   │       └── lib/            # API client, socket service
-│   └── server/                 # Express + Socket.IO backend
-│       └── src/
-│           ├── modules/        # Feature modules (auth, chat, classrooms)
-│           ├── socket/         # Real-time event handlers
-│           ├── middleware/      # Auth, error handling
-│           └── db/             # Migrations
-├── extensions/
-│   └── vscode-classroom/       # VS Code extension
-├── packages/                   # Shared utilities
+│   ├── web/
+│   │   └── src/app/globals.css    # Lumina theme tokens & utilities
+│   └── server/
 ├── docs/
-│   ├── design.md               # This file — design system
-│   └── designs/                # Stitch-generated screen PNGs
-├── docker-compose.yml
-├── docker-compose.prod.yml
-└── .gitignore
+│   ├── design.md                  # This specification document
+│   └── designs/
+│       ├── light_dashboard.png    # Stitch Light Theme UI output
+│       └── teacher_dashboard.png  # Stitch Dark Theme UI output
 ```
-
----
-
-*Generated with [Google Stitch](https://stitch.withgoogle.com) · Design System: **Lumina AI Classroom***
