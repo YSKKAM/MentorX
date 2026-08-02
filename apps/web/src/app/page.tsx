@@ -35,23 +35,26 @@ export default function Home() {
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/15 dark:bg-purple-500/20 rounded-full blur-[140px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
       
       <div className="max-w-4xl mx-auto text-center z-10 animate-slide-up space-y-8">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/15 backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-indigo-700 dark:bg-indigo-400 animate-pulse" />
-          <span className="text-xs font-extrabold text-indigo-900 dark:text-indigo-400">Welcome to AI Classroom</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/15 backdrop-blur-md shadow-sm">
+          <span className="w-2.5 h-2.5 rounded-full bg-indigo-700 dark:bg-indigo-400 animate-pulse" />
+          <span className="text-xs font-black text-indigo-950 dark:text-indigo-300">Welcome to AI Classroom</span>
         </div>
         
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-slate-950 dark:text-white">
-          Experience <br className="hidden sm:block" />
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-tight">
+          <span className="text-heading-theme font-black" style={{ color: 'var(--foreground)' }}>
+            Experience{" "}
+          </span>
+          <br className="hidden sm:block" />
           <span className="text-gradient-lumina">Next-Gen AI Classroom Intelligence</span>
         </h1>
         
-        <p className="text-base sm:text-lg md:text-xl text-slate-800 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-bold">
+        <p className="text-base sm:text-lg md:text-xl text-slate-800 dark:text-gray-200 max-w-2xl mx-auto leading-relaxed font-extrabold">
           Empowering teachers with real-time student activity tracking and providing students with intelligent AI coding assistance.
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <Link href="/login" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full sm:w-auto font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 text-white shadow-xl shadow-indigo-500/25 group px-8 py-4 text-base">
+            <Button size="lg" className="w-full sm:w-auto font-black rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 text-white shadow-xl shadow-indigo-500/25 group px-8 py-4 text-base">
               Get Started
               <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -59,7 +62,7 @@ export default function Home() {
             </Button>
           </Link>
           <Link href="/register" className="w-full sm:w-auto">
-            <Button variant="ghost" size="lg" className="w-full sm:w-auto font-extrabold rounded-xl border border-slate-900/15 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-white text-slate-900 dark:text-white px-8 py-4 text-base backdrop-blur-md">
+            <Button variant="ghost" size="lg" className="w-full sm:w-auto font-black rounded-xl btn-outline-theme px-8 py-4 text-base shadow-md">
               Create Account
             </Button>
           </Link>
