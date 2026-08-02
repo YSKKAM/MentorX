@@ -13,19 +13,19 @@ export class GeminiChatProvider implements IAIChatProvider {
 
   async generateText(prompt: string): Promise<string> {
     if (!this.ai) {
-      return `Jarvis: GEMINI_API_KEY is not configured in the server environment.`;
+      return `AI Assistant: GEMINI_API_KEY is not configured in the server environment.`;
     }
 
     try {
-      const systemPrompt = `You are Jarvis, an advanced AI programming assistant & educational mentor in the AI Classroom Platform. Be helpful, concise, well-structured, and clear.`;
+      const systemPrompt = `You are an advanced AI programming assistant & educational mentor in the AI Classroom Platform. Be helpful, concise, well-structured, and clear.`;
       const response = await this.ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: `${systemPrompt}\n\nUser Question/Context:\n${prompt}`,
       });
-      return response.text || 'Jarvis: No response text generated.';
+      return response.text || 'AI Assistant: No response text generated.';
     } catch (error: any) {
       console.error('Gemini API Error in generateText:', error);
-      return `Jarvis AI: Error contacting Gemini API - ${error?.message || 'Unknown error'}`;
+      return `AI Assistant: Error contacting Gemini API - ${error?.message || 'Unknown error'}`;
     }
   }
 
@@ -35,7 +35,7 @@ export class GeminiChatProvider implements IAIChatProvider {
     }
 
     try {
-      const systemPrompt = `You are Jarvis, an expert programming assistant. Reply strictly with valid code solution for the user's request. Double check syntax for completeness. Include helpful inline comments.`;
+      const systemPrompt = `You are an expert programming assistant in AI Classroom. Reply strictly with valid code solution for the user's request. Double check syntax for completeness. Include helpful inline comments.`;
       const response = await this.ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: `${systemPrompt}\n\nRequest:\n${prompt}`,

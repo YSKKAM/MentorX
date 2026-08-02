@@ -26,7 +26,7 @@ export class MockAIProvider implements IAIProvider {
   async generateResponse(prompt: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(`Jarvis: Here is the assistance for: "${prompt}"`);
+        resolve(`AI Assistant: Here is the assistance for: "${prompt}"`);
       }, 1000);
     });
   }
@@ -55,7 +55,7 @@ export const analyzeErrorConcept = async (errorMessage: string, codeSnippet: str
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are Jarvis, an expert programming tutor. Analyze the following compiler error and code snippet.
+      const prompt = `You are an expert programming tutor in AI Classroom. Analyze the following compiler error and code snippet.
 Error: ${errorMessage}
 Code:
 ${codeSnippet}
@@ -130,7 +130,7 @@ export const enhanceText = async (text: string) => {
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are Jarvis. Rewrite the following message from a teacher to a student to be highly professional, encouraging, clear, and pedagogical. Do not add any introductory or concluding conversational text, just return the rewritten message itself.
+      const prompt = `Rewrite the following message from a teacher to a student to be highly professional, encouraging, clear, and pedagogical. Do not add any introductory or concluding conversational text, just return the rewritten message itself.
 Message: "${text}"`;
 
       const response = await ai.models.generateContent({
@@ -168,7 +168,7 @@ export const generateAssignment = async (topic: string, marks: number, difficult
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are Jarvis, an expert computer science professor. Generate a programming assignment for your students.
+      const prompt = `You are an expert computer science professor. Generate a programming assignment for your students.
 Topic/Example: ${topic}
 Language: ${language}
 Difficulty: ${difficulty}
@@ -225,7 +225,7 @@ export const generateTestCasesFromDescription = async (title: string, descriptio
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are Jarvis, an expert computer science professor. The teacher has provided a programming assignment description, but forgot to provide test cases and hints.
+      const prompt = `You are an expert computer science professor. The teacher has provided a programming assignment description, but forgot to provide test cases and hints.
 Assignment Title: ${title}
 Assignment Description: ${description}
 Language: ${language}
@@ -278,7 +278,7 @@ export const analyzeSubmission = async (code: string, language: string, results:
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are Jarvis. Analyze this student submission.
+      const prompt = `Analyze this student submission.
 Language: ${language}
 Code:
 ${code}

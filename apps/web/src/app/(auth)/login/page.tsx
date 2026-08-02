@@ -35,21 +35,21 @@ export default function LoginPage() {
       <div className="text-center mb-8 space-y-2">
         <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center mb-4">
           <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl">
-            🤖
+            🎓
           </div>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
           Welcome Back
         </h2>
-        <p className="text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-          Sign in to access your Jarvis AI Classroom
+        <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
+          Sign in to access your AI Classroom Platform
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-xs font-semibold">
+          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-700 dark:text-red-400 text-xs font-bold">
             {error}
           </div>
         )}
@@ -74,16 +74,16 @@ export default function LoginPage() {
 
         <Button
           type="submit"
-          className="w-full mt-2 py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
+          className="w-full mt-2 py-3.5 text-sm font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
           isLoading={loading}
         >
-          Sign In to Jarvis Hub
+          Sign In to AI Classroom
         </Button>
       </form>
 
-      <div className="mt-8 text-center text-xs font-semibold text-slate-500 dark:text-gray-400">
+      <div className="mt-8 text-center text-xs font-bold text-slate-700 dark:text-gray-400">
         Don't have an account yet?{" "}
-        <Link href="/register" className="text-indigo-600 dark:text-blue-400 hover:underline font-bold">
+        <Link href="/register" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
           Create account now
         </Link>
       </div>

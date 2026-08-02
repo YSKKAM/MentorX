@@ -42,30 +42,30 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
           Create Account
         </h2>
-        <p className="text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
-          Join the Jarvis AI Classroom Platform
+        <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
+          Join the AI Classroom Platform
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-xs font-semibold">
+          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-700 dark:text-red-400 text-xs font-bold">
             {error}
           </div>
         )}
 
         {/* Role Selector Pill */}
-        <div className="flex bg-slate-900/5 dark:bg-white/5 p-1 rounded-xl border border-slate-900/10 dark:border-white/10 mb-4">
+        <div className="flex bg-slate-900/10 dark:bg-white/5 p-1 rounded-xl border border-slate-900/15 dark:border-white/10 mb-4">
           <button
             type="button"
             onClick={() => setRole("student")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
               role === "student"
                 ? "bg-indigo-600 text-white shadow-md"
-                : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
+                : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
             }`}
           >
             🎓 Student
@@ -73,10 +73,10 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => setRole("teacher")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
               role === "teacher"
                 ? "bg-violet-600 text-white shadow-md"
-                : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
+                : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
             }`}
           >
             👨‍🏫 Teacher
@@ -112,16 +112,16 @@ export default function RegisterPage() {
 
         <Button
           type="submit"
-          className="w-full mt-2 py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
+          className="w-full mt-2 py-3.5 text-sm font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
           isLoading={loading}
         >
           Register as {role === "teacher" ? "Teacher" : "Student"}
         </Button>
       </form>
 
-      <div className="mt-6 text-center text-xs font-semibold text-slate-500 dark:text-gray-400">
+      <div className="mt-6 text-center text-xs font-bold text-slate-700 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/login" className="text-indigo-600 dark:text-blue-400 hover:underline font-bold">
+        <Link href="/register" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
           Sign in
         </Link>
       </div>

@@ -20,7 +20,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [user, loading, router]);
 
   useEffect(() => {
-    // Load theme setting from localStorage or default to light theme
     const savedTheme = (localStorage.getItem('theme') as 'dark' | 'light') || 'light';
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -52,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       ];
 
   const commonLinks = [
-    { name: 'Jarvis Chat', href: '/dashboard/chat', icon: '💬' },
+    { name: 'AI Chat', href: '/dashboard/chat', icon: '💬' },
     { name: 'Settings', href: '#', icon: '⚙️' }
   ];
 
@@ -73,29 +72,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-30 w-64 transform flex-col p-5 transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ${
         isLight 
-          ? 'bg-white/70 backdrop-blur-2xl border-r border-slate-900/10 shadow-[0_10px_30px_-5px_rgba(79,70,229,0.08)]' 
+          ? 'bg-white/80 backdrop-blur-2xl border-r border-slate-900/10 shadow-[0_10px_30px_-5px_rgba(79,70,229,0.08)]' 
           : 'bg-[#12121a]/80 backdrop-blur-xl border-r border-white/10 shadow-2xl'
       } ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="mb-8 flex items-center justify-start pt-2 px-2 gap-3">
           <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center">
             <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center text-lg font-bold text-white">
-              🤖
+              🎓
             </div>
           </div>
           <div>
             <Link href="/">
               <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 bg-clip-text text-xl font-extrabold text-transparent tracking-tight block">
-                Jarvis AI
+                AI Classroom
               </span>
             </Link>
-            <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase block -mt-1">
-              Classroom Platform
+            <span className="text-[10px] font-bold tracking-wider text-slate-700 dark:text-slate-400 uppercase block -mt-1">
+              Interactive Platform
             </span>
           </div>
         </div>
 
         <nav className="flex-1 space-y-1.5">
-          <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3">
+          <div className="mb-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">
             Menu
           </div>
           {navLinks.map((link) => {
@@ -104,13 +103,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                className={`relative flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all ${
                   isActive 
                     ? isLight 
-                      ? 'bg-indigo-600/10 text-indigo-600 shadow-sm' 
+                      ? 'bg-indigo-600/15 text-indigo-800 shadow-sm' 
                       : 'bg-indigo-500/15 text-indigo-400 shadow-inner'
                     : isLight
-                      ? 'text-slate-600 hover:bg-slate-900/5 hover:text-slate-900'
+                      ? 'text-slate-800 hover:bg-slate-900/10 hover:text-slate-950'
                       : 'text-gray-400 hover:bg-white/5 hover:text-white'
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
@@ -122,20 +121,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             );
           })}
           
-          <div className="mt-8 mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3">
-            Jarvis Suite
+          <div className="mt-8 mb-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">
+            AI Tools
           </div>
           {commonLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className={`relative flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+              className={`relative flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition-all ${
                 pathname === link.href
                   ? isLight
-                    ? 'bg-violet-600/10 text-violet-600'
+                    ? 'bg-violet-600/15 text-violet-800'
                     : 'bg-purple-500/15 text-purple-400'
                   : isLight
-                    ? 'text-slate-600 hover:bg-slate-900/5 hover:text-slate-900'
+                    ? 'text-slate-800 hover:bg-slate-900/10 hover:text-slate-950'
                     : 'text-gray-400 hover:bg-white/5 hover:text-white'
               }`}
             >
@@ -144,7 +143,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {link.name}
               </div>
               {link.href === '#' && (
-                <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-500">
+                <span className="rounded-full bg-indigo-500/15 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-400">
                   Soon
                 </span>
               )}
@@ -154,10 +153,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="pt-4 border-t border-slate-900/10 dark:border-white/10">
           <div className={`p-3 rounded-xl flex items-center justify-between ${
-            isLight ? 'bg-slate-900/5' : 'bg-white/5'
+            isLight ? 'bg-slate-900/5 border border-slate-900/10' : 'bg-white/5'
           }`}>
-            <span className="text-xs font-semibold text-slate-500 dark:text-gray-400">Jarvis Status</span>
-            <span className="spark-chip">Online ✨</span>
+            <span className="text-xs font-bold text-slate-800 dark:text-gray-400">AI Assistant</span>
+            <span className="spark-chip text-indigo-700 dark:text-rose-400 font-bold">Online ✨</span>
           </div>
         </div>
       </aside>
@@ -167,30 +166,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Header */}
         <header className={`z-10 flex h-16 items-center justify-between border-b px-4 sm:px-6 transition-colors duration-300 ${
           isLight 
-            ? 'bg-white/70 backdrop-blur-2xl border-slate-900/10' 
+            ? 'bg-white/80 backdrop-blur-2xl border-slate-900/10' 
             : 'bg-[#12121a]/80 backdrop-blur-xl border-white/10'
         }`}>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="mr-2 text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white lg:hidden"
+              className="mr-2 text-slate-700 hover:text-slate-950 dark:text-gray-400 dark:hover:text-white lg:hidden"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white capitalize flex items-center gap-2">
+            <h1 className="text-lg font-black text-slate-900 dark:text-white capitalize flex items-center gap-2">
               <span>{user?.role === 'teacher' ? '👨‍🏫' : '🎓'}</span> {user?.role} Workspace
             </h1>
           </div>
           
           <div className="flex items-center gap-3 sm:gap-4">
-            {/* Theme Switcher Button */}
             <button
               onClick={toggleTheme}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
                 isLight 
-                  ? 'bg-slate-900/5 border-slate-900/10 text-slate-700 hover:bg-slate-900/10' 
+                  ? 'bg-slate-900/10 border-slate-900/15 text-slate-900 hover:bg-slate-900/15' 
                   : 'bg-white/10 border-white/10 text-gray-200 hover:bg-white/15'
               }`}
               title="Toggle Light/Dark Theme"
@@ -198,11 +196,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span>{isLight ? '☀️ Light' : '🌙 Dark'}</span>
             </button>
 
-            <div className="hidden sm:block text-sm text-slate-600 dark:text-gray-300">
-              Welcome, <span className="font-bold text-slate-900 dark:text-white">{user?.displayName}</span>
+            <div className="hidden sm:block text-sm font-semibold text-slate-700 dark:text-gray-300">
+              Welcome, <span className="font-extrabold text-slate-950 dark:text-white">{user?.displayName}</span>
             </div>
             
-            <Button variant="ghost" size="sm" onClick={logout} className="rounded-xl">
+            <Button variant="ghost" size="sm" onClick={logout} className="rounded-xl font-bold text-slate-700 hover:text-slate-950 dark:text-gray-300">
               Sign out
             </Button>
           </div>

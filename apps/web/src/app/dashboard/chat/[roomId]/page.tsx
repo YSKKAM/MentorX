@@ -35,7 +35,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
   const [room, setRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
-  const [aiProvider, setAiProvider] = useState("Jarvis (Gemini)");
+  const [aiProvider, setAiProvider] = useState("Gemini (AI)");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -53,7 +53,6 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
   useEffect(() => {
     if (!user || !roomId) return;
 
-    // Load room details & history
     const loadData = async () => {
       try {
         const roomRes = await api.get(`/chat-rooms/${roomId}`);
@@ -76,7 +75,6 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
     if (!token) return;
     const socket = socketService.connect(token);
     
-    // Join private room channel
     socket.emit('chat_room:join', { chatRoomId: roomId });
 
     const onNewMessage = (msg: ChatMessage) => {
@@ -136,8 +134,8 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
   };
 
   const handleAskAI = (targetMsg: ChatMessage) => {
-    if (!aiProvider.includes('Jarvis')) {
-      alert(`${aiProvider} is currently unavailable. Please select Jarvis from the dropdown.`);
+    if (!aiProvider.includes('Gemini')) {
+      alert(`${aiProvider} is currently unavailable. Please select Gemini from the dropdown.`);
       return;
     }
 
@@ -164,29 +162,29 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
 
       <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 p-4 sm:p-5 backdrop-blur-md">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white/70 dark:bg-white/5 p-4 sm:p-5 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white text-lg shadow-md">
               💬
             </div>
             <div>
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-lg tracking-tight flex items-center gap-2">
+              <h3 className="font-black text-slate-950 dark:text-white text-lg tracking-tight flex items-center gap-2">
                 {room?.name || 'Private Room'}
               </h3>
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-gray-400 block -mt-0.5">
-                Jarvis Multiplayer Lounge
+              <span className="text-[11px] font-bold text-slate-700 dark:text-gray-400 block -mt-0.5">
+                AI Multiplayer Lounge
               </span>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/5 dark:bg-black/40 border border-slate-900/10 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-gray-300">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/5 dark:bg-black/40 border border-slate-900/10 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-gray-300">
                <span>Code:</span>
-               <span className="font-mono text-indigo-600 dark:text-emerald-400 font-bold">{room?.join_code || '...'}</span>
+               <span className="font-mono text-indigo-700 dark:text-emerald-400 font-extrabold">{room?.join_code || '...'}</span>
             </div>
             <button 
               onClick={() => setShowShareModal(true)}
-              className="px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 text-white shadow-md hover:shadow-indigo-500/30 transition-all hover:scale-[1.02]"
+              className="px-4 py-2 text-xs font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 text-white shadow-md hover:shadow-indigo-500/30 transition-all hover:scale-[1.02]"
             >
               🤝 Share Room
             </button>
@@ -196,20 +194,20 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
         {/* Message Stream */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth">
           {messages.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center text-center text-slate-500 dark:text-gray-400">
+            <div className="flex h-full flex-col items-center justify-center text-center text-slate-700 dark:text-gray-400">
               <div className="relative mb-6 group">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 blur-xl opacity-40 animate-pulse"></div>
                 <div className="relative bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] w-20 h-20 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/20 shadow-2xl text-3xl">
                   🔒
                 </div>
               </div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{room?.name || 'Your Room'}</h2>
-              <p className="text-xs sm:text-sm max-w-md leading-relaxed text-slate-500 dark:text-gray-400 mb-6">
-                This room is ready. Share Room Code <strong className="text-indigo-600 dark:text-emerald-400 font-mono">{room?.join_code}</strong> to start chatting with peers and Jarvis.
+              <h2 className="text-xl font-black text-slate-950 dark:text-white mb-2">{room?.name || 'Your Room'}</h2>
+              <p className="text-xs sm:text-sm font-semibold max-w-md leading-relaxed text-slate-800 dark:text-gray-400 mb-6">
+                This room is ready. Share Room Code <strong className="text-indigo-700 dark:text-emerald-400 font-mono font-extrabold">{room?.join_code}</strong> to start chatting with peers and AI Assistant.
               </p>
               <button 
                 onClick={() => setShowShareModal(true)}
-                className="px-5 py-2.5 rounded-xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white font-bold text-xs hover:bg-slate-900/10 transition-all"
+                className="px-5 py-2.5 rounded-xl bg-slate-900/10 dark:bg-white/5 border border-slate-900/15 dark:border-white/10 text-slate-900 dark:text-white font-extrabold text-xs hover:bg-slate-900/15 transition-all"
               >
                 View Share QR Code
               </button>
@@ -220,24 +218,24 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
               
               return (
               <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} w-full group`}>
-                <div className="mb-1 text-[11px] font-bold tracking-wider text-slate-400 dark:text-gray-500 uppercase px-2 flex items-center gap-1.5">
+                <div className="mb-1 text-[11px] font-black tracking-wider text-slate-700 dark:text-gray-400 uppercase px-2 flex items-center gap-1.5">
                   {isMe ? (
-                    <>You <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span></>
+                    <>You <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span></>
                   ) : msg.is_ai_response ? (
-                    <><span className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span> Your Jarvis (requested by {msg.ai_requested_by})</>
+                    <><span className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span> AI Assistant (requested by {msg.ai_requested_by})</>
                   ) : (
-                    <><span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span> {msg.sender_name}</>
+                    <><span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span> {msg.sender_name}</>
                   )}
                 </div>
                 
                 <div className="relative group/msg">
                   <div 
-                    className={`max-w-2xl rounded-2xl p-4 text-sm shadow-md transition-all ${
+                    className={`max-w-2xl rounded-2xl p-4 text-sm font-semibold shadow-md transition-all ${
                       isMe 
                         ? 'rounded-tr-sm bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-indigo-500/15' 
                         : msg.is_ai_response
-                        ? 'rounded-tl-sm border border-rose-500/30 bg-rose-500/10 dark:bg-rose-900/20 text-slate-900 dark:text-gray-200 backdrop-blur-md'
-                        : 'rounded-tl-sm border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-[#1e1e2d]/80 text-slate-900 dark:text-gray-200 backdrop-blur-md'
+                        ? 'rounded-tl-sm border border-indigo-500/30 bg-indigo-50/90 dark:bg-indigo-900/20 text-slate-950 dark:text-gray-200 backdrop-blur-md'
+                        : 'rounded-tl-sm border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1e1e2d]/80 text-slate-950 dark:text-gray-200 backdrop-blur-md'
                     }`}
                   >
                     <div className="whitespace-pre-wrap leading-relaxed text-sm">
@@ -249,8 +247,8 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
                   {!isMe && !msg.is_ai_response && (
                     <button
                       onClick={() => handleAskAI(msg)}
-                      className="absolute -right-11 top-1/2 -translate-y-1/2 opacity-0 group-hover/msg:opacity-100 transition-all p-2 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/20 shadow-lg text-xs hover:scale-110"
-                      title={`Invoke Jarvis to reply to ${msg.sender_name}`}
+                      className="absolute -right-11 top-1/2 -translate-y-1/2 opacity-0 group-hover/msg:opacity-100 transition-all p-2 rounded-full bg-white dark:bg-white/10 border border-slate-300 dark:border-white/20 shadow-lg text-xs hover:scale-110"
+                      title={`Invoke AI Assistant to reply to ${msg.sender_name}`}
                     >
                       ✨
                     </button>
@@ -262,12 +260,12 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
 
           {isAiTyping && (
             <div className="flex flex-col items-start w-full">
-              <div className="mb-1 text-[11px] font-bold tracking-wider text-slate-400 dark:text-gray-500 uppercase px-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Your Jarvis Thinking...
+              <div className="mb-1 text-[11px] font-black tracking-wider text-slate-700 dark:text-gray-400 uppercase px-2 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> AI Assistant Thinking...
               </div>
               <div className="rounded-2xl rounded-tl-sm border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1e1e2d] p-4 shadow-md backdrop-blur-md flex items-center gap-2">
-                <div className="h-2 w-2 animate-bounce rounded-full bg-indigo-500 [animation-delay:-0.3s]"></div>
-                <div className="h-2 w-2 animate-bounce rounded-full bg-violet-500 [animation-delay:-0.15s]"></div>
+                <div className="h-2 w-2 animate-bounce rounded-full bg-indigo-600 [animation-delay:-0.3s]"></div>
+                <div className="h-2 w-2 animate-bounce rounded-full bg-violet-600 [animation-delay:-0.15s]"></div>
                 <div className="h-2 w-2 animate-bounce rounded-full bg-rose-500"></div>
               </div>
             </div>
@@ -276,15 +274,15 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
         </div>
 
         {/* Input Bar */}
-        <div className="border-t border-slate-200 dark:border-white/10 bg-white/70 dark:bg-black/40 p-4 backdrop-blur-xl">
+        <div className="border-t border-slate-200 dark:border-white/10 bg-white/90 dark:bg-black/40 p-4 backdrop-blur-xl">
           <div className="max-w-4xl mx-auto flex flex-col gap-2.5">
             
             <div className="flex items-center gap-2 px-1">
-              <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Assistant Mode:</span>
+              <span className="text-[10px] font-black text-slate-700 dark:text-gray-400 uppercase tracking-wider">Assistant Provider:</span>
               <div className="relative">
                 <button 
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/5 dark:bg-[#161622] border border-slate-900/10 dark:border-white/10 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:border-indigo-500/30 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/10 dark:bg-[#161622] border border-slate-900/15 dark:border-white/10 text-xs font-black text-indigo-800 dark:text-indigo-400 hover:border-indigo-500/30 transition-all"
                 >
                   🤖 {aiProvider}
                   <svg className={`w-3 h-3 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
@@ -292,12 +290,12 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
                 
                 {isDropdownOpen && (
                   <div className="absolute bottom-full left-0 mb-2 w-52 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1e1e2d] p-1.5 shadow-2xl backdrop-blur-3xl z-50">
-                    {['Jarvis (Gemini)', 'Claude (Offline)', 'OpenAI (Offline)'].map(ai => (
+                    {['Gemini (AI)', 'Claude (Offline)', 'OpenAI (Offline)'].map(ai => (
                       <button
                         key={ai}
                         onClick={() => { setAiProvider(ai); setIsDropdownOpen(false); }}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
-                          aiProvider === ai ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-900/5 dark:hover:bg-white/5'
+                        className={`w-full flex items-center justify-between px-3 py-2 text-xs font-bold rounded-lg transition-colors ${
+                          aiProvider === ai ? 'bg-indigo-500/15 text-indigo-800 dark:text-indigo-400' : 'text-slate-800 dark:text-gray-400 hover:bg-slate-900/10 dark:hover:bg-white/5'
                         }`}
                       >
                         {ai}
@@ -309,7 +307,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
             </div>
 
             <div className="relative flex items-end w-full">
-              <div className="relative flex w-full bg-slate-900/5 dark:bg-[#161622] rounded-2xl border border-slate-900/10 dark:border-white/10 focus-within:border-indigo-500 transition-all shadow-inner">
+              <div className="relative flex w-full bg-white dark:bg-[#161622] rounded-2xl border border-slate-900/15 dark:border-white/10 focus-within:border-indigo-600 transition-all shadow-sm">
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
@@ -320,7 +318,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
                     }
                   }}
                   placeholder="Type a message to the lounge..."
-                  className="flex-1 max-h-32 min-h-[52px] resize-none bg-transparent px-4 py-3.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none"
+                  className="flex-1 max-h-32 min-h-[52px] resize-none bg-transparent px-4 py-3.5 text-sm font-semibold text-slate-950 dark:text-white placeholder-slate-500 outline-none"
                   rows={1}
                 />
                 <div className="p-1.5 flex items-end">
@@ -350,7 +348,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
-              <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mb-5 text-center">Share Room Code</h3>
+              <h3 className="text-lg font-black text-slate-950 dark:text-white mb-5 text-center">Share Room Code</h3>
               
               <div className="flex justify-center mb-6 bg-white p-3 rounded-2xl border border-slate-200">
                 <QRCodeSVG value={inviteUrl} size={170} level="H" includeMargin={true} />
@@ -358,11 +356,11 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Room Code</label>
-                  <input readOnly value={room?.join_code || ''} className="w-full bg-slate-100 dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-mono text-center font-bold tracking-widest text-base" />
+                  <label className="text-[10px] font-black text-slate-700 dark:text-gray-400 uppercase tracking-wider mb-1 block">Room Code</label>
+                  <input readOnly value={room?.join_code || ''} className="w-full bg-slate-100 dark:bg-black/50 border border-slate-300 dark:border-white/10 rounded-xl px-3 py-2 text-slate-950 dark:text-white font-mono text-center font-black tracking-widest text-base" />
                 </div>
-                <p className="text-xs text-slate-500 dark:text-gray-400 text-center">
-                  Share this code with your classmates to join the Jarvis lounge.
+                <p className="text-xs font-semibold text-slate-700 dark:text-gray-400 text-center">
+                  Share this code with your classmates to join the chat lounge.
                 </p>
               </div>
             </div>
