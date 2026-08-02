@@ -32,48 +32,61 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="glass-card rounded-2xl p-8 animate-slide-up">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-        <p className="text-gray-400 text-sm">Join the next generation classroom</p>
+    <div className="glass-card-light dark:glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-900/10 dark:border-white/10 animate-slide-up relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500" />
+
+      <div className="text-center mb-6 space-y-2">
+        <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center mb-3">
+          <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl">
+            🚀
+          </div>
+        </div>
+
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+          Create Account
+        </h2>
+        <p className="text-slate-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
+          Join the Jarvis AI Classroom Platform
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-xs font-semibold">
             {error}
           </div>
         )}
 
-        <div className="flex bg-white/5 p-1 rounded-lg border border-white/10 mb-6">
+        {/* Role Selector Pill */}
+        <div className="flex bg-slate-900/5 dark:bg-white/5 p-1 rounded-xl border border-slate-900/10 dark:border-white/10 mb-4">
           <button
             type="button"
             onClick={() => setRole("student")}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
               role === "student"
-                ? "bg-blue-500 text-white shadow-lg"
-                : "text-gray-400 hover:text-white"
+                ? "bg-indigo-600 text-white shadow-md"
+                : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            Student
+            🎓 Student
           </button>
           <button
             type="button"
             onClick={() => setRole("teacher")}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
               role === "teacher"
-                ? "bg-purple-500 text-white shadow-lg"
-                : "text-gray-400 hover:text-white"
+                ? "bg-violet-600 text-white shadow-md"
+                : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            Teacher
+            👨‍🏫 Teacher
           </button>
         </div>
 
         <Input
           label="Full Name"
           type="text"
-          placeholder="John Doe"
+          placeholder="Alex Rivera"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           required
@@ -99,17 +112,16 @@ export default function RegisterPage() {
 
         <Button
           type="submit"
-          className="w-full mt-6"
+          className="w-full mt-2 py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
           isLoading={loading}
-          variant={role === "teacher" ? "secondary" : "primary"}
         >
           Register as {role === "teacher" ? "Teacher" : "Student"}
         </Button>
       </form>
 
-      <div className="mt-6 text-center text-sm text-gray-400">
+      <div className="mt-6 text-center text-xs font-semibold text-slate-500 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+        <Link href="/login" className="text-indigo-600 dark:text-blue-400 hover:underline font-bold">
           Sign in
         </Link>
       </div>

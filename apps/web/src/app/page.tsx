@@ -22,44 +22,44 @@ export default function Home() {
 
   if (loading || isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
-        <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center light-mesh-bg">
+        <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-[#0a0a0f]">
-      {/* Background Effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] -z-10 mix-blend-screen" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] -z-10 mix-blend-screen" />
+    <main className="flex-1 flex flex-col items-center justify-center min-h-screen relative overflow-hidden light-mesh-bg p-6">
+      {/* Lumina Background Ambient Light Blobs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/15 dark:bg-blue-500/20 rounded-full blur-[140px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/15 dark:bg-purple-500/20 rounded-full blur-[140px] -z-10 mix-blend-multiply dark:mix-blend-screen" />
       
-      <div className="max-w-4xl mx-auto px-6 text-center z-10 animate-slide-up">
-        <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-          <span className="text-sm font-medium text-blue-400">Welcome to the Future of Learning</span>
+      <div className="max-w-4xl mx-auto text-center z-10 animate-slide-up space-y-8">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/10 backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">Welcome to Jarvis AI Classroom</span>
         </div>
         
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
-          <span className="text-white">Experience </span>
-          <br className="hidden md:block" />
-          <span className="text-gradient">AI Classroom Intelligence</span>
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-slate-900 dark:text-white">
+          Experience <br className="hidden sm:block" />
+          <span className="text-gradient-lumina">Next-Gen AI Classroom Intelligence</span>
         </h1>
         
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-          Empowering educators with AI-driven insights and enabling students with intelligent, personalized coding environments.
+        <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-medium">
+          Empowering teachers with real-time student activity tracking and providing students with Your Jarvis AI coding assistant.
         </p>
         
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <Link href="/login" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full sm:w-auto group">
+            <Button size="lg" className="w-full sm:w-auto font-bold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 text-white shadow-xl shadow-indigo-500/25 group px-8 py-4 text-base">
               Get Started
-              <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Button>
           </Link>
           <Link href="/register" className="w-full sm:w-auto">
-            <Button variant="ghost" size="lg" className="w-full sm:w-auto border border-white/10 hover:bg-white/5">
+            <Button variant="ghost" size="lg" className="w-full sm:w-auto font-bold rounded-xl border border-slate-900/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-white text-slate-900 dark:text-white px-8 py-4 text-base backdrop-blur-md">
               Create Account
             </Button>
           </Link>
