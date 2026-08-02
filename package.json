@@ -1,0 +1,17 @@
+{
+  "name": "ai-classroom-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev": "npm run dev:server & npm run dev:web",
+    "db:migrate": "npm run migrate --workspace=apps/server"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

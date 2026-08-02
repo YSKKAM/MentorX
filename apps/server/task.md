@@ -1,0 +1,10 @@
+- [x] 1. Frontend: Install `qrcode.react` in `apps/web`.
+- [x] 2. Backend: Create `008_chat_rooms.sql` migration.
+- [x] 3. Backend: Apply migration and restart server.
+- [x] 4. Backend: Create `chat_rooms.service.ts` for database operations.
+- [x] 5. Backend: Create `chat_rooms.controller.ts` & `chat_rooms.routes.ts`.
+- [x] 6. Backend: Wire routes into `app.ts`.
+- [x] 7. Backend: Update `chat.service.ts` and socket handlers to support `chat_room_id`.
+- [x] 8. Frontend: Create the Lobby page at `apps/web/src/app/dashboard/chat/page.tsx`.
+- [x] 9. Frontend: Move the Multiplayer UI to `apps/web/src/app/dashboard/chat/[roomId]/page.tsx`.
+- [x] 10. Frontend: Add a "Share Room" button with QR code.

@@ -1,0 +1,68 @@
+{
+  "name": "classroom-tracker",
+  "displayName": "AI Classroom Tracker",
+  "description": "Track coding activity for AI Classroom Platform",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "classroom-sidebar",
+          "title": "AI Classroom",
+          "icon": "$(mortar-board)"
+        }
+      ]
+    },
+    "views": {
+      "classroom-sidebar": [
+        {
+          "type": "webview",
+          "id": "classroomAssignments",
+          "name": "Assignments"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "classroom.login",
+        "title": "Classroom: Login"
+      },
+      {
+        "command": "classroom.selectClassroom",
+        "title": "Classroom: Select Classroom"
+      },
+      {
+        "command": "classroom.disconnect",
+        "title": "Classroom: Disconnect"
+      },
+      {
+        "command": "classroom.showStatus",
+        "title": "Classroom: Show Status"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "marked": "^18.0.7",
+    "socket.io-client": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.3.3"
+  }
+}
