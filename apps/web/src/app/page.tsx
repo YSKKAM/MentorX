@@ -41,14 +41,14 @@ export default function Home() {
         </div>
         
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-tight">
-          <span className="text-heading-theme font-black" style={{ color: 'var(--foreground)' }}>
+          <span className="text-slate-950 dark:text-white font-black" style={{ color: '#020617' }}>
             Experience{" "}
           </span>
           <br className="hidden sm:block" />
           <span className="text-gradient-lumina">Next-Gen AI Classroom Intelligence</span>
         </h1>
         
-        <p className="text-base sm:text-lg md:text-xl text-slate-800 dark:text-gray-200 max-w-2xl mx-auto leading-relaxed font-extrabold">
+        <p className="text-base sm:text-lg md:text-xl text-body-theme max-w-2xl mx-auto leading-relaxed font-extrabold" style={{ color: '#1e293b' }}>
           Empowering teachers with real-time student activity tracking and providing students with intelligent AI coding assistance.
         </p>
         

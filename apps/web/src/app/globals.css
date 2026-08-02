@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --color-blue-500: #3b82f6;
   --color-indigo-600: #4f46e5;
@@ -106,10 +108,18 @@
     color: var(--foreground);
   }
 
+  .text-body-theme {
+    color: #1e293b !important;
+  }
+
+  :root[data-theme="dark"] .text-body-theme {
+    color: #e2e8f0 !important;
+  }
+
   .btn-outline-theme {
     background-color: rgba(15, 23, 42, 0.08);
-    border: 1px solid rgba(15, 23, 42, 0.2);
-    color: #0f172a !important;
+    border: 1px solid rgba(15, 23, 42, 0.25);
+    color: #020617 !important;
   }
 
   :root[data-theme="dark"] .btn-outline-theme {
