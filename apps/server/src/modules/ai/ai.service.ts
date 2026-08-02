@@ -14,7 +14,7 @@ export class MockAIProvider implements IAIProvider {
   async generateResponse(prompt: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(`This is a simulated AI response to: "${prompt}"`);
+        resolve(`Jarvis: Here is the assistance for: "${prompt}"`);
       }, 1000); // 1 second delay
     });
   }

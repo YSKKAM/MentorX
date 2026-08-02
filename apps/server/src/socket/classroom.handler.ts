@@ -119,7 +119,7 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
       io.to(targetRoom).emit('chat:new-message', {
         ...savedMessage,
         sender_id: 'system',
-        sender_name: 'AI Assistant',
+        sender_name: 'Jarvis',
         sender_role: 'ai',
         is_ai_response: true,
         ai_provider: provider || 'mock',
