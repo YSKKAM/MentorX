@@ -1,37 +1,60 @@
 import { GoogleGenAI } from '@google/genai';
 import { IAIChatProvider } from './IAIChatProvider';
-import { env } from '../../../config/env';
 
 export class GeminiChatProvider implements IAIChatProvider {
   private ai: any;
 
   constructor() {
-    // We instantiate without passing apiKey if it is automatically picked up from process.env.GEMINI_API_KEY
-    // Or we explicitly pass it
-    this.ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      this.ai = new GoogleGenAI({ apiKey });
+    }
   }
 
   async generateText(prompt: string): Promise<string> {
-    const response = await this.ai.models.generateContent({
-      model: 'gemini-3.5-flash',
-      contents: prompt,
-    });
-    return response.text || '';
+    if (!this.ai) {
+      return `Jarvis: GEMINI_API_KEY is not configured in the server environment.`;
+    }
+
+    try {
+      const systemPrompt = `You are Jarvis, an advanced AI programming assistant & educational mentor in the AI Classroom Platform. Be helpful, concise, well-structured, and clear.`;
+      const response = await this.ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `${systemPrompt}\n\nUser Question/Context:\n${prompt}`,
+      });
+      return response.text || 'Jarvis: No response text generated.';
+    } catch (error: any) {
+      console.error('Gemini API Error in generateText:', error);
+      return `Jarvis AI: Error contacting Gemini API - ${error?.message || 'Unknown error'}`;
+    }
   }
 
   async generateCode(prompt: string): Promise<string> {
-    const systemPrompt = `You are an expert programmer. You must ONLY reply with the code requested. Do not include markdown blocks like \`\`\`javascript. Just the raw code. If the user asks a question, answer it in comments within the code. IMPORTANT: Double check all syntax (like using System.in for Java Scanners) to ensure the code compiles perfectly.`;
-    const response = await this.ai.models.generateContent({
-      model: 'gemini-3.5-flash',
-      contents: `${systemPrompt}\n\nUser Request: ${prompt}`,
-    });
-    return response.text || '';
+    if (!this.ai) {
+      return `// GEMINI_API_KEY is not configured in environment.`;
+    }
+
+    try {
+      const systemPrompt = `You are Jarvis, an expert programming assistant. Reply strictly with valid code solution for the user's request. Double check syntax for completeness. Include helpful inline comments.`;
+      const response = await this.ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `${systemPrompt}\n\nRequest:\n${prompt}`,
+      });
+      return response.text || '';
+    } catch (error: any) {
+      console.error('Gemini API Error in generateCode:', error);
+      return `// Error generating code with Gemini API: ${error?.message}`;
+    }
   }
 
   async generateImage(prompt: string): Promise<string> {
+    if (!this.ai) {
+      return `https://placehold.co/600x400/1a1a24/4ade80.png?text=API+Key+Required`;
+    }
+
     try {
       const response = await this.ai.models.generateImages({
-        model: 'imagen-4.0-generate-001',
+        model: 'imagen-3.0-generate-002',
         prompt: prompt,
         config: {
           numberOfImages: 1,
@@ -43,10 +66,9 @@ export class GeminiChatProvider implements IAIChatProvider {
         return `data:image/jpeg;base64,${response.generatedImages[0].image.imageBytes}`;
       }
       throw new Error('No image returned');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Imagen API Error:', error);
-      // Fallback: Return a placeholder image with the prompt text if the user's API key doesn't have Imagen access yet
-      const fallbackUrl = `https://placehold.co/600x400/1a1a24/4ade80.png?text=API+Key+Cannot+Generate+Images%5Cn%5CnPrompt:+${encodeURIComponent(prompt.substring(0, 50))}`;
+      const fallbackUrl = `https://placehold.co/600x400/1a1a24/818cf8.png?text=Generated+Visual%5CnPrompt:+${encodeURIComponent(prompt.substring(0, 40))}`;
       return fallbackUrl;
     }
   }

@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { GeminiChatProvider } from './providers/GeminiChatProvider';
 
 /**
  * Interface defining the contract for AI providers.
@@ -8,21 +9,31 @@ export interface IAIProvider {
 }
 
 /**
- * A mock AI provider that simulates network latency and returns a generated response.
+ * Real Gemini AI Provider connecting to Google Gemini API
+ */
+export class RealGeminiProvider implements IAIProvider {
+  private provider = new GeminiChatProvider();
+
+  async generateResponse(prompt: string): Promise<string> {
+    return this.provider.generateText(prompt);
+  }
+}
+
+/**
+ * A fallback mock AI provider if no GEMINI_API_KEY is configured.
  */
 export class MockAIProvider implements IAIProvider {
   async generateResponse(prompt: string): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(`Jarvis: Here is the assistance for: "${prompt}"`);
-      }, 1000); // 1 second delay
+      }, 1000);
     });
   }
 }
 
 /**
- * Factory method to generate an AI response.
- * Currently uses MockAIProvider.
+ * Factory method to generate a real AI response using the configured Gemini API key.
  *
  * @param provider - The name of the AI provider to use.
  * @param prompt - The prompt to send to the AI.
@@ -31,12 +42,10 @@ export class MockAIProvider implements IAIProvider {
 export const generateAiResponse = async (provider: string, prompt: string): Promise<string> => {
   let aiProvider: IAIProvider;
   
-  // You can extend this factory to support different providers (e.g., 'openai', 'anthropic')
-  switch (provider.toLowerCase()) {
-    case 'mock':
-    default:
-      aiProvider = new MockAIProvider();
-      break;
+  if (process.env.GEMINI_API_KEY) {
+    aiProvider = new RealGeminiProvider();
+  } else {
+    aiProvider = new MockAIProvider();
   }
 
   return aiProvider.generateResponse(prompt);
@@ -46,7 +55,7 @@ export const analyzeErrorConcept = async (errorMessage: string, codeSnippet: str
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are an expert programming tutor. Analyze the following compiler error and code snippet.
+      const prompt = `You are Jarvis, an expert programming tutor. Analyze the following compiler error and code snippet.
 Error: ${errorMessage}
 Code:
 ${codeSnippet}
@@ -64,7 +73,6 @@ Only return the raw JSON object, no markdown blocks.`;
       });
 
       let responseText = response.text || '';
-      // Find the first { and last } to extract just the JSON object
       const startIdx = responseText.indexOf('{');
       const endIdx = responseText.lastIndexOf('}');
       
@@ -82,7 +90,6 @@ Only return the raw JSON object, no markdown blocks.`;
       };
     } catch (e) {
       console.error('Gemini API Error in analyzeErrorConcept:', e);
-      // Fallback to mock on error
     }
   }
 
@@ -123,7 +130,7 @@ export const enhanceText = async (text: string) => {
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `Rewrite the following message from a teacher to a student to be highly professional, encouraging, clear, and pedagogical. Do not add any introductory or concluding conversational text, just return the rewritten message itself.
+      const prompt = `You are Jarvis. Rewrite the following message from a teacher to a student to be highly professional, encouraging, clear, and pedagogical. Do not add any introductory or concluding conversational text, just return the rewritten message itself.
 Message: "${text}"`;
 
       const response = await ai.models.generateContent({
@@ -134,13 +141,11 @@ Message: "${text}"`;
       return response.text?.trim() || text;
     } catch (e) {
       console.error('Gemini API Error in enhanceText:', e);
-      // Fallback to mock on error
     }
   }
 
   return new Promise((resolve) => {
     setTimeout(() => {
-      // Very basic mock logic for enhancement
       const lower = text.toLowerCase();
       let enhanced = text;
       
@@ -151,12 +156,11 @@ Message: "${text}"`;
       } else if (lower.includes('good') || lower.includes('great')) {
         enhanced = "Excellent work! Your approach here is very solid.";
       } else {
-        // Generic enhancement
         enhanced = `Here is a clearer way to say this: "${text}" -> "I noticed your code. Let's discuss your approach."`;
       }
       
       resolve(enhanced);
-    }, 800); // 800ms delay to simulate typing
+    }, 800);
   });
 };
 
@@ -164,7 +168,7 @@ export const generateAssignment = async (topic: string, marks: number, difficult
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are an expert computer science professor. Generate a programming assignment for your students.
+      const prompt = `You are Jarvis, an expert computer science professor. Generate a programming assignment for your students.
 Topic/Example: ${topic}
 Language: ${language}
 Difficulty: ${difficulty}
@@ -203,10 +207,9 @@ Include at least 2 visible test cases and 3 hidden test cases. Do NOT include ma
     }
   }
 
-  // Fallback Mock
   return {
-    title: `Mock Assignment: ${topic}`,
-    description: "This is a mock assignment since the AI key failed. Please implement the requested logic.",
+    title: `Assignment: ${topic}`,
+    description: "Please implement the requested logic.",
     conceptsCovered: ["Basics", topic],
     visibleTestCases: [{ input: "test", expectedOutput: "test_success" }],
     hiddenTestCases: [{ input: "hidden", expectedOutput: "hidden_success" }],
@@ -222,7 +225,7 @@ export const generateTestCasesFromDescription = async (title: string, descriptio
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are an expert computer science professor. The teacher has provided a programming assignment description, but forgot to provide test cases and hints.
+      const prompt = `You are Jarvis, an expert computer science professor. The teacher has provided a programming assignment description, but forgot to provide test cases and hints.
 Assignment Title: ${title}
 Assignment Description: ${description}
 Language: ${language}
@@ -260,7 +263,6 @@ Do NOT include markdown blocks around the JSON.`;
     }
   }
 
-  // Fallback Mock
   return {
     visibleTestCases: [{ input: "fallback_in", expectedOutput: "fallback_out" }],
     hiddenTestCases: [{ input: "hidden_in", expectedOutput: "hidden_out" }],
@@ -276,7 +278,7 @@ export const analyzeSubmission = async (code: string, language: string, results:
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `Analyze this student submission.
+      const prompt = `You are Jarvis. Analyze this student submission.
 Language: ${language}
 Code:
 ${code}
@@ -310,7 +312,7 @@ Do NOT include markdown blocks around the JSON.`;
   }
 
   return {
-    recommendationText: "Mock analysis: The student seems to have some logical errors in their submission.",
+    recommendationText: "The student seems to have some logical errors in their submission.",
     conceptGap: "Logic Errors"
   };
 };
