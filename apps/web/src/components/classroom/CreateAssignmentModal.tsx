@@ -24,9 +24,9 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
     timeLimitMinutes: 60,
     dueDate: '',
     conceptsCovered: [] as string[],
-    visibleTestCases: [] as any[],
-    hiddenTestCases: [] as any[],
-    hints: [] as any[]
+    visibleTestCases: [] as { input: string; expectedOutput: string }[],
+    hiddenTestCases: [] as { input: string; expectedOutput: string }[],
+    hints: [] as { level: number; text: string }[]
   });
 
   const [aiTopic, setAiTopic] = useState('');
@@ -56,13 +56,57 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
         hints: result.hints || prev.hints
       }));
       
-      addToast('Assignment generated successfully!', 'success');
+      addToast('Assignment and realistic test cases generated!', 'success');
     } catch (error) {
       console.error(error);
       addToast('Failed to generate assignment with AI', 'error');
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const addVisibleTestCase = () => {
+    setFormData(prev => ({
+      ...prev,
+      visibleTestCases: [...prev.visibleTestCases, { input: '', expectedOutput: '' }]
+    }));
+  };
+
+  const removeVisibleTestCase = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      visibleTestCases: prev.visibleTestCases.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateVisibleTestCase = (index: number, field: 'input' | 'expectedOutput', value: string) => {
+    setFormData(prev => {
+      const updated = [...prev.visibleTestCases];
+      updated[index][field] = value;
+      return { ...prev, visibleTestCases: updated };
+    });
+  };
+
+  const addHiddenTestCase = () => {
+    setFormData(prev => ({
+      ...prev,
+      hiddenTestCases: [...prev.hiddenTestCases, { input: '', expectedOutput: '' }]
+    }));
+  };
+
+  const removeHiddenTestCase = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      hiddenTestCases: prev.hiddenTestCases.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateHiddenTestCase = (index: number, field: 'input' | 'expectedOutput', value: string) => {
+    setFormData(prev => {
+      const updated = [...prev.hiddenTestCases];
+      updated[index][field] = value;
+      return { ...prev, hiddenTestCases: updated };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,34 +130,32 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 py-8">
-      <div className="w-full max-w-4xl max-h-full overflow-y-auto rounded-2xl border border-white/10 bg-[#12121a] p-6 shadow-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">Create Assignment</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 py-6">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-[#12121a] p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-black text-white">Create Assignment</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div className="mb-8 rounded-xl bg-purple-900/20 border border-purple-500/30 p-6">
-          <h3 className="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            Generate with AI
+        {/* AI Auto-generator Banner */}
+        <div className="rounded-2xl bg-gradient-to-r from-purple-950/60 to-indigo-950/60 border border-purple-500/30 p-5 shadow-lg">
+          <h3 className="text-sm font-extrabold text-purple-300 mb-3 flex items-center gap-2">
+            ✨ Auto-Generate Full Question & Real Test Cases
           </h3>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={aiTopic}
               onChange={(e) => setAiTopic(e.target.value)}
-              placeholder="E.g., Create a Java OOP question about Bank Accounts..."
-              className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-white focus:border-purple-500 focus:outline-none"
+              placeholder="E.g. Fibonacci Series in Java, String Palindrome, Factorial..."
+              className="flex-1 rounded-xl border border-white/15 bg-black/50 px-4 py-2.5 text-sm text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none font-medium"
             />
-            <Button onClick={generateWithAI} disabled={isGenerating} variant="primary" className="bg-purple-600 hover:bg-purple-700">
-              {isGenerating ? 'Generating...' : 'Auto-Generate'}
+            <Button onClick={generateWithAI} disabled={isGenerating} variant="primary" className="bg-purple-600 hover:bg-purple-700 font-bold whitespace-nowrap">
+              {isGenerating ? 'Generating...' : '⚡ Generate Question'}
             </Button>
           </div>
         </div>
@@ -121,23 +163,24 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
+              <label className="block text-xs font-bold text-gray-300 mb-1.5 uppercase">Title</label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+                placeholder="Fibonacci Series Generator"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm font-bold text-white focus:border-indigo-500 focus:outline-none"
                 required
               />
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Language</label>
+                <label className="block text-xs font-bold text-gray-300 mb-1.5 uppercase">Language</label>
                 <select 
                   value={formData.language}
                   onChange={(e) => setFormData({...formData, language: e.target.value})}
-                  className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-xs font-bold text-white focus:border-indigo-500 focus:outline-none capitalize"
                 >
                   <option value="java">Java</option>
                   <option value="python">Python</option>
@@ -145,11 +188,11 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Difficulty</label>
+                <label className="block text-xs font-bold text-gray-300 mb-1.5 uppercase">Difficulty</label>
                 <select 
                   value={formData.difficulty}
                   onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
-                  className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-xs font-bold text-white focus:border-indigo-500 focus:outline-none"
                 >
                   <option value="Easy">Easy</option>
                   <option value="Medium">Medium</option>
@@ -157,12 +200,12 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Marks</label>
+                <label className="block text-xs font-bold text-gray-300 mb-1.5 uppercase">Marks</label>
                 <input
                   type="number"
                   value={formData.marks}
                   onChange={(e) => setFormData({...formData, marks: parseInt(e.target.value)})}
-                  className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-xs font-bold text-white focus:border-indigo-500 focus:outline-none"
                   min="1"
                   required
                 />
@@ -172,46 +215,18 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-300">Description / Problem Statement (Markdown)</label>
-              <label className="cursor-pointer text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-blue-500/10 px-2 py-1 rounded">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Insert Image
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (event) => {
-                        const base64 = event.target?.result;
-                        if (base64) {
-                          setFormData(prev => ({
-                            ...prev,
-                            description: prev.description + `\n\n![${file.name}](${base64})\n`
-                          }));
-                          addToast('Image inserted into description!', 'success');
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }} 
-                />
-              </label>
+              <label className="block text-xs font-bold text-gray-300 uppercase">Problem Statement (Markdown)</label>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                rows={12}
+                rows={8}
                 placeholder="Write your problem statement here..."
-                className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-white focus:border-blue-500 focus:outline-none font-mono text-sm"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none font-mono text-xs leading-relaxed"
                 required
               />
-              <div className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2 text-gray-200 overflow-y-auto max-h-[280px] prose prose-invert prose-sm">
+              <div className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-gray-200 overflow-y-auto max-h-[220px] prose prose-invert prose-xs">
                 {formData.description ? (
                   <ReactMarkdown>{formData.description}</ReactMarkdown>
                 ) : (
@@ -219,6 +234,110 @@ export default function CreateAssignmentModal({ classroomId, onClose, onCreated 
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Test Cases Editor Section */}
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider">🧪 Visible Test Cases (Students Can View)</h4>
+              <button
+                type="button"
+                onClick={addVisibleTestCase}
+                className="text-xs font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20"
+              >
+                + Add Test Case
+              </button>
+            </div>
+
+            {formData.visibleTestCases.length === 0 ? (
+              <p className="text-xs text-gray-500 italic">No visible test cases added yet. Click Auto-Generate or + Add Test Case.</p>
+            ) : (
+              <div className="space-y-2">
+                {formData.visibleTestCases.map((tc, idx) => (
+                  <div key={idx} className="flex items-center gap-3 bg-black/30 p-3 rounded-xl border border-white/10">
+                    <div className="flex-1 space-y-1">
+                      <div className="text-[10px] font-bold text-gray-400">INPUT (STDIN)</div>
+                      <input
+                        type="text"
+                        value={tc.input}
+                        onChange={(e) => updateVisibleTestCase(idx, 'input', e.target.value)}
+                        placeholder="e.g. 5"
+                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="text-[10px] font-bold text-gray-400">EXPECTED OUTPUT (STDOUT)</div>
+                      <input
+                        type="text"
+                        value={tc.expectedOutput}
+                        onChange={(e) => updateVisibleTestCase(idx, 'expectedOutput', e.target.value)}
+                        placeholder="e.g. 0 1 1 2 3"
+                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeVisibleTestCase(idx)}
+                      className="text-red-400 hover:text-red-300 p-2 text-xs font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Hidden Test Cases Section */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider">🔒 Hidden Test Cases (Edge Cases)</h4>
+              <button
+                type="button"
+                onClick={addHiddenTestCase}
+                className="text-xs font-bold text-purple-400 hover:text-purple-300 bg-purple-500/10 px-3 py-1.5 rounded-lg border border-purple-500/20"
+              >
+                + Add Hidden Case
+              </button>
+            </div>
+
+            {formData.hiddenTestCases.length === 0 ? (
+              <p className="text-xs text-gray-500 italic">No hidden test cases added yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {formData.hiddenTestCases.map((tc, idx) => (
+                  <div key={idx} className="flex items-center gap-3 bg-black/30 p-3 rounded-xl border border-white/10">
+                    <div className="flex-1 space-y-1">
+                      <div className="text-[10px] font-bold text-gray-400">HIDDEN INPUT</div>
+                      <input
+                        type="text"
+                        value={tc.input}
+                        onChange={(e) => updateHiddenTestCase(idx, 'input', e.target.value)}
+                        placeholder="e.g. 10"
+                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="text-[10px] font-bold text-gray-400">EXPECTED OUTPUT</div>
+                      <input
+                        type="text"
+                        value={tc.expectedOutput}
+                        onChange={(e) => updateHiddenTestCase(idx, 'expectedOutput', e.target.value)}
+                        placeholder="e.g. 0 1 1 2 3 5 8 13 21 34"
+                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeHiddenTestCase(idx)}
+                      className="text-red-400 hover:text-red-300 p-2 text-xs font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-4 pt-4 border-t border-white/10">
