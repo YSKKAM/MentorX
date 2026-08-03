@@ -64,8 +64,8 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
         if (histRes.status === 'success' && histRes.data) {
           setMessages(histRes.data);
         }
-      } catch (err) {
-        console.error('Failed to load chat room data', err);
+      } catch (err: any) {
+        console.warn('Chat room load warning:', err?.message || err);
       }
     };
     

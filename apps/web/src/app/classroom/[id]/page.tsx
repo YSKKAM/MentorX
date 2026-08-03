@@ -48,8 +48,9 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
         studentEmail: s.student_email,
         joinedAt: s.joined_at
       })));
-    } catch (error) {
-      console.error('Failed to fetch classroom details', error);
+    } catch (error: any) {
+      console.warn('Classroom details fetch warning:', error?.message || error);
+      setClassroom(null);
     } finally {
       setIsLoading(false);
     }

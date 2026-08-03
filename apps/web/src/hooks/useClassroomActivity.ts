@@ -39,8 +39,8 @@ export function useClassroomActivity(classroomId: string) {
         };
       });
       setActivities(activityMap);
-    } catch (error) {
-      console.error('Failed to fetch initial activity', error);
+    } catch (error: any) {
+      console.warn('Classroom activity fetch warning:', error?.message || error);
     } finally {
       setLoading(false);
     }
