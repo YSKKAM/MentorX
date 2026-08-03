@@ -38,8 +38,10 @@ export default function CreateClassroomModal({ isOpen, onClose, onCreated }: Cre
       onCreated();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to create classroom');
-      addToast('Failed to create classroom', 'error');
+      const msg = err?.data?.errors?.[0]?.message || err?.message || 'Failed to create classroom. Please try again.';
+      setError(msg);
+      addToast(msg, 'error');
+      console.error('Create classroom error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +73,12 @@ export default function CreateClassroomModal({ isOpen, onClose, onCreated }: Cre
             placeholder="What is this class about?"
           />
         </div>
+        
+        {error && (
+          <div className="rounded-xl bg-red-500/15 border border-red-500/30 px-4 py-3 text-sm font-bold text-red-700 dark:text-red-400">
+            ⚠️ {error}
+          </div>
+        )}
         
         <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-white/10">
           <Button type="button" variant="ghost" onClick={onClose}>

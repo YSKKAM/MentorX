@@ -39,16 +39,17 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
         joinCode: roomData.join_code,
         teacherId: roomData.teacher_id,
         teacherName: roomData.teacher_name,
-        studentCount: roomData.student_count,
+        studentCount: parseInt(roomData.student_count) || (roomData.students?.length ?? 0),
         createdAt: roomData.created_at,
         updatedAt: roomData.updated_at
       });
 
-      const studentsData = await api.get(`/classrooms/${id}/students`);
-      setStudents(studentsData.map((s: any) => ({
+      // Students are already included in the getById response
+      const studentsArr = roomData.students || [];
+      setStudents(studentsArr.map((s: any) => ({
         id: s.id,
-        studentName: s.student_name,
-        studentEmail: s.student_email,
+        studentName: s.display_name || s.student_name || s.email,
+        studentEmail: s.email || s.student_email,
         joinedAt: s.joined_at
       })));
     } catch (error: any) {
