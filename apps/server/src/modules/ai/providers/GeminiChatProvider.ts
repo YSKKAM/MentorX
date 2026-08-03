@@ -11,6 +11,26 @@ export class GeminiChatProvider implements IAIChatProvider {
     }
   }
 
+  private async callGeminiWithFallback(contents: string): Promise<string> {
+    const models = ['gemini-flash-latest', 'gemini-2.0-flash'];
+    let lastError = null;
+
+    for (const model of models) {
+      try {
+        const response = await this.ai.models.generateContent({
+          model,
+          contents,
+        });
+        if (response.text) return response.text;
+      } catch (err: any) {
+        console.warn(`Gemini model ${model} warning:`, err?.message || err);
+        lastError = err;
+      }
+    }
+
+    throw lastError || new Error('Failed to generate content with Gemini API');
+  }
+
   async generateText(prompt: string): Promise<string> {
     if (!this.ai) {
       return `AI Assistant: GEMINI_API_KEY is not configured in the server environment.`;
@@ -18,11 +38,8 @@ export class GeminiChatProvider implements IAIChatProvider {
 
     try {
       const systemPrompt = `You are an advanced AI programming assistant & educational mentor in the AI Classroom Platform. Be helpful, concise, well-structured, and clear.`;
-      const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `${systemPrompt}\n\nUser Question/Context:\n${prompt}`,
-      });
-      return response.text || 'AI Assistant: No response text generated.';
+      const responseText = await this.callGeminiWithFallback(`${systemPrompt}\n\nUser Question/Context:\n${prompt}`);
+      return responseText || 'AI Assistant: No response text generated.';
     } catch (error: any) {
       console.error('Gemini API Error in generateText:', error);
       return `AI Assistant: Error contacting Gemini API - ${error?.message || 'Unknown error'}`;
@@ -36,11 +53,8 @@ export class GeminiChatProvider implements IAIChatProvider {
 
     try {
       const systemPrompt = `You are an expert programming assistant in AI Classroom. Reply strictly with valid code solution for the user's request. Double check syntax for completeness. Include helpful inline comments.`;
-      const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `${systemPrompt}\n\nRequest:\n${prompt}`,
-      });
-      return response.text || '';
+      const responseText = await this.callGeminiWithFallback(`${systemPrompt}\n\nRequest:\n${prompt}`);
+      return responseText || '';
     } catch (error: any) {
       console.error('Gemini API Error in generateCode:', error);
       return `// Error generating code with Gemini API: ${error?.message}`;

@@ -68,7 +68,7 @@ Provide a JSON response with the following keys exactly:
 Only return the raw JSON object, no markdown blocks.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-flash-latest',
         contents: prompt,
       });
 
@@ -134,7 +134,7 @@ export const enhanceText = async (text: string) => {
 Message: "${text}"`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-flash-latest',
         contents: prompt,
       });
 
@@ -343,7 +343,7 @@ Return a valid JSON object strictly matching this schema:
 Do NOT include markdown blocks around the JSON.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-flash-latest',
         contents: prompt,
       });
 
@@ -394,7 +394,7 @@ Return a valid JSON object strictly matching this schema:
 Do NOT include markdown blocks around the JSON.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-flash-latest',
         contents: prompt,
       });
 
@@ -442,7 +442,7 @@ Return a JSON object with:
 Do NOT include markdown blocks around the JSON.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-flash-latest',
         contents: prompt,
       });
 
