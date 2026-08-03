@@ -74,6 +74,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
     const token = localStorage.getItem('token');
     if (!token) return;
     const socket = socketService.connect(token);
+    if (!socket) return;
     
     socket.emit('chat_room:join', { chatRoomId: roomId });
 

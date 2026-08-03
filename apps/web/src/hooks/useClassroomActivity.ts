@@ -56,6 +56,7 @@ export function useClassroomActivity(classroomId: string) {
     if (!token || user?.role !== 'teacher') return;
 
     const socket = socketService.connect(token);
+    if (!socket) return;
     
     // Join classroom room
     socket.emit('classroom:join', { classroomId });
