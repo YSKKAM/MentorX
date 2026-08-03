@@ -49,6 +49,20 @@ export const getClassroomActivity = async (req: Request, res: Response, next: Ne
 };
 
 /**
+ * Handle fetching real-time classroom confusion alerts
+ */
+export const getConfusionAlerts = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { classroomId } = req.params;
+    const { getConfusionAlertsForClassroom } = require('./confusion.service');
+    const alerts = await getConfusionAlertsForClassroom(classroomId);
+    res.json(alerts);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Handle fetching activity history for a specific student
  */
 export const getStudentHistory = async (req: Request, res: Response, next: NextFunction) => {

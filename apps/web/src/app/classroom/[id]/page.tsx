@@ -12,6 +12,8 @@ import Button from '../../../components/ui/Button';
 import ClassroomChat from '../../../components/chat/ClassroomChat';
 import { useClassroomActivity } from '../../../hooks/useClassroomActivity';
 
+import ClassroomConfusionRadar from '../../../components/classroom/ClassroomConfusionRadar';
+
 export default function ClassroomDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { user } = useAuth();
@@ -197,7 +199,10 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
                 </div>
 
                 <div className="mb-8">
-                  <ActivityCharts activities={activities} />
+                  <div className="mb-6">
+                  <ClassroomConfusionRadar classroomId={id} />
+                </div>
+                <ActivityCharts activities={activities} />
                 </div>
 
                 <div className="space-y-4">

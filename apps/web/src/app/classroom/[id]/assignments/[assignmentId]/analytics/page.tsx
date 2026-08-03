@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '../../../../../../lib/api';
 import Button from '../../../../../../components/ui/Button';
+import PlagiarismReportModal, { PlagiarismPairResult } from '../../../../../../components/assignment/PlagiarismReportModal';
 
 export default function AssignmentAnalytics() {
   const params = useParams();
@@ -13,6 +14,24 @@ export default function AssignmentAnalytics() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+
+  const [isPlagiarismModalOpen, setIsPlagiarismModalOpen] = useState(false);
+  const [plagiarismResults, setPlagiarismResults] = useState<PlagiarismPairResult[]>([]);
+  const [isPlagiarismLoading, setIsPlagiarismLoading] = useState(false);
+
+  const handleRunPlagiarismCheck = async () => {
+    setIsPlagiarismModalOpen(true);
+    setIsPlagiarismLoading(true);
+    try {
+      const id = params.assignmentId as string;
+      const res = await api.post(`/plagiarism/assignment/${id}`, {});
+      setPlagiarismResults(res.results || []);
+    } catch (err) {
+      console.error('Failed to run plagiarism check:', err);
+    } finally {
+      setIsPlagiarismLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,9 +85,14 @@ export default function AssignmentAnalytics() {
           Back to Classroom
         </button>
 
-        <div className="glass-card overflow-hidden rounded-2xl border border-white/10 bg-[#12121a]/80 p-8">
-          <h1 className="text-3xl font-bold text-white mb-2">{assignment.title} - Analytics</h1>
-          <p className="text-gray-400">Deep dive into student performance and AI-identified learning gaps.</p>
+        <div className="glass-card overflow-hidden rounded-2xl border border-white/10 bg-[#12121a]/80 p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">{assignment.title} - Analytics</h1>
+            <p className="text-gray-400">Deep dive into student performance and AI-identified learning gaps.</p>
+          </div>
+          <Button variant="primary" onClick={handleRunPlagiarismCheck} className="bg-rose-600 hover:bg-rose-700 font-extrabold shrink-0">
+            🛡️ Run Plagiarism Check
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -188,6 +212,13 @@ export default function AssignmentAnalytics() {
           </div>
         </div>
       )}
+
+      <PlagiarismReportModal
+        isOpen={isPlagiarismModalOpen}
+        onClose={() => setIsPlagiarismModalOpen(false)}
+        results={plagiarismResults}
+        isLoading={isPlagiarismLoading}
+      />
     </div>
   );
 }

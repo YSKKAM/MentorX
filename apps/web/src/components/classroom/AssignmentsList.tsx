@@ -99,18 +99,46 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
               </div>
 
               {isTeacher && !assignment.is_published && (
-                <Button onClick={() => publishAssignment(assignment.id)} variant="secondary" className="w-full">
-                  Publish to Students
-                </Button>
+                <div className="flex flex-col gap-2 w-full">
+                  <Button onClick={() => publishAssignment(assignment.id)} variant="secondary" className="w-full">
+                    Publish to Students
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = `/classroom/${classroomId}/assignments/${assignment.id}`} 
+                    variant="ghost" 
+                    className="w-full text-xs text-slate-400 hover:text-white"
+                  >
+                    Preview Web Sandbox 💻
+                  </Button>
+                </div>
               )}
               
               {isTeacher && assignment.is_published && (
+                <div className="flex gap-2 w-full">
+                  <Button 
+                    onClick={() => window.location.href = `/classroom/${classroomId}/assignments/${assignment.id}/analytics`} 
+                    variant="primary" 
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Analytics
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = `/classroom/${classroomId}/assignments/${assignment.id}`} 
+                    variant="secondary" 
+                    className="flex-1"
+                  >
+                    Sandbox 💻
+                  </Button>
+                </div>
+              )}
+
+              {!isTeacher && (
                 <Button 
-                  onClick={() => window.location.href = `/classroom/${classroomId}/assignments/${assignment.id}/analytics`} 
+                  onClick={() => window.location.href = `/classroom/${classroomId}/assignments/${assignment.id}`} 
                   variant="primary" 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700"
                 >
-                  View Analytics
+                  Open Web Sandbox 💻
                 </Button>
               )}
             </div>
