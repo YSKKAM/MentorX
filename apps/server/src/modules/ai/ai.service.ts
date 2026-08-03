@@ -207,16 +207,17 @@ Include at least 2 visible test cases and 3 hidden test cases. Do NOT include ma
     }
   }
 
+  const isHelloWorld = topic.toLowerCase().includes('hello');
   return {
     title: `Assignment: ${topic}`,
-    description: "Please implement the requested logic.",
+    description: isHelloWorld ? "Print 'Hello World' to the console." : "Please implement the requested logic.",
     conceptsCovered: ["Basics", topic],
-    visibleTestCases: [{ input: "test", expectedOutput: "test_success" }],
-    hiddenTestCases: [{ input: "hidden", expectedOutput: "hidden_success" }],
+    visibleTestCases: [{ input: "", expectedOutput: isHelloWorld ? "Hello World" : "test_success" }],
+    hiddenTestCases: [{ input: "", expectedOutput: isHelloWorld ? "Hello World" : "hidden_success" }],
     hints: [
       { level: 1, text: "Think about the basic syntax." },
-      { level: 2, text: "Use a loop or condition." },
-      { level: 3, text: "Return the modified value." }
+      { level: 2, text: "Use System.out.println in Java or print() in Python." },
+      { level: 3, text: "Ensure string casing matches expected output." }
     ]
   };
 };
@@ -231,6 +232,7 @@ Assignment Description: ${description}
 Language: ${language}
 
 Analyze the description and generate appropriate text-based I/O test cases and hints for this assignment.
+For "hello world" assignments, expectedOutput MUST be "Hello World".
 If the assignment is purely visual (like HTML/CSS/Frontend JS) and cannot be tested with terminal STDIN/STDOUT, return empty arrays for the test cases, but still provide hints.
 
 Return a valid JSON object strictly matching this schema:
@@ -263,13 +265,15 @@ Do NOT include markdown blocks around the JSON.`;
     }
   }
 
+  const isHello = (title + description).toLowerCase().includes('hello');
+
   return {
-    visibleTestCases: [{ input: "fallback_in", expectedOutput: "fallback_out" }],
-    hiddenTestCases: [{ input: "hidden_in", expectedOutput: "hidden_out" }],
+    visibleTestCases: [{ input: "", expectedOutput: isHello ? "Hello World" : "fallback_out" }],
+    hiddenTestCases: [{ input: "", expectedOutput: isHello ? "Hello World" : "hidden_out" }],
     hints: [
       { level: 1, text: "Review the problem statement." },
       { level: 2, text: "Consider the logic flow." },
-      { level: 3, text: "Check your syntax." }
+      { level: 3, text: "Check your syntax and string output." }
     ]
   };
 };
