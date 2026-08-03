@@ -79,9 +79,17 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
 
   if (!classroom) {
     return (
-      <div className="glass-card-light dark:glass-card flex h-64 flex-col items-center justify-center space-y-4 rounded-2xl border p-8 text-center">
-        <h2 className="text-2xl font-black text-slate-950 dark:text-white">Classroom not found</h2>
-        <Button onClick={() => router.back()}>Go Back</Button>
+      <div className="glass-card-light dark:glass-card flex min-h-[40vh] flex-col items-center justify-center space-y-4 rounded-3xl border border-slate-900/10 dark:border-white/10 p-8 text-center m-6 shadow-xl">
+        <h2 className="text-2xl font-black text-slate-950 dark:text-white">Classroom Not Found</h2>
+        <p className="text-sm font-bold text-slate-700 dark:text-gray-400 max-w-md">
+          This classroom ID may have been deleted or does not exist. Please return to your active classrooms dashboard.
+        </p>
+        <Button 
+          onClick={() => router.push(user?.role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student')}
+          className="font-extrabold px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25"
+        >
+          Go to My Active Classrooms
+        </Button>
       </div>
     );
   }
