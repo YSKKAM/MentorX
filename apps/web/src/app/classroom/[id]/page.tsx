@@ -27,8 +27,11 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
   const totalOnline = activities.filter(a => a.status === 'coding' || a.status === 'online').length;
   const activeLanguages = Array.from(new Set(activities.map(a => a.language).filter(Boolean))) as string[];
 
+  const [accessError, setAccessError] = useState<string | null>(null);
+
   const fetchClassroomDetails = async () => {
     setIsLoading(true);
+    setAccessError(null);
     try {
       const roomData = await api.get(`/classrooms/${id}`);
       setClassroom({
@@ -50,6 +53,11 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
       })));
     } catch (error: any) {
       console.warn('Classroom details fetch warning:', error?.message || error);
+      if (error?.status === 403) {
+        setAccessError('Access Denied: You do not have permission to view this classroom or are not enrolled in it yet.');
+      } else {
+        setAccessError('Classroom Not Found: This classroom ID may have been deleted or does not exist.');
+      }
       setClassroom(null);
     } finally {
       setIsLoading(false);
@@ -80,9 +88,11 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
   if (!classroom) {
     return (
       <div className="glass-card-light dark:glass-card flex min-h-[40vh] flex-col items-center justify-center space-y-4 rounded-3xl border border-slate-900/10 dark:border-white/10 p-8 text-center m-6 shadow-xl">
-        <h2 className="text-2xl font-black text-slate-950 dark:text-white">Classroom Not Found</h2>
+        <h2 className="text-2xl font-black text-slate-950 dark:text-white">
+          {accessError?.startsWith('Access Denied') ? 'Access Denied' : 'Classroom Not Found'}
+        </h2>
         <p className="text-sm font-bold text-slate-700 dark:text-gray-400 max-w-md">
-          This classroom ID may have been deleted or does not exist. Please return to your active classrooms dashboard.
+          {accessError || 'This classroom ID may have been deleted or does not exist. Please return to your active classrooms dashboard.'}
         </p>
         <Button 
           onClick={() => router.push(user?.role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student')}
