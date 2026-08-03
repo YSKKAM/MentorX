@@ -77,13 +77,20 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
     
     socket.emit('chat_room:join', { chatRoomId: roomId });
 
-    const onNewMessage = (msg: ChatMessage) => {
-      if (msg.classroom_id === roomId) {
+    const onNewMessage = (msg: any) => {
+      // For chat room messages: check chat_room_id (raw from DB) OR classroom_id (aliased in history query)
+      const belongsHere = msg.chat_room_id === roomId || msg.classroom_id === roomId;
+      if (belongsHere) {
         setMessages((prev) => {
            if (prev.some(m => m.id === msg.id)) return prev;
-           return [...prev, msg];
+           // Normalize the message format
+           const normalized: ChatMessage = {
+             ...msg,
+             classroom_id: roomId, // normalize so isMe check works
+           };
+           return [...prev, normalized];
         });
-        if (msg.is_ai_response) {
+        if (msg.is_ai_response || msg.is_ai) {
           setIsAiTyping(false);
         }
       }

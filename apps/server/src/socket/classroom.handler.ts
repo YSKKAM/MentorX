@@ -77,11 +77,18 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
         messageType
       });
 
+      // Fetch sender display name from DB (JWT payload doesn't include displayName)
+      const { query: dbQuery } = await import('../config/database');
+      const userRow = await dbQuery('SELECT display_name FROM users WHERE id = $1', [user.userId]);
+      const senderName = userRow.rows[0]?.display_name || 'Unknown';
+
       const targetRoom = chatRoomId ? `chat_room:${chatRoomId}` : `classroom:${classroomId}`;
       io.to(targetRoom).emit('chat:new-message', {
         ...savedMessage,
+        chat_room_id: chatRoomId || savedMessage.chat_room_id || null,
+        classroom_id: savedMessage.classroom_id || classroomId || null,
         sender_id: user.userId,
-        sender_name: user.displayName || 'Unknown',
+        sender_name: senderName,
         sender_role: user.role || 'student',
         is_ai_response: isAi || false,
         ai_provider: aiProvider,
@@ -89,7 +96,7 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
         prompt,
         generated_image: generatedImage,
         message_type: messageType || 'text',
-        created_at: savedMessage.timestamp || new Date().toISOString(),
+        created_at: savedMessage.timestamp || savedMessage.created_at || new Date().toISOString(),
       });
     } catch (error) {
       console.error('Error saving chat message:', error);
