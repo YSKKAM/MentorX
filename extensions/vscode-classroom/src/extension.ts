@@ -123,7 +123,6 @@ export async function activate(context: vscode.ExtensionContext) {
             console.error('Auto-connect failed:', err);
             const message = err instanceof Error ? err.message : String(err);
             updateStatus('Error', message);
-            vscode.window.showErrorMessage(`Auto-connect failed: ${message}`);
         }
     }
 }
