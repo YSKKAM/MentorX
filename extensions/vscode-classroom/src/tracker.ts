@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as socket from './socket';
 import { getDiagnosticsForActiveFile } from './diagnostics';
 import { getActivitySendInterval, getIdleTimeout } from './config';
+import { disableSuggestions, restoreSuggestions } from './suggestions';
 
 let isTracking = false;
 let currentClassroomId: string | null = null;
@@ -19,6 +20,9 @@ export function start(classroomId: string) {
     isTracking = true;
     lastTypeTime = Date.now();
     status = 'coding';
+    
+    // Disable student inline suggestions/Copilot when joining classroom
+    disableSuggestions();
     
     disposables.push(vscode.workspace.onDidChangeTextDocument(e => {
         if (vscode.window.activeTextEditor && e.document === vscode.window.activeTextEditor.document) {
@@ -62,6 +66,9 @@ export function stop() {
     isTracking = false;
     currentClassroomId = null;
     status = 'idle';
+    
+    // Restore student suggestion settings when leaving classroom
+    restoreSuggestions();
 }
 
 function sendStatus() {
