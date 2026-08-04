@@ -28,7 +28,8 @@
         {
           "type": "webview",
           "id": "classroomAssignments",
-          "name": "Assignments"
+          "name": "Assignments",
+          "icon": "media/icon.svg"
         }
       ]
     },
