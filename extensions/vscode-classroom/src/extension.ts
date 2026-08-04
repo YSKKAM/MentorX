@@ -11,6 +11,25 @@ export async function activate(context: vscode.ExtensionContext) {
     initAuth(context);
     initStatusBar(context);
 
+    // Dynamically update VS Code status bar based on Socket.IO connection status
+    socket.onEvent('connect', () => {
+        const trackStatus = tracker.getStatus();
+        if (trackStatus.isTracking) {
+            // Restore tracking text if we were tracking
+            updateStatus('Tracking', trackStatus.status);
+        } else {
+            updateStatus('Connected');
+        }
+    });
+
+    socket.onEvent('disconnect', () => {
+        updateStatus('Disconnected');
+    });
+
+    socket.onEvent('connect_error', (err: any) => {
+        updateStatus('Error', err.message || 'Connection Error');
+    });
+
     const sidebarProvider = new AssignmentSidebarProvider(context.extensionUri);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(AssignmentSidebarProvider.viewType, sidebarProvider)
@@ -100,8 +119,11 @@ export async function activate(context: vscode.ExtensionContext) {
         try {
             await socket.connect(serverUrl, token);
             updateStatus('Connected');
-        } catch (err) {
-            updateStatus('Error', 'Auto-connect failed');
+        } catch (err: any) {
+            console.error('Auto-connect failed:', err);
+            const message = err instanceof Error ? err.message : String(err);
+            updateStatus('Error', message);
+            vscode.window.showErrorMessage(`Auto-connect failed: ${message}`);
         }
     }
 }
