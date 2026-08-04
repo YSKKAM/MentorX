@@ -3,8 +3,11 @@ import { env } from './env';
 import fs from 'fs/promises';
 import path from 'path';
 
+const isNeon = env.DATABASE_URL.includes('neon.tech');
+
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
+  ssl: isNeon ? { rejectUnauthorized: false } : undefined,
 });
 
 /**

@@ -54,6 +54,12 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
         classroomId,
         activity,
       });
+
+      if (errors && errors.length > 0) {
+        io.to(`classroom:${classroomId}`).emit('confusion:update', {
+          classroomId,
+        });
+      }
     } catch (error) {
       console.error('Error recording student activity via socket:', error);
     }

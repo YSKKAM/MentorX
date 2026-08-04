@@ -123,13 +123,15 @@ export const checkAssignmentPlagiarism = async (assignmentId: string): Promise<P
         if (simScore >= 75) level = 'HIGH';
         else if (simScore >= 50) level = 'MEDIUM';
 
+        const { matchedLinesA, matchedLinesB } = getMatchedLines(subA.code, subB.code);
+
         pairs.push({
           studentA: { id: subA.studentId, name: subA.studentName, submissionId: subA.submissionId, code: subA.code },
           studentB: { id: subB.studentId, name: subB.studentName, submissionId: subB.submissionId, code: subB.code },
           similarity: simScore,
           level,
-          matchedLinesA: [2, 3, 4, 5],
-          matchedLinesB: [2, 3, 4, 5],
+          matchedLinesA,
+          matchedLinesB,
         });
       }
     }
@@ -137,4 +139,60 @@ export const checkAssignmentPlagiarism = async (assignmentId: string): Promise<P
 
   pairs.sort((a, b) => b.similarity - a.similarity);
   return pairs;
+};
+
+const canonicalizeLine = (line: string): string => {
+  let cleaned = line
+    .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '') // remove comments
+    .replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g, 'STR_LIT') // normalize strings
+    .replace(/\b\d+(\.\d+)?\b/g, 'NUM_LIT'); // normalize numbers
+
+  const keywords = new Set([
+    'public', 'class', 'static', 'void', 'main', 'string', 'int', 'double', 'float', 'boolean',
+    'if', 'else', 'for', 'while', 'return', 'import', 'def', 'function', 'const', 'let', 'var',
+    'new', 'true', 'false', 'null', 'sys', 'println', 'print', 'package'
+  ]);
+
+  const rawTokens = cleaned.match(/[a-zA-Z_]\w*|[^\s\w]/g) || [];
+  const canonical: string[] = [];
+  for (const token of rawTokens) {
+    const lower = token.toLowerCase();
+    if (keywords.has(lower) || /^[^\w]$/.test(token) || token === 'STR_LIT' || token === 'NUM_LIT') {
+      canonical.push(lower);
+    } else {
+      canonical.push('var');
+    }
+  }
+  return canonical.join('');
+};
+
+export const getMatchedLines = (codeA: string, codeB: string): { matchedLinesA: number[], matchedLinesB: number[] } => {
+  const linesA = (codeA || '').split('\n');
+  const linesB = (codeB || '').split('\n');
+
+  const normA = linesA.map(canonicalizeLine);
+  const normB = linesB.map(canonicalizeLine);
+
+  const matchedLinesA = new Set<number>();
+  const matchedLinesB = new Set<number>();
+
+  for (let i = 0; i < normA.length; i++) {
+    const cA = normA[i];
+    if (!cA || cA.length < 5) continue; // skip short lines like brackets, short variables
+
+    for (let j = 0; j < normB.length; j++) {
+      const cB = normB[j];
+      if (!cB || cB.length < 5) continue;
+
+      if (cA === cB) {
+        matchedLinesA.add(i + 1);
+        matchedLinesB.add(j + 1);
+      }
+    }
+  }
+
+  return {
+    matchedLinesA: Array.from(matchedLinesA),
+    matchedLinesB: Array.from(matchedLinesB)
+  };
 };

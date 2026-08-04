@@ -149,9 +149,7 @@ export default function PlagiarismReportModal({
                   <div className="bg-[#12131f] px-3 py-2 border-b border-slate-800 font-bold text-slate-300">
                     👤 {selectedPair.studentA.name}'s Submission
                   </div>
-                  <pre className="p-3 overflow-y-auto text-slate-200 leading-5 whitespace-pre-wrap flex-1">
-                    {selectedPair.studentA.code}
-                  </pre>
+                  <CodeViewer code={selectedPair.studentA.code} matchedLines={selectedPair.matchedLinesA} />
                 </div>
 
                 {/* Student B Code */}
@@ -159,15 +157,42 @@ export default function PlagiarismReportModal({
                   <div className="bg-[#12131f] px-3 py-2 border-b border-slate-800 font-bold text-slate-300">
                     👤 {selectedPair.studentB.name}'s Submission
                   </div>
-                  <pre className="p-3 overflow-y-auto text-slate-200 leading-5 whitespace-pre-wrap flex-1">
-                    {selectedPair.studentB.code}
-                  </pre>
+                  <CodeViewer code={selectedPair.studentB.code} matchedLines={selectedPair.matchedLinesB} />
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function CodeViewer({ code, matchedLines }: { code: string; matchedLines: number[] }) {
+  const lines = (code || "").split("\n");
+  const matchedSet = new Set(matchedLines);
+
+  return (
+    <div className="overflow-y-auto flex-1 font-mono text-xs p-3 leading-5 select-text bg-[#08090f] text-slate-200">
+      {lines.map((line, idx) => {
+        const lineNum = idx + 1;
+        const isMatched = matchedSet.has(lineNum);
+        return (
+          <div
+            key={lineNum}
+            className={`flex items-start ${
+              isMatched
+                ? "bg-rose-500/20 text-rose-200 border-l-2 border-rose-500 -ml-1 pl-1"
+                : ""
+            }`}
+          >
+            <span className="w-8 shrink-0 text-slate-600 text-right pr-2 select-none border-r border-slate-800 mr-2">
+              {lineNum}
+            </span>
+            <span className="whitespace-pre-wrap break-all">{line || " "}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
