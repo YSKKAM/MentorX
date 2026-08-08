@@ -43,6 +43,55 @@ export const assignmentService = {
     return this.getAssignmentById(assignment.id);
   },
 
+  async updateAssignment(assignmentId: string, data: any) {
+    await query(
+      `UPDATE assignments 
+       SET title = COALESCE($1, title),
+           description = COALESCE($2, description),
+           language = COALESCE($3, language),
+           difficulty = COALESCE($4, difficulty),
+           marks = COALESCE($5, marks),
+           time_limit_minutes = COALESCE($6, time_limit_minutes),
+           due_date = COALESCE($7, due_date),
+           concepts_covered = COALESCE($8, concepts_covered),
+           updated_at = NOW()
+       WHERE id = $9`,
+      [
+        data.title || null,
+        data.description || null,
+        data.language || null,
+        data.difficulty || null,
+        data.marks || null,
+        data.timeLimitMinutes || null,
+        data.dueDate || null,
+        data.conceptsCovered || null,
+        assignmentId
+      ]
+    );
+
+    if (data.visibleTestCases || data.hiddenTestCases) {
+      await query(`DELETE FROM assignment_test_cases WHERE assignment_id = $1`, [assignmentId]);
+      if (data.visibleTestCases && data.visibleTestCases.length > 0) {
+        for (const tc of data.visibleTestCases) {
+          await query(
+            `INSERT INTO assignment_test_cases (assignment_id, input, expected_output, is_hidden) VALUES ($1, $2, $3, false)`,
+            [assignmentId, tc.input, tc.expectedOutput]
+          );
+        }
+      }
+      if (data.hiddenTestCases && data.hiddenTestCases.length > 0) {
+        for (const tc of data.hiddenTestCases) {
+          await query(
+            `INSERT INTO assignment_test_cases (assignment_id, input, expected_output, is_hidden) VALUES ($1, $2, $3, true)`,
+            [assignmentId, tc.input, tc.expectedOutput]
+          );
+        }
+      }
+    }
+
+    return this.getAssignmentById(assignmentId);
+  },
+
   async publishAssignment(assignmentId: string) {
     await query(`UPDATE assignments SET is_published = true WHERE id = $1`, [assignmentId]);
     return { success: true };

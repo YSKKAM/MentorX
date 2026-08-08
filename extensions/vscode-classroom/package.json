@@ -2,6 +2,7 @@
   "name": "classroom-tracker",
   "displayName": "AI Classroom Tracker",
   "description": "Track coding activity for AI Classroom Platform",
+  "publisher": "priyanshuGauttam",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.90.0"

@@ -2,6 +2,27 @@ import { Server, Socket } from 'socket.io';
 import * as activityService from '../modules/activity/activity.service';
 import * as chatService from '../modules/chat/chat.service';
 import * as aiService from '../modules/ai/ai.service';
+import { query } from '../config/database';
+
+/**
+ * Helper to verify if a user has permission to access a classroom
+ */
+const canUserAccessClassroom = async (userId: string, userRole: string, classroomId: string): Promise<boolean> => {
+  if (!classroomId || classroomId === 'global') return true;
+  try {
+    if (userRole === 'teacher') {
+      const res = await query('SELECT id FROM classrooms WHERE id = $1 AND teacher_id = $2', [classroomId, userId]);
+      return res.rows.length > 0;
+    } else {
+      const res = await query('SELECT id FROM classroom_students WHERE classroom_id = $1 AND student_id = $2', [classroomId, userId]);
+      return res.rows.length > 0;
+    }
+  } catch (err) {
+    console.error('Error checking classroom access:', err);
+    return false;
+  }
+};
+
 /**
  * Register real-time socket handlers for classroom interactions
  */
@@ -9,7 +30,16 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
   const user = (socket as any).user;
 
   socket.on('classroom:join', async ({ classroomId }) => {
-    // Note: Would typically verify user has access to classroom here
+    if (!classroomId) return;
+    
+    // Verify user has access to classroom
+    const hasAccess = await canUserAccessClassroom(user.userId, user.role, classroomId);
+    if (!hasAccess) {
+      console.warn(`Unauthorized classroom join attempt by user ${user.userId} for classroom ${classroomId}`);
+      socket.emit('error', { message: 'Forbidden: You do not belong to this classroom' });
+      return;
+    }
+
     socket.join(`classroom:${classroomId}`);
     (socket as any).currentClassroom = classroomId;
     
@@ -22,6 +52,7 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
   });
 
   socket.on('classroom:leave', async ({ classroomId }) => {
+    if (!classroomId) return;
     socket.leave(`classroom:${classroomId}`);
     if ((socket as any).currentClassroom === classroomId) {
       (socket as any).currentClassroom = null;
@@ -38,6 +69,9 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
     try {
       const { classroomId, language, status, currentFile, errors, metadata } = data;
       
+      const hasAccess = await canUserAccessClassroom(user.userId, user.role, classroomId);
+      if (!hasAccess) return;
+
       const activity = await activityService.recordActivity({
         student_id: user.userId,
         classroom_id: classroomId,
@@ -69,6 +103,21 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
     try {
       const { classroomId, chatRoomId, content, isAi, aiProvider, replyToId, prompt, generatedImage, messageType } = data;
       
+      // Enforce length limit
+      if (!content || typeof content !== 'string' || content.trim().length === 0) return;
+      if (content.length > 5000) {
+        socket.emit('error', { message: 'Message exceeds maximum limit of 5000 characters' });
+        return;
+      }
+
+      if (classroomId && classroomId !== 'global') {
+        const hasAccess = await canUserAccessClassroom(user.userId, user.role, classroomId);
+        if (!hasAccess) {
+          socket.emit('error', { message: 'Forbidden: You cannot chat in this classroom' });
+          return;
+        }
+      }
+      
       const savedMessage = await chatService.saveMessage({
         classroomId: classroomId || null,
         chatRoomId: chatRoomId || null,
@@ -83,10 +132,9 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
         messageType
       });
 
-      // Fetch sender display name from DB (JWT payload doesn't include displayName)
-      const { query: dbQuery } = await import('../config/database');
-      const userRow = await dbQuery('SELECT display_name FROM users WHERE id = $1', [user.userId]);
-      const senderName = userRow.rows[0]?.display_name || 'Unknown';
+      // Fetch sender display name from DB
+      const dbRes = await query('SELECT display_name FROM users WHERE id = $1', [user.userId]);
+      const senderName = dbRes.rows[0]?.display_name || 'Unknown';
 
       const targetRoom = chatRoomId ? `chat_room:${chatRoomId}` : `classroom:${classroomId}`;
       io.to(targetRoom).emit('chat:new-message', {
@@ -112,6 +160,17 @@ export const registerClassroomHandlers = (io: Server, socket: Socket) => {
   socket.on('chat:ask-ai', async (data) => {
     try {
       const { classroomId, chatRoomId, prompt, provider } = data;
+      if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) return;
+      if (prompt.length > 5000) {
+        socket.emit('error', { message: 'Prompt exceeds maximum limit of 5000 characters' });
+        return;
+      }
+
+      if (classroomId && classroomId !== 'global') {
+        const hasAccess = await canUserAccessClassroom(user.userId, user.role, classroomId);
+        if (!hasAccess) return;
+      }
+
       const targetRoom = chatRoomId ? `chat_room:${chatRoomId}` : `classroom:${classroomId}`;
       
       io.to(targetRoom).emit('chat:ai-typing', { isTyping: true });

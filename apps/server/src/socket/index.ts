@@ -20,7 +20,7 @@ export const initSocket = (httpServer: HttpServer) => {
         if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
           callback(null, true);
         } else {
-          callback(null, true);
+          callback(new Error('Not allowed by CORS'), false);
         }
       },
       methods: ['GET', 'POST'],

@@ -50,4 +50,39 @@ export class AuthController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  static async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = z.object({ email: z.string().email() }).parse(req.body);
+      const result = await AuthService.requestPasswordReset(email);
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token, newPassword } = z
+        .object({ token: z.string().min(1), newPassword: z.string().min(6) })
+        .parse(req.body);
+      const result = await AuthService.resetPassword(token, newPassword);
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = (req as any).token;
+      if (token) {
+        const { BlacklistService } = await import('./tokenBlacklist.service');
+        BlacklistService.add(token);
+      }
+      res.status(200).json({ success: true, message: 'Logged out successfully' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }

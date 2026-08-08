@@ -105,12 +105,19 @@ export const assignmentController = {
 
   async getById(req: Request, res: Response) {
     try {
+      const user = (req as any).user;
       const { id } = req.params;
       const assignment = await assignmentService.getAssignmentById(id);
       if (!assignment) {
         res.status(404).json({ message: 'Not found' });
         return;
       }
+      
+      // If student or unknown role, hide test cases marked is_hidden
+      if (user?.role !== 'teacher') {
+        assignment.testCases = assignment.testCases.filter((tc: any) => !tc.is_hidden);
+      }
+      
       res.status(200).json(assignment);
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
@@ -119,7 +126,21 @@ export const assignmentController = {
 
   async deleteAssignment(req: Request, res: Response) {
     try {
+      const user = (req as any).user;
       const { id } = req.params;
+      
+      const assignment = await assignmentService.getAssignmentById(id);
+      if (!assignment) {
+        res.status(404).json({ message: 'Not found' });
+        return;
+      }
+
+      const classroom = await classroomService.getClassroomById(assignment.classroom_id);
+      if (!classroom || classroom.teacher_id !== user.userId) {
+        res.status(403).json({ message: 'Forbidden: You do not own this classroom' });
+        return;
+      }
+
       await assignmentService.deleteAssignment(id);
       res.status(200).json({ success: true, message: 'Assignment deleted successfully' });
     } catch (error) {
@@ -130,7 +151,21 @@ export const assignmentController = {
 
   async getAnalytics(req: Request, res: Response) {
     try {
+      const user = (req as any).user;
       const { id } = req.params;
+      
+      const assignment = await assignmentService.getAssignmentById(id);
+      if (!assignment) {
+        res.status(404).json({ message: 'Assignment not found' });
+        return;
+      }
+
+      const classroom = await classroomService.getClassroomById(assignment.classroom_id);
+      if (!classroom || classroom.teacher_id !== user.userId) {
+        res.status(403).json({ message: 'Forbidden' });
+        return;
+      }
+
       const analytics = await assignmentService.getAnalytics(id);
       res.status(200).json(analytics);
     } catch (error) {
@@ -203,17 +238,53 @@ export const assignmentController = {
     }
   },
 
+  async update(req: Request, res: Response) {
+    try {
+      const user = (req as any).user;
+      const { id } = req.params;
+
+      const assignment = await assignmentService.getAssignmentById(id);
+      if (!assignment) {
+        res.status(404).json({ message: 'Assignment not found' });
+        return;
+      }
+
+      const classroom = await classroomService.getClassroomById(assignment.classroom_id);
+      if (!classroom || classroom.teacher_id !== user.userId) {
+        res.status(403).json({ message: 'Forbidden' });
+        return;
+      }
+
+      const updated = await assignmentService.updateAssignment(id, req.body);
+      res.status(200).json(updated);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+
   async submit(req: Request, res: Response) {
     try {
       const user = (req as any).user;
       const { id } = req.params;
       const { sourceCode, language } = req.body;
 
+      const assignment = await assignmentService.getAssignmentById(id);
+      if (!assignment) {
+        res.status(404).json({ message: 'Assignment not found' });
+        return;
+      }
+
+      // Enforce due date deadline if present
+      if (assignment.due_date && new Date() > new Date(assignment.due_date)) {
+        res.status(400).json({ message: 'Assignment submission deadline has passed' });
+        return;
+      }
+
       // 1. Create submission
       const submission = await assignmentService.createSubmission(id, user.userId, language, sourceCode);
 
       // 2. Execute Code
-      const assignment = await assignmentService.getAssignmentById(id);
       let passedCount = 0;
       const totalTests = assignment.testCases.length;
       let executionResults = [];

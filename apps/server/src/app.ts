@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import authRoutes from './modules/auth/auth.routes';
 import classroomRoutes from './modules/classroom/classroom.routes';
 import activityRoutes from './modules/activity/activity.routes';
@@ -16,12 +17,46 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Reduced limit from 50MB to 10MB for DoS prevention
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Global API Rate Limiter (200 requests per 15 minutes)
+const globalApiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Auth Rate Limiter for Login/Register (10 requests per 15 minutes)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many authentication attempts, please try again after 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// AI Rate Limiter (30 requests per minute)
+const aiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 30,
+  message: { error: 'AI request limit reached, please wait a minute before making more requests.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
+
+app.use('/api', globalApiLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/ai', aiLimiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/classrooms', classroomRoutes);

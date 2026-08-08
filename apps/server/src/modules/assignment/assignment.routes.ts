@@ -16,6 +16,9 @@ router.get('/classroom/:classroomId', assignmentController.getByClassroom);
 // Get specific assignment details
 router.get('/:id', assignmentController.getById);
 
+// Update specific assignment
+router.put('/:id', assignmentController.update);
+
 // Delete specific assignment
 router.delete('/:id', assignmentController.deleteAssignment);
 

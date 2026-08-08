@@ -32,6 +32,13 @@ export class MockAIProvider implements IAIProvider {
   }
 }
 
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number = 15000, fallbackValue: T): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallbackValue), timeoutMs)),
+  ]);
+};
+
 /**
  * Factory method to generate a real AI response using the configured Gemini API key.
  *
@@ -48,24 +55,40 @@ export const generateAiResponse = async (provider: string, prompt: string): Prom
     aiProvider = new MockAIProvider();
   }
 
-  return aiProvider.generateResponse(prompt);
+  return withTimeout(
+    aiProvider.generateResponse(prompt),
+    15000,
+    'AI Assistant: The request timed out. Please try again.'
+  );
 };
 
 export const analyzeErrorConcept = async (errorMessage: string, codeSnippet: string) => {
   if (process.env.GEMINI_API_KEY) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `You are an expert programming tutor in AI Classroom. Analyze the following compiler error and code snippet.
-Error: ${errorMessage}
-Code:
+      const prompt = `You are an expert Java programming tutor in an AI Classroom. Analyze this compiler/runtime error and code snippet carefully.
+
+Error message: "${errorMessage}"
+Code snippet:
+\`\`\`java
 ${codeSnippet}
+\`\`\`
 
-Provide a JSON response with the following keys exactly:
-- "topic": A 2-4 word categorization of the error (e.g., "Syntax Error", "Type Mismatch", "Variable Scope").
-- "insight": A 1-2 sentence explanation aimed at a teacher on how to guide the student.
-- "suggestedError": A rewritten, highly clear version of the error message for the student. If the original error is already clear, return an empty string.
+Your job is to identify the SPECIFIC Java programming concept or topic this error relates to — not just the surface-level syntax error.
 
-Only return the raw JSON object, no markdown blocks.`;
+For example:
+- "Syntax error on token X, { expected" near a class name → likely "Java Inheritance (missing extends)" 
+- "cannot find symbol" for a class → likely "Class not found / Import missing"
+- "method not found" → "Method Overriding" or "Method Signature"
+- "incompatible types" → "Type Casting / Type Mismatch"
+- Missing semicolon → "Syntax Error"
+
+Respond ONLY with a raw JSON object (no markdown, no code blocks):
+{
+  "topic": "<2-5 word CS topic name — be specific, e.g. 'Java Inheritance', 'Polymorphism', 'Array Index', 'Missing Import', 'Method Overriding', 'Interface Implementation'>",
+  "insight": "<1-2 sentences for the teacher on how to help the student understand this concept>",
+  "suggestedError": "<A clearer, student-friendly rewrite of the error message. If original is already clear, return empty string ''>"
+}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-flash-latest',
@@ -93,6 +116,7 @@ Only return the raw JSON object, no markdown blocks.`;
     }
   }
 
+  // --- Improved fallback when no Gemini API key is available ---
   return new Promise((resolve) => {
     setTimeout(() => {
       let topic = 'Syntax Error';
@@ -100,20 +124,80 @@ Only return the raw JSON object, no markdown blocks.`;
       let suggestedError = '';
       
       const lowerError = errorMessage.toLowerCase();
-      
-      if (codeSnippet.includes('Student()') && !codeSnippet.includes('new Student()')) {
-        topic = 'Missing Object Instantiation';
-        insight = 'The student forgot to use the `new` keyword (and possibly the `=` operator) when trying to create an object. Remind them that objects in Java must be instantiated with `new`.';
-        suggestedError = 'Missing "=" or "new" keyword for object instantiation.';
-      } else if (lowerError.includes('cannot find symbol') || lowerError.includes('undefined') || lowerError.includes('cannot be resolved')) {
-        topic = 'Variable Declaration / Scope';
-        insight = "The student is trying to use a variable or method that hasn't been declared or is out of scope (like 's1' missing its declaration). Suggest they check if they deleted the object creation code or verify where it was defined.";
-      } else if (lowerError.includes('type mismatch') || lowerError.includes('incompatible types')) {
+      const lowerCode = codeSnippet.toLowerCase();
+
+      // ── Inheritance / extends keyword ──────────────────────────
+      if (
+        (lowerError.includes('syntax error on token') && lowerError.includes('{ expected')) ||
+        (lowerError.includes('expected') && lowerCode.match(/class\s+\w+\s+\w+\s*\{/))
+      ) {
+        topic = 'Java Inheritance (missing extends)';
+        insight = 'The student likely forgot the `extends` keyword when declaring a subclass. Remind them that `class Child extends Parent {}` is the correct syntax for inheritance in Java.';
+        suggestedError = 'Class declaration is missing the `extends` keyword. Use: `class ClassName extends ParentClass { }`';
+
+      // ── Interface / implements keyword ─────────────────────────
+      } else if (lowerError.includes('implements') || (lowerCode.includes('interface') && lowerError.includes('expected'))) {
+        topic = 'Java Interface Implementation';
+        insight = 'The student is trying to implement an interface but may have forgotten the `implements` keyword or not overridden all required methods.';
+        suggestedError = 'Missing `implements` keyword or unimplemented interface methods.';
+
+      // ── Abstract class / method ────────────────────────────────
+      } else if (lowerError.includes('abstract') || lowerError.includes('cannot instantiate')) {
+        topic = 'Abstract Classes & Methods';
+        insight = 'The student may be trying to instantiate an abstract class directly. Remind them that abstract classes cannot be instantiated — they must be subclassed.';
+        suggestedError = 'Cannot create an object of an abstract class. Create a concrete subclass instead.';
+
+      // ── Method overriding ──────────────────────────────────────
+      } else if (lowerError.includes('cannot override') || lowerError.includes('does not override')) {
+        topic = 'Method Overriding';
+        insight = 'The student is trying to override a method but the signature does not match the parent class. Check return type, method name, and parameters.';
+        suggestedError = 'Method signature does not match the parent class method being overridden.';
+
+      // ── Polymorphism / casting ─────────────────────────────────
+      } else if (lowerError.includes('classcastexception') || lowerError.includes('cannot cast') || lowerError.includes('incompatible types')) {
+        topic = 'Polymorphism & Type Casting';
+        insight = 'The student has a type casting issue. Remind them that casting only works when there is a valid inheritance relationship between the classes.';
+        suggestedError = 'Incompatible type cast — the object cannot be converted to the target type.';
+
+      // ── Object instantiation ───────────────────────────────────
+      } else if (lowerCode.includes('student()') && !lowerCode.includes('new student()')) {
+        topic = 'Object Instantiation (new keyword)';
+        insight = 'The student forgot to use the `new` keyword when creating an object. Remind them that objects in Java must be created with `new ClassName()`.';
+        suggestedError = 'Missing `new` keyword for object instantiation. Use: `ClassName obj = new ClassName();`';
+
+      // ── Cannot find symbol / variable not declared ─────────────
+      } else if (lowerError.includes('cannot find symbol') || lowerError.includes('cannot be resolved')) {
+        topic = 'Variable / Method Not Found';
+        insight = 'The student is using a variable, method, or class name that hasn\'t been declared or is out of scope. Ask them to check for typos, missing declarations, or missing imports.';
+        suggestedError = 'The variable or method used does not exist or is not accessible in this scope.';
+
+      // ── NullPointerException ───────────────────────────────────
+      } else if (lowerError.includes('nullpointerexception') || lowerError.includes('null pointer')) {
+        topic = 'Null Pointer Exception';
+        insight = 'The student is trying to call a method or access a field on an object that hasn\'t been initialized (is null). Remind them to always initialize objects before using them.';
+        suggestedError = 'NullPointerException: The object is null. Make sure to initialize it before use.';
+
+      // ── Array index out of bounds ──────────────────────────────
+      } else if (lowerError.includes('arrayindexoutofbounds') || lowerError.includes('index out of bound')) {
+        topic = 'Array Index Out of Bounds';
+        insight = 'The student is accessing an array index that doesn\'t exist. Remind them that arrays are 0-indexed so the last valid index is `array.length - 1`.';
+        suggestedError = 'Array index out of bounds — check that your loop/index does not exceed the array length.';
+
+      // ── Stack overflow / infinite recursion ────────────────────
+      } else if (lowerError.includes('stackoverflowerror') || lowerError.includes('stack overflow')) {
+        topic = 'Infinite Recursion / Stack Overflow';
+        insight = 'The student\'s recursive method has no valid base case, causing infinite recursion. Ask them to verify their base case condition.';
+        suggestedError = 'StackOverflowError: Infinite recursion detected — add a proper base case to the recursive method.';
+
+      // ── Type mismatch ──────────────────────────────────────────
+      } else if (lowerError.includes('type mismatch')) {
         topic = 'Type Mismatch';
-        insight = 'The student is assigning a value to a variable of a different, incompatible type. Remind them to check variable types (e.g., assigning a String to an int).';
-      } else if (lowerError.includes('expected') || lowerError.includes(';')) {
-        topic = 'Missing Semicolon / Syntax';
-        insight = 'The student likely missed a semicolon or closing brace. Tell them to check the end of their statements.';
+        insight = 'The student is assigning a value to a variable of an incompatible type. Remind them to match variable types (e.g., don\'t assign a String to an int).';
+
+      // ── Missing semicolon / brace ──────────────────────────────
+      } else if (lowerError.includes(';') || (lowerError.includes('expected') && !lowerError.includes('{ expected'))) {
+        topic = 'Missing Semicolon or Brace';
+        insight = 'The student likely missed a semicolon (`;`) at the end of a statement or a closing brace (`}`). Ask them to carefully check statement endings.';
       }
 
       resolve({
