@@ -1,4 +1,10 @@
-const BASE_URL = "http://localhost:3001/api";
+const getBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname || "localhost";
+    return `http://${hostname}:3001/api`;
+  }
+  return "http://localhost:3001/api";
+};
 
 export class ApiError extends Error {
   status: number;
@@ -22,7 +28,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 
   let response: Response;
   try {
-    response = await fetch(`${BASE_URL}${endpoint}`, {
+    response = await fetch(`${getBaseUrl()}${endpoint}`, {
       ...options,
       headers,
     });

@@ -1,6 +1,13 @@
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+const getSocketUrl = () => {
+  if (process.env.NEXT_PUBLIC_SOCKET_URL) return process.env.NEXT_PUBLIC_SOCKET_URL;
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname || 'localhost';
+    return `http://${hostname}:3001`;
+  }
+  return 'http://localhost:3001';
+};
 
 class SocketService {
   private socket: Socket | null = null;
@@ -16,7 +23,7 @@ class SocketService {
 
     if (!this.socket) {
       this.currentToken = token;
-      this.socket = io(SOCKET_URL, {
+      this.socket = io(getSocketUrl(), {
         auth: { token },
         transports: ['websocket', 'polling'], // Prefer WebSocket first to eliminate XHR polling errors
         reconnection: true,
