@@ -9,12 +9,21 @@ import ClassroomCard from '../../../components/classroom/ClassroomCard';
 import CreateClassroomModal from '../../../components/classroom/CreateClassroomModal';
 import CommandPalette from '../../../components/ui/CommandPalette';
 import MagneticButton from '../../../components/ui/MagneticButton';
+import { TextEffect } from '../../../components/ui/TextEffect';
 
 export default function TeacherDashboard() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [textTrigger, setTextTrigger] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTextTrigger((prev) => !prev);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchClassrooms = useCallback(async () => {
     setIsLoading(true);
@@ -78,8 +87,10 @@ export default function TeacherDashboard() {
               <span>MentorX Assistant Active & Monitoring</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#0f172a]">
-              Welcome to Your Teaching Hub! 🚀
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#0f172a] min-h-[48px] flex items-center">
+              <TextEffect per="char" trigger={textTrigger}>
+                Welcome to Your Teaching Hub! 🚀
+              </TextEffect>
             </h1>
 
             <p className="text-sm sm:text-base text-indigo-50 font-extrabold leading-relaxed">
