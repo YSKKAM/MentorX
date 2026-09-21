@@ -14,10 +14,7 @@ export default function ClassroomCard({ classroom, isTeacherView = false, onDele
   return (
     <Link href={`/classroom/${classroom.id}`}>
       <InteractiveCard className="group flex h-full flex-col p-6 rounded-3xl cursor-pointer relative overflow-hidden bg-white dark:bg-[#181826] border-3 border-slate-950 dark:border-white shadow-[7px_7px_0px_0px_#0f172a] dark:shadow-[7px_7px_0px_0px_#818cf8] hover:shadow-[10px_10px_0px_0px_#0f172a] dark:hover:shadow-[10px_10px_0px_0px_#818cf8] transition-all">
-        {/* Top Neo Accent Bar */}
-        <div className="absolute top-0 left-0 right-0 h-2.5 bg-gradient-to-r from-[#FF0055] via-[#FFE600] to-[#CCFF00] border-b-2 border-slate-950" />
-        
-        <div className="mb-5 flex items-start justify-between gap-3 pt-1">
+        <div className="mb-5 flex items-start justify-between gap-3">
           <div className="flex flex-col gap-2">
             <h3 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
               {classroom.name}
