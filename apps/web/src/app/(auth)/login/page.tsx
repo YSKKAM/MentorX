@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "../../../hooks/useAuth";
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
+import { RocketCursor } from "../../../components/ui/RocketCursor";
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
@@ -29,7 +30,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="glass-card-light dark:glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-900/10 dark:border-white/10 animate-slide-up relative overflow-hidden">
+    <>
+      <RocketCursor />
+      <div className="glass-card-light dark:glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-900/10 dark:border-white/10 animate-slide-up relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500" />
 
       <div className="text-center mb-8 space-y-2">
@@ -88,5 +91,6 @@ export default function LoginPage() {
         </Link>
       </div>
     </div>
+    </>
   );
 }
