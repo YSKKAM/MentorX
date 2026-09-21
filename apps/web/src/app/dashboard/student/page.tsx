@@ -47,13 +47,13 @@ export default function StudentDashboard() {
           <div className="space-y-2 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-              <span>AI Coding Assistant Ready</span>
+              <span>MentorX Assistant Ready</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
               Ready to code today? 💻
             </h1>
             <p className="text-sm sm:text-base text-white/95 leading-relaxed font-semibold">
-              Join your classes, complete AI-assisted assignments, and get 24/7 guidance from your AI Assistant.
+              Join your classes, complete MentorX-assisted assignments, and get 24/7 guidance from your MentorX Assistant.
             </p>
           </div>
 
@@ -69,7 +69,7 @@ export default function StudentDashboard() {
                 variant="ghost"
                 className="bg-black/20 hover:bg-black/30 border border-white/30 text-white font-bold rounded-xl px-5 py-3 text-sm backdrop-blur-md"
               >
-                ✨ Chat with AI Assistant
+                ✨ Chat with MentorX Assistant
               </Button>
             </Link>
           </div>
@@ -100,7 +100,7 @@ export default function StudentDashboard() {
             </div>
             <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">No classes joined yet</h3>
             <p className="text-sm font-semibold text-slate-700 dark:text-gray-400 max-w-md">
-              Ask your teacher for a join code to enroll in a classroom and start your AI coding journey.
+              Ask your teacher for a join code to enroll in a classroom and start your MentorX coding journey.
             </p>
             <Button onClick={() => setIsModalOpen(true)} className="mt-2 rounded-xl font-bold">
               Join Your First Class

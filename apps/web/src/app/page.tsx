@@ -37,7 +37,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto text-center z-10 animate-slide-up space-y-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/15 backdrop-blur-md shadow-sm">
           <span className="w-2.5 h-2.5 rounded-full bg-indigo-700 dark:bg-indigo-400 animate-pulse" />
-          <span className="text-xs font-black text-indigo-950 dark:text-indigo-300">Welcome to AI Classroom</span>
+          <span className="text-xs font-black text-indigo-950 dark:text-indigo-300">Welcome to MentorX</span>
         </div>
         
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-tight">
@@ -45,11 +45,11 @@ export default function Home() {
             Experience{" "}
           </span>
           <br className="hidden sm:block" />
-          <span className="text-gradient-lumina">Next-Gen AI Classroom Intelligence</span>
+          <span className="text-gradient-lumina">Next-Gen MentorX Intelligence</span>
         </h1>
         
         <p className="text-base sm:text-lg md:text-xl text-body-theme max-w-2xl mx-auto leading-relaxed font-extrabold" style={{ color: '#1e293b' }}>
-          Empowering teachers with real-time student activity tracking and providing students with intelligent AI coding assistance.
+          Empowering teachers with real-time student activity tracking and providing students with intelligent MentorX coding assistance.
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

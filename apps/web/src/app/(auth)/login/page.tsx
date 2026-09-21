@@ -43,7 +43,7 @@ export default function LoginPage() {
           Welcome Back
         </h2>
         <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
-          Sign in to access your AI Classroom Platform
+          Sign in to access your MentorX Platform
         </p>
       </div>
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
           className="w-full mt-2 py-3.5 text-sm font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
           isLoading={loading}
         >
-          Sign In to AI Classroom
+          Sign In to MentorX
         </Button>
       </form>
 

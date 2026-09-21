@@ -60,13 +60,13 @@ export default function TeacherDashboard() {
           <div className="space-y-2 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-              <span>AI Assistant Active & Monitoring</span>
+              <span>MentorX Assistant Active & Monitoring</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
               Welcome to Your Teaching Hub! 🚀
             </h1>
             <p className="text-sm sm:text-base text-white/95 leading-relaxed font-semibold">
-              Manage your classrooms, monitor real-time student coding activity, and collaborate using AI Assistant features.
+              Manage your classrooms, monitor real-time student coding activity, and collaborate using MentorX Assistant features.
             </p>
           </div>
 
@@ -82,7 +82,7 @@ export default function TeacherDashboard() {
                 variant="ghost"
                 className="bg-black/20 hover:bg-black/30 border border-white/30 text-white font-bold rounded-xl px-5 py-3 text-sm backdrop-blur-md"
               >
-                ✨ Ask AI Assistant
+                ✨ Ask MentorX Assistant
               </Button>
             </Link>
           </div>
@@ -152,7 +152,7 @@ export default function TeacherDashboard() {
           <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-900/10 dark:border-white/10 space-y-5">
             <div className="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-white/10">
               <h3 className="font-black text-slate-900 dark:text-white text-base flex items-center gap-2">
-                <span>🤖</span> AI Classroom Insights
+                <span>🤖</span> MentorX Classroom Insights
               </h3>
               <span className="spark-chip text-[10px] text-rose-700 dark:text-rose-400 font-extrabold">Live Sync</span>
             </div>
@@ -166,23 +166,23 @@ export default function TeacherDashboard() {
               </div>
 
               <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-                <span className="font-extrabold text-emerald-900 dark:text-emerald-400">💡 AI Multi-Group Lounge</span>
+                <span className="font-extrabold text-emerald-900 dark:text-emerald-400">💡 MentorX Multi-Group Lounge</span>
                 <p className="text-slate-800 dark:text-gray-300 font-semibold leading-relaxed">
-                  Join private chat rooms to invoke AI Assistant on demand for code reviews & debugging.
+                  Join private chat rooms to invoke MentorX Assistant on demand for code reviews & debugging.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-1">
                 <span className="font-extrabold text-rose-900 dark:text-rose-400">⚡ Automated Evaluation</span>
                 <p className="text-slate-800 dark:text-gray-300 font-semibold leading-relaxed">
-                  Automated test cases and hints generated with 1-click AI assistance.
+                  Automated test cases and hints generated with 1-click MentorX assistance.
                 </p>
               </div>
             </div>
 
             <Link href="/dashboard/chat" className="block w-full">
               <button className="w-full py-3 rounded-xl font-extrabold text-xs text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 shadow-md transition-all">
-                Open AI Chat Suite →
+                Open MentorX Chat Suite →
               </button>
             </Link>
           </div>

@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       ];
 
   const commonLinks = [
-    { name: 'AI Chat', href: '/dashboard/chat', icon: '💬' },
+    { name: 'MentorX Chat', href: '/dashboard/chat', icon: '💬' },
     { name: 'Settings', href: '#', icon: '⚙️' }
   ];
 
@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div>
             <Link href="/">
               <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 bg-clip-text text-xl font-extrabold text-transparent tracking-tight block">
-                AI Classroom
+                MentorX
               </span>
             </Link>
             <span className="text-[10px] font-bold tracking-wider text-slate-700 dark:text-slate-400 uppercase block -mt-1">
@@ -122,7 +122,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
           
           <div className="mt-8 mb-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">
-            AI Tools
+            MentorX Tools
           </div>
           {commonLinks.map((link) => (
             <Link
@@ -155,7 +155,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className={`p-3 rounded-xl flex items-center justify-between ${
             isLight ? 'bg-slate-900/5 border border-slate-900/10' : 'bg-white/5'
           }`}>
-            <span className="text-xs font-bold text-slate-800 dark:text-gray-400">AI Assistant</span>
+            <span className="text-xs font-bold text-slate-800 dark:text-gray-400">MentorX Assistant</span>
             <span className="spark-chip text-indigo-700 dark:text-rose-400 font-bold">Online ✨</span>
           </div>
         </div>

@@ -7,8 +7,8 @@ import { ToastProvider } from "../components/ui/Toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Classroom Platform",
-  description: "Next generation AI-powered classroom intelligence",
+  title: "MentorX Platform",
+  description: "Next generation MentorX classroom intelligence",
 };
 
 export default function RootLayout({

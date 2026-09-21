@@ -46,7 +46,7 @@ export default function RegisterPage() {
           Create Account
         </h2>
         <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
-          Join the AI Classroom Platform
+          Join the MentorX Platform
         </p>
       </div>
 
