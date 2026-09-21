@@ -64,37 +64,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile sidebar overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 z-20 bg-black/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-20 bg-slate-950/60 backdrop-blur-sm lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Neo-Brutalist Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-30 w-64 transform flex-col p-5 transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ${
         isLight 
-          ? 'bg-white/80 backdrop-blur-2xl border-r border-slate-900/10 shadow-[0_10px_30px_-5px_rgba(79,70,229,0.08)]' 
-          : 'bg-[#12121a]/80 backdrop-blur-xl border-r border-white/10 shadow-2xl'
+          ? 'bg-white border-r-3 border-slate-950 shadow-[4px_0px_0px_0px_#0f172a]' 
+          : 'bg-[#141420] border-r-3 border-white shadow-[4px_0px_0px_0px_#818cf8]'
       } ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+
+        {/* Logo Section */}
         <div className="mb-8 flex items-center justify-start pt-2 px-2 gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center">
-            <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center text-lg font-bold text-white">
-              🎓
-            </div>
+          <div className="h-11 w-11 rounded-2xl bg-[#FFE600] border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center text-xl shrink-0">
+            🎓
           </div>
           <div>
             <Link href="/">
-              <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 bg-clip-text text-xl font-extrabold text-transparent tracking-tight block">
+              <span className="text-2xl font-black text-slate-950 dark:text-white tracking-tight block">
                 MentorX
               </span>
             </Link>
-            <span className="text-[10px] font-bold tracking-wider text-slate-700 dark:text-slate-400 uppercase block -mt-1">
+            <span className="text-[10px] font-black tracking-widest text-indigo-600 dark:text-indigo-400 uppercase block -mt-1">
               Interactive Platform
             </span>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1.5">
-          <div className="mb-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">
+        {/* Navigation Section */}
+        <nav className="flex-1 space-y-2 overflow-y-auto pr-1">
+          <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-gray-300 bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-lg border-2 border-slate-950 dark:border-white shadow-[2px_2px_0px_0px_#0f172a] w-fit">
             Menu
           </div>
           {navLinks.map((link) => {
@@ -103,82 +104,81 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all ${
+                className={`relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition-all ${
                   isActive 
-                    ? isLight 
-                      ? 'bg-indigo-600/15 text-indigo-800 shadow-sm' 
-                      : 'bg-indigo-500/15 text-indigo-400 shadow-inner'
+                    ? 'bg-[#FFE600] text-slate-950 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[-0.5deg] scale-[1.02]' 
                     : isLight
-                      ? 'text-slate-800 hover:bg-slate-900/10 hover:text-slate-950'
-                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                      ? 'text-slate-800 hover:bg-indigo-500/10 border-2 border-transparent hover:border-slate-950 hover:shadow-[2px_2px_0px_0px_#0f172a]'
+                      : 'text-gray-300 hover:bg-white/10 border-2 border-transparent hover:border-white hover:shadow-[2px_2px_0px_0px_#818cf8]'
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
-                {isActive && <div className="active-pill-indicator" />}
                 <span className="text-base">{link.icon}</span>
                 {link.name}
               </Link>
             );
           })}
           
-          <div className="mt-8 mb-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">
+          <div className="mt-7 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-950 dark:text-gray-300 bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-lg border-2 border-slate-950 dark:border-white shadow-[2px_2px_0px_0px_#0f172a] w-fit">
             MentorX Tools
           </div>
-          {commonLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`relative flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition-all ${
-                pathname === link.href
-                  ? isLight
-                    ? 'bg-violet-600/15 text-violet-800'
-                    : 'bg-purple-500/15 text-purple-400'
-                  : isLight
-                    ? 'text-slate-800 hover:bg-slate-900/10 hover:text-slate-950'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-base">{link.icon}</span>
-                {link.name}
-              </div>
-              {link.href === '#' && (
-                <span className="rounded-full bg-indigo-500/15 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-400">
-                  Soon
-                </span>
-              )}
-            </Link>
-          ))}
+          {commonLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`relative flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-black transition-all ${
+                  isActive
+                    ? 'bg-[#CCFF00] text-slate-950 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[0.5deg] scale-[1.02]'
+                    : isLight
+                      ? 'text-slate-800 hover:bg-indigo-500/10 border-2 border-transparent hover:border-slate-950 hover:shadow-[2px_2px_0px_0px_#0f172a]'
+                      : 'text-gray-300 hover:bg-white/10 border-2 border-transparent hover:border-white hover:shadow-[2px_2px_0px_0px_#818cf8]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-base">{link.icon}</span>
+                  {link.name}
+                </div>
+                {link.href === '#' && (
+                  <span className="rounded-lg bg-[#FF0055] text-white border border-slate-950 text-[10px] font-black px-2 py-0.5 shadow-[1px_1px_0px_0px_#0f172a]">
+                    Soon
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="pt-4 border-t border-slate-900/10 dark:border-white/10">
-          <div className={`p-3 rounded-xl flex items-center justify-between ${
-            isLight ? 'bg-slate-900/5 border border-slate-900/10' : 'bg-white/5'
-          }`}>
-            <span className="text-xs font-bold text-slate-800 dark:text-gray-400">MentorX Assistant</span>
-            <span className="spark-chip text-indigo-700 dark:text-rose-400 font-bold">Online ✨</span>
+        {/* Bottom Neo Status Sticker Box */}
+        <div className="pt-4 border-t-2 border-slate-950/20 dark:border-white/20">
+          <div className="bg-[#CCFF00] border-2 border-slate-950 text-slate-950 font-black p-3.5 rounded-2xl shadow-[3px_3px_0px_0px_#0f172a] rotate-[0.5deg] flex items-center justify-between">
+            <span className="text-xs font-black">MentorX Assistant</span>
+            <span className="bg-[#FF0055] text-white text-[10px] font-black px-2.5 py-0.5 rounded-xl border border-slate-950 shadow-[1px_1px_0px_0px_#0f172a]">
+              Online ✨
+            </span>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header */}
-        <header className={`z-10 flex h-16 items-center justify-between border-b px-4 sm:px-6 transition-colors duration-300 ${
+        {/* Neo-Brutalist Header */}
+        <header className={`z-10 flex h-16 items-center justify-between border-b-3 px-4 sm:px-6 transition-colors duration-300 ${
           isLight 
-            ? 'bg-white/80 backdrop-blur-2xl border-slate-900/10' 
-            : 'bg-[#12121a]/80 backdrop-blur-xl border-white/10'
+            ? 'bg-white/95 border-slate-950 shadow-sm' 
+            : 'bg-[#141420]/95 border-white shadow-sm'
         }`}>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="mr-2 text-slate-700 hover:text-slate-950 dark:text-gray-400 dark:hover:text-white lg:hidden"
+              className="mr-2 text-slate-950 dark:text-white lg:hidden p-1 rounded-lg border-2 border-slate-950 dark:border-white bg-[#FFE600] text-slate-950"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg className="h-6 w-6 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-lg font-black text-slate-900 dark:text-white capitalize flex items-center gap-2">
+            <h1 className="text-lg font-black text-slate-950 dark:text-white capitalize flex items-center gap-2">
               <span>{user?.role === 'teacher' ? '👨‍🏫' : '🎓'}</span> {user?.role} Workspace
             </h1>
           </div>
@@ -186,21 +186,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={toggleTheme}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
-                isLight 
-                  ? 'bg-slate-900/10 border-slate-900/15 text-slate-900 hover:bg-slate-900/15' 
-                  : 'bg-white/10 border-white/10 text-gray-200 hover:bg-white/15'
-              }`}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border-2 border-slate-950 dark:border-white bg-[#FFE600] text-slate-950 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#0f172a] transition-all"
               title="Toggle Light/Dark Theme"
             >
               <span>{isLight ? '☀️ Light' : '🌙 Dark'}</span>
             </button>
 
-            <div className="hidden sm:block text-sm font-semibold text-slate-700 dark:text-gray-300">
-              Welcome, <span className="font-extrabold text-slate-950 dark:text-white">{user?.displayName}</span>
+            <div className="hidden sm:block text-sm font-bold text-slate-800 dark:text-gray-300">
+              Welcome, <span className="font-black text-slate-950 dark:text-white">{user?.displayName}</span>
             </div>
             
-            <Button variant="ghost" size="sm" onClick={logout} className="rounded-xl font-bold text-slate-700 hover:text-slate-950 dark:text-gray-300">
+            <Button variant="ghost" size="sm" onClick={logout} className="rounded-xl font-black text-slate-950 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10">
               Sign out
             </Button>
           </div>
