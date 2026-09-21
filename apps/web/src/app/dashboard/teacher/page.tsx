@@ -55,39 +55,50 @@ export default function TeacherDashboard() {
 
   return (
     <div className="animate-fade-in space-y-8">
-      {/* Stitch Design Hero Card Banner with Spring Physics */}
+      {/* Neo-Brutalist Hero Banner */}
       <motion.div 
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-        className="hero-gradient-card relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl"
+        initial={{ opacity: 0, y: 15, rotate: -0.5 }}
+        animate={{ opacity: 1, y: 0, rotate: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 border-4 border-slate-950 dark:border-white bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 text-white shadow-[10px_10px_0px_0px_#0f172a] dark:shadow-[10px_10px_0px_0px_#818cf8]"
       >
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        {/* Decorative Grid Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+        {/* Neo Brutalist Floating Corner Sticker */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#FF0055] text-white text-[11px] font-black uppercase tracking-wider border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[3deg] z-20">
+          <span>★</span> TEACHER MODE
+        </div>
+
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/20 text-xs font-black backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+          <div className="space-y-3 max-w-xl">
+            {/* Neo Status Sticker Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#CCFF00] text-slate-950 text-xs font-black border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[-1deg] w-fit">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse border border-slate-950" />
               <span>MentorX Assistant Active & Monitoring</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#0f172a]">
               Welcome to Your Teaching Hub! 🚀
             </h1>
-            <p className="text-sm sm:text-base text-white/95 leading-relaxed font-semibold">
+
+            <p className="text-sm sm:text-base text-indigo-50 font-extrabold leading-relaxed">
               Manage your classrooms, monitor real-time student coding activity, and collaborate using MentorX Assistant features.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-4">
             <MagneticButton
               onClick={() => setIsModalOpen(true)}
-              className="bg-white text-indigo-700 hover:bg-slate-100 rounded-xl px-5 py-3 text-sm font-extrabold shadow-lg shadow-black/10"
+              className="bg-[#FFE600] text-slate-950 hover:bg-[#ffd700] border-3 border-slate-950 font-black rounded-2xl px-6 py-3.5 text-sm shadow-[5px_5px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
             >
               + Create Classroom
             </MagneticButton>
+
             <Link href="/dashboard/chat">
               <MagneticButton
                 variant="ghost"
-                className="bg-black/20 hover:bg-black/30 text-white border border-white/30 rounded-xl px-5 py-3 text-sm backdrop-blur-md"
+                className="bg-white text-slate-950 hover:bg-slate-100 border-3 border-slate-950 font-black rounded-2xl px-6 py-3.5 text-sm shadow-[5px_5px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
               >
                 ✨ Ask MentorX Assistant
               </MagneticButton>
