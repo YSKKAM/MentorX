@@ -71,7 +71,7 @@ export function TextEffect({
 
   const activeTrigger = externalTrigger !== undefined ? externalTrigger : internalTrigger;
 
-  const elements = per === 'char' ? children.split('') : children.split(' ');
+  const elements = per === 'char' ? Array.from(children) : children.split(' ');
 
   return (
     <AnimatePresence mode="wait">
