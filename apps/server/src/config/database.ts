@@ -23,7 +23,30 @@ export const query = (text: string, params?: any[]) => pool.query(text, params);
  */
 export const initDatabase = async () => {
   try {
-    const migrationsDir = path.join(__dirname, '../db/migrations');
+    const candidates = [
+      path.join(__dirname, '../db/migrations'),
+      path.join(__dirname, '../../src/db/migrations'),
+      path.join(process.cwd(), 'src/db/migrations'),
+      path.join(process.cwd(), 'dist/db/migrations'),
+    ];
+
+    let migrationsDir = '';
+    for (const dir of candidates) {
+      try {
+        const stat = await fs.stat(dir);
+        if (stat.isDirectory()) {
+          migrationsDir = dir;
+          break;
+        }
+      } catch {
+        // continue searching
+      }
+    }
+
+    if (!migrationsDir) {
+      throw new Error(`Could not find migrations directory in any candidate locations: ${candidates.join(', ')}`);
+    }
+
     const files = await fs.readdir(migrationsDir);
     const sqlFiles = files.filter(f => f.endsWith('.sql')).sort();
 
