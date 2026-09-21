@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../hooks/useAuth";
 import Input from "../../../components/ui/Input";
-import MagneticButton from "../../../components/ui/MagneticButton";
+import Button from "../../../components/ui/Button";
 import { UserRole } from "../../../types";
 
 export default function RegisterPage() {
@@ -32,39 +32,40 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#141422] rounded-3xl p-8 sm:p-10 border-4 border-slate-950 dark:border-white shadow-[10px_10px_0px_0px_#0f172a] dark:shadow-[10px_10px_0px_0px_#818cf8] relative overflow-hidden transition-all">
-      {/* Top Neo Accent Strip */}
-      <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 border-b-2 border-slate-950" />
+    <div className="glass-card-light dark:glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-900/10 dark:border-white/10 animate-slide-up relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500" />
 
-      <div className="text-center mb-6 space-y-2 pt-2">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center mb-3 text-white text-3xl">
-          🚀
+      <div className="text-center mb-6 space-y-2">
+        <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center mb-3">
+          <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl">
+            🚀
+          </div>
         </div>
 
-        <h2 className="text-3xl font-black text-slate-950 dark:text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
           Create Account
         </h2>
-        <p className="text-slate-700 dark:text-gray-300 text-xs sm:text-sm font-extrabold">
+        <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
           Join the MentorX Platform
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3.5 bg-red-500/15 border-2 border-slate-950 rounded-xl text-red-700 dark:text-red-300 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a]">
-            ⚠️ {error}
+          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-700 dark:text-red-400 text-xs font-bold">
+            {error}
           </div>
         )}
 
-        {/* Role Selector Neo Pills */}
-        <div className="flex bg-slate-100 dark:bg-white/10 p-1.5 rounded-2xl border-2 border-slate-950 dark:border-white shadow-[3px_3px_0px_0px_#0f172a] mb-4 gap-1.5">
+        {/* Role Selector Pill */}
+        <div className="flex bg-slate-900/10 dark:bg-white/5 p-1 rounded-xl border border-slate-900/15 dark:border-white/10 mb-4">
           <button
             type="button"
             onClick={() => setRole("student")}
-            className={`flex-1 py-2 text-xs font-black rounded-xl border-2 transition-all ${
+            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
               role === "student"
-                ? "bg-indigo-600 text-white border-slate-950 shadow-[2px_2px_0px_0px_#0f172a]"
-                : "bg-transparent border-transparent text-slate-800 dark:text-gray-300 hover:text-slate-950"
+                ? "bg-indigo-600 text-white shadow-md"
+                : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
             }`}
           >
             🎓 Student
@@ -72,10 +73,10 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => setRole("teacher")}
-            className={`flex-1 py-2 text-xs font-black rounded-xl border-2 transition-all ${
+            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
               role === "teacher"
-                ? "bg-violet-600 text-white border-slate-950 shadow-[2px_2px_0px_0px_#0f172a]"
-                : "bg-transparent border-transparent text-slate-800 dark:text-gray-300 hover:text-slate-950"
+                ? "bg-violet-600 text-white shadow-md"
+                : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
             }`}
           >
             👨‍🏫 Teacher
@@ -109,18 +110,18 @@ export default function RegisterPage() {
           required
         />
 
-        <MagneticButton
+        <Button
           type="submit"
-          className="w-full mt-3 py-3.5 text-sm font-black rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white border-3 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
-          disabled={loading}
+          className="w-full mt-2 py-3.5 text-sm font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
+          isLoading={loading}
         >
-          {loading ? "Registering..." : `Register as ${role === "teacher" ? "Teacher" : "Student"} →`}
-        </MagneticButton>
+          Register as {role === "teacher" ? "Teacher" : "Student"}
+        </Button>
       </form>
 
-      <div className="mt-6 text-center text-xs font-bold text-slate-700 dark:text-gray-300">
+      <div className="mt-6 text-center text-xs font-bold text-slate-700 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/login" className="text-indigo-700 dark:text-indigo-400 hover:underline font-black">
+        <Link href="/register" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
           Sign in
         </Link>
       </div>

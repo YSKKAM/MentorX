@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../../hooks/useAuth";
 import Input from "../../../components/ui/Input";
-import MagneticButton from "../../../components/ui/MagneticButton";
+import Button from "../../../components/ui/Button";
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
@@ -29,27 +29,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#141422] rounded-3xl p-8 sm:p-10 border-4 border-slate-950 dark:border-white shadow-[10px_10px_0px_0px_#0f172a] dark:shadow-[10px_10px_0px_0px_#818cf8] relative overflow-hidden transition-all">
-      {/* Top Neo Accent Strip */}
-      <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 border-b-2 border-slate-950" />
+    <div className="glass-card-light dark:glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-900/10 dark:border-white/10 animate-slide-up relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500" />
 
-      <div className="text-center mb-8 space-y-2 pt-2">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center mb-4 text-white text-3xl">
-          🎓
+      <div className="text-center mb-8 space-y-2">
+        <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center mb-4">
+          <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl">
+            🎓
+          </div>
         </div>
 
-        <h2 className="text-3xl font-black text-slate-950 dark:text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
           Welcome Back
         </h2>
-        <p className="text-slate-700 dark:text-gray-300 text-xs sm:text-sm font-extrabold">
+        <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
           Sign in to access your MentorX Platform
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="p-3.5 bg-red-500/15 border-2 border-slate-950 rounded-xl text-red-700 dark:text-red-300 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a]">
-            ⚠️ {error}
+          <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-700 dark:text-red-400 text-xs font-bold">
+            {error}
           </div>
         )}
 
@@ -71,18 +72,18 @@ export default function LoginPage() {
           required
         />
 
-        <MagneticButton
+        <Button
           type="submit"
-          className="w-full mt-3 py-3.5 text-sm font-black rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white border-3 border-slate-950 shadow-[4px_4px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
-          disabled={loading}
+          className="w-full mt-2 py-3.5 text-sm font-extrabold rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 text-white shadow-lg shadow-indigo-500/25 transition-all"
+          isLoading={loading}
         >
-          {loading ? "Signing in..." : "Sign In to MentorX →"}
-        </MagneticButton>
+          Sign In to MentorX
+        </Button>
       </form>
 
-      <div className="mt-8 text-center text-xs font-bold text-slate-700 dark:text-gray-300">
+      <div className="mt-8 text-center text-xs font-bold text-slate-700 dark:text-gray-400">
         Don't have an account yet?{" "}
-        <Link href="/register" className="text-indigo-700 dark:text-indigo-400 hover:underline font-black">
+        <Link href="/register" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
           Create account now
         </Link>
       </div>
