@@ -89,105 +89,59 @@ export default function TeacherDashboard() {
         </div>
       </div>
 
-      {/* Main Grid + AI Classroom Activity Stream */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Classrooms Section (2 Columns) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">My Active Classrooms</h2>
-              <span className="px-3 py-0.5 rounded-full text-xs font-extrabold bg-indigo-500/15 text-indigo-800 dark:text-indigo-400">
-                {classrooms.length} Total
-              </span>
-            </div>
-            <button
-              onClick={() => fetchClassrooms()}
-              disabled={isLoading}
-              className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-xl border border-indigo-500/20 transition-all disabled:opacity-50"
-              title="Refresh classrooms"
-            >
-              <svg className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      {/* Main Classrooms Section */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">My Active Classrooms</h2>
+            <span className="px-3 py-0.5 rounded-full text-xs font-extrabold bg-indigo-500/15 text-indigo-800 dark:text-indigo-400">
+              {classrooms.length} Total
+            </span>
+          </div>
+          <button
+            onClick={() => fetchClassrooms()}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-xl border border-indigo-500/20 transition-all disabled:opacity-50"
+            title="Refresh classrooms"
+          >
+            <svg className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex h-64 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+          </div>
+        ) : classrooms.length === 0 ? (
+          <div className="glass-card-light dark:glass-card flex h-64 flex-col items-center justify-center space-y-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/20 p-8 text-center">
+            <div className="rounded-2xl bg-indigo-500/10 p-4 text-indigo-700 dark:text-indigo-400">
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              Refresh
-            </button>
+            </div>
+            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">No classrooms created yet</h3>
+            <p className="text-sm font-semibold text-slate-700 dark:text-gray-400 max-w-md">
+              Create your first classroom to share your join code and start tracking real-time student activity.
+            </p>
+            <Button onClick={() => setIsModalOpen(true)} className="mt-2 rounded-xl font-bold">
+              Create Your First Classroom
+            </Button>
           </div>
-
-          {isLoading ? (
-            <div className="flex h-64 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
-            </div>
-          ) : classrooms.length === 0 ? (
-            <div className="glass-card-light dark:glass-card flex h-64 flex-col items-center justify-center space-y-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/20 p-8 text-center">
-              <div className="rounded-2xl bg-indigo-500/10 p-4 text-indigo-700 dark:text-indigo-400">
-                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">No classrooms created yet</h3>
-              <p className="text-sm font-semibold text-slate-700 dark:text-gray-400 max-w-md">
-                Create your first classroom to share your join code and start tracking real-time student activity.
-              </p>
-              <Button onClick={() => setIsModalOpen(true)} className="mt-2 rounded-xl font-bold">
-                Create Your First Classroom
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {classrooms.map((classroom) => (
-                <ClassroomCard 
-                  key={classroom.id} 
-                  classroom={classroom} 
-                  isTeacherView={true} 
-                  onDelete={handleDeleteClassroom}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right Sidebar: AI Classroom Insights & Real-time Stream */}
-        <div className="space-y-6">
-          <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-900/10 dark:border-white/10 space-y-5">
-            <div className="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-white/10">
-              <h3 className="font-black text-slate-900 dark:text-white text-base flex items-center gap-2">
-                <span>🤖</span> MentorX Classroom Insights
-              </h3>
-              <span className="spark-chip text-[10px] text-rose-700 dark:text-rose-400 font-extrabold">Live Sync</span>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 space-y-1">
-                <span className="font-extrabold text-indigo-900 dark:text-indigo-400">✨ Real-time Tracking</span>
-                <p className="text-slate-800 dark:text-gray-300 font-semibold leading-relaxed">
-                  Track active student coding sessions from VS Code extension users automatically.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-                <span className="font-extrabold text-emerald-900 dark:text-emerald-400">💡 MentorX Multi-Group Lounge</span>
-                <p className="text-slate-800 dark:text-gray-300 font-semibold leading-relaxed">
-                  Join private chat rooms to invoke MentorX Assistant on demand for code reviews & debugging.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-1">
-                <span className="font-extrabold text-rose-900 dark:text-rose-400">⚡ Automated Evaluation</span>
-                <p className="text-slate-800 dark:text-gray-300 font-semibold leading-relaxed">
-                  Automated test cases and hints generated with 1-click MentorX assistance.
-                </p>
-              </div>
-            </div>
-
-            <Link href="/dashboard/chat" className="block w-full">
-              <button className="w-full py-3 rounded-xl font-extrabold text-xs text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 hover:from-indigo-700 hover:to-rose-600 shadow-md transition-all">
-                Open MentorX Chat Suite →
-              </button>
-            </Link>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {classrooms.map((classroom) => (
+              <ClassroomCard 
+                key={classroom.id} 
+                classroom={classroom} 
+                isTeacherView={true} 
+                onDelete={handleDeleteClassroom}
+              />
+            ))}
           </div>
-        </div>
-
+        )}
       </div>
 
       <CreateClassroomModal 
