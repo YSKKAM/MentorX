@@ -10,6 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, loading, logout } = useAuth();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const router = useRouter();
 
@@ -23,6 +24,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const savedTheme = (localStorage.getItem('theme') as 'dark' | 'light') || 'light';
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const savedSidebarState = localStorage.getItem('sidebar_collapsed') === 'true';
+    setIsSidebarCollapsed(savedSidebarState);
   }, []);
 
   const toggleTheme = () => {
@@ -30,6 +34,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setTheme(nextTheme);
     localStorage.setItem('theme', nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
+  };
+
+  const toggleSidebarCollapse = () => {
+    const nextState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(nextState);
+    localStorage.setItem('sidebar_collapsed', String(nextState));
   };
 
   if (loading || !user) {
@@ -69,28 +79,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
       )}
 
-      {/* Neo-Brutalist Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-30 w-64 transform flex-col p-5 transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ${
+      {/* Neo-Brutalist Collapsible Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-30 transform flex-col p-5 transition-all duration-300 ease-in-out ${
+        isSidebarCollapsed ? 'w-0 -translate-x-full lg:w-0 lg:-translate-x-full hidden' : 'w-64 translate-x-0 lg:static lg:translate-x-0 flex'
+      } ${
         isLight 
           ? 'bg-white border-r-3 border-slate-950 shadow-[4px_0px_0px_0px_#0f172a]' 
           : 'bg-[#141420] border-r-3 border-white shadow-[4px_0px_0px_0px_#818cf8]'
-      } ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      } ${isSidebarOpen ? 'translate-x-0 !flex' : ''}`}>
 
-        {/* Logo Section */}
-        <div className="mb-8 flex items-center justify-start pt-2 px-2 gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-[#FFE600] border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center text-xl shrink-0">
-            🎓
-          </div>
-          <div>
-            <Link href="/">
-              <span className="text-2xl font-black text-slate-950 dark:text-white tracking-tight block">
-                MentorX
+        {/* Logo & Hide Sidebar Header */}
+        <div className="mb-8 flex items-center justify-between pt-1 px-1">
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] flex items-center justify-center text-xl shrink-0 text-white">
+              🎓
+            </div>
+            <div>
+              <Link href="/">
+                <span className="text-2xl font-black text-slate-950 dark:text-white tracking-tight block">
+                  MentorX
+                </span>
+              </Link>
+              <span className="text-[10px] font-black tracking-widest text-indigo-600 dark:text-indigo-400 uppercase block -mt-1">
+                Interactive Platform
               </span>
-            </Link>
-            <span className="text-[10px] font-black tracking-widest text-indigo-600 dark:text-indigo-400 uppercase block -mt-1">
-              Interactive Platform
-            </span>
+            </div>
           </div>
+
+          {/* Hide Sidebar Button */}
+          <button
+            onClick={() => {
+              setIsSidebarOpen(false);
+              toggleSidebarCollapse();
+            }}
+            className="p-1.5 rounded-xl border-2 border-slate-950 dark:border-white bg-slate-100 dark:bg-white/10 hover:bg-red-500 hover:text-white text-slate-950 dark:text-white shadow-[2px_2px_0px_0px_#0f172a] transition-all"
+            title="Hide Sidebar"
+          >
+            <svg className="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
         </div>
 
         {/* Navigation Section */}
@@ -106,7 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={link.href}
                 className={`relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition-all ${
                   isActive 
-                    ? 'bg-[#FFE600] text-slate-950 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[-0.5deg] scale-[1.02]' 
+                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] scale-[1.02]' 
                     : isLight
                       ? 'text-slate-800 hover:bg-indigo-500/10 border-2 border-transparent hover:border-slate-950 hover:shadow-[2px_2px_0px_0px_#0f172a]'
                       : 'text-gray-300 hover:bg-white/10 border-2 border-transparent hover:border-white hover:shadow-[2px_2px_0px_0px_#818cf8]'
@@ -130,7 +158,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={link.href}
                 className={`relative flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-black transition-all ${
                   isActive
-                    ? 'bg-[#CCFF00] text-slate-950 border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[0.5deg] scale-[1.02]'
+                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] scale-[1.02]'
                     : isLight
                       ? 'text-slate-800 hover:bg-indigo-500/10 border-2 border-transparent hover:border-slate-950 hover:shadow-[2px_2px_0px_0px_#0f172a]'
                       : 'text-gray-300 hover:bg-white/10 border-2 border-transparent hover:border-white hover:shadow-[2px_2px_0px_0px_#818cf8]'
@@ -152,7 +180,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Bottom Neo Status Sticker Box */}
         <div className="pt-4 border-t-2 border-slate-950/20 dark:border-white/20">
-          <div className="bg-[#CCFF00] border-2 border-slate-950 text-slate-950 font-black p-3.5 rounded-2xl shadow-[3px_3px_0px_0px_#0f172a] rotate-[0.5deg] flex items-center justify-between">
+          <div className="bg-slate-900 text-white dark:bg-white dark:text-slate-950 border-2 border-slate-950 dark:border-white font-black p-3.5 rounded-2xl shadow-[3px_3px_0px_0px_#0f172a] dark:shadow-[3px_3px_0px_0px_#818cf8] flex items-center justify-between">
             <span className="text-xs font-black">MentorX Assistant</span>
             <span className="bg-[#FF0055] text-white text-[10px] font-black px-2.5 py-0.5 rounded-xl border border-slate-950 shadow-[1px_1px_0px_0px_#0f172a]">
               Online ✨
@@ -170,14 +198,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             : 'bg-[#141420]/95 border-white shadow-sm'
         }`}>
           <div className="flex items-center gap-3">
+            {/* Show / Toggle Sidebar Button */}
             <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="mr-2 text-slate-950 dark:text-white lg:hidden p-1 rounded-lg border-2 border-slate-950 dark:border-white bg-[#FFE600] text-slate-950"
+              onClick={() => {
+                if (isSidebarCollapsed) {
+                  setIsSidebarCollapsed(false);
+                } else {
+                  setIsSidebarOpen(true);
+                }
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 border-slate-950 dark:border-white bg-indigo-600 text-white font-black text-xs shadow-[2px_2px_0px_0px_#0f172a] hover:bg-indigo-500 transition-all"
+              title="Show / Toggle Sidebar"
             >
-              <svg className="h-6 w-6 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
+              {isSidebarCollapsed && <span className="hidden sm:inline">Show Sidebar</span>}
             </button>
+
             <h1 className="text-lg font-black text-slate-950 dark:text-white capitalize flex items-center gap-2">
               <span>{user?.role === 'teacher' ? '👨‍🏫' : '🎓'}</span> {user?.role} Workspace
             </h1>
@@ -186,7 +224,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border-2 border-slate-950 dark:border-white bg-[#FFE600] text-slate-950 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#0f172a] transition-all"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border-2 border-slate-950 dark:border-white bg-slate-900 text-white dark:bg-white dark:text-slate-950 text-xs font-black shadow-[2px_2px_0px_0px_#0f172a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#0f172a] transition-all"
               title="Toggle Light/Dark Theme"
             >
               <span>{isLight ? '☀️ Light' : '🌙 Dark'}</span>
