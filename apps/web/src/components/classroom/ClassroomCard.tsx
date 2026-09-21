@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Classroom } from '../../types';
+import InteractiveCard from '../ui/InteractiveCard';
 
 interface ClassroomCardProps {
   classroom: Classroom;
@@ -12,15 +13,15 @@ interface ClassroomCardProps {
 export default function ClassroomCard({ classroom, isTeacherView = false, onDelete }: ClassroomCardProps) {
   return (
     <Link href={`/classroom/${classroom.id}`}>
-      <div className="glass-card-light dark:glass-card group flex h-full flex-col p-6 transition-all duration-300 hover:scale-[1.02] hover:border-indigo-500/50 hover:shadow-[0_10px_30px_rgba(79,70,229,0.12)] rounded-2xl cursor-pointer relative overflow-hidden border">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-violet-500 to-rose-500 opacity-80" />
+      <InteractiveCard className="glass-card-light dark:glass-card group flex h-full flex-col p-6 rounded-2xl cursor-pointer relative overflow-hidden border border-slate-900/10 dark:border-white/15 shadow-xl hover:border-indigo-500/50 hover:shadow-[0_15px_35px_rgba(79,70,229,0.18)]">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-rose-500 opacity-90" />
         
         <div className="mb-4 flex items-start justify-between">
           <div className="flex flex-col gap-1">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               {classroom.name}
             </h3>
-            <span className="inline-flex items-center w-fit rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-xs font-semibold text-indigo-600 dark:text-indigo-300 border border-indigo-500/20">
+            <span className="inline-flex items-center w-fit rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-500/20">
               👥 {classroom.studentCount || 0} {(classroom.studentCount === 1) ? 'Student' : 'Students'}
             </span>
           </div>
@@ -45,11 +46,11 @@ export default function ClassroomCard({ classroom, isTeacherView = false, onDele
         </div>
         
         {classroom.description ? (
-          <p className="mb-6 flex-grow text-sm text-slate-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+          <p className="mb-6 flex-grow text-sm font-semibold text-slate-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
             {classroom.description}
           </p>
         ) : (
-          <p className="mb-6 flex-grow text-sm text-slate-400 dark:text-gray-500 italic">
+          <p className="mb-6 flex-grow text-sm font-medium text-slate-400 dark:text-gray-500 italic">
             No description provided.
           </p>
         )}
@@ -57,22 +58,22 @@ export default function ClassroomCard({ classroom, isTeacherView = false, onDele
         <div className="mt-auto border-t border-slate-200 dark:border-white/10 pt-4 flex items-center justify-between">
           {isTeacherView ? (
             <div className="flex flex-col">
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-gray-500 uppercase">Join Code</span>
-              <span className="font-mono text-sm font-bold tracking-widest text-emerald-600 dark:text-emerald-400">{classroom.joinCode}</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider">Join Code</span>
+              <span className="font-mono text-sm font-extrabold tracking-widest text-emerald-600 dark:text-emerald-400">{classroom.joinCode}</span>
             </div>
           ) : (
             <div className="flex flex-col">
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-gray-500 uppercase">Instructor</span>
-              <span className="text-sm font-semibold text-slate-700 dark:text-gray-300">{classroom.teacherName || 'Unknown'}</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider">Instructor</span>
+              <span className="text-sm font-bold text-slate-700 dark:text-gray-300">{classroom.teacherName || 'Unknown'}</span>
             </div>
           )}
           
           <div className="flex flex-col text-right">
-            <span className="text-[11px] font-semibold text-slate-400 dark:text-gray-500 uppercase">Created</span>
-            <span className="text-xs font-medium text-slate-500 dark:text-gray-400">{new Date(classroom.createdAt).toLocaleDateString()}</span>
+            <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider">Created</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-gray-400">{new Date(classroom.createdAt).toLocaleDateString()}</span>
           </div>
         </div>
-      </div>
+      </InteractiveCard>
     </Link>
   );
 }

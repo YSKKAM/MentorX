@@ -2,16 +2,19 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { api } from '../../../lib/api';
 import { Classroom } from '../../../types';
 import ClassroomCard from '../../../components/classroom/ClassroomCard';
 import CreateClassroomModal from '../../../components/classroom/CreateClassroomModal';
-import Button from '../../../components/ui/Button';
+import CommandPalette from '../../../components/ui/CommandPalette';
+import MagneticButton from '../../../components/ui/MagneticButton';
 
 export default function TeacherDashboard() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   const fetchClassrooms = useCallback(async () => {
     setIsLoading(true);
@@ -45,7 +48,6 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     fetchClassrooms();
-    // Refresh classrooms whenever user comes back to this tab
     const handleFocus = () => fetchClassrooms();
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
@@ -53,12 +55,17 @@ export default function TeacherDashboard() {
 
   return (
     <div className="animate-fade-in space-y-8">
-      {/* Stitch Design Hero Card Banner */}
-      <div className="hero-gradient-card relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl">
+      {/* Stitch Design Hero Card Banner with Spring Physics */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        className="hero-gradient-card relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-2xl"
+      >
         <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/20 text-xs font-black backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
               <span>MentorX Assistant Active & Monitoring</span>
             </div>
@@ -71,37 +78,49 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button
+            <MagneticButton
               onClick={() => setIsModalOpen(true)}
-              className="bg-white text-indigo-700 hover:bg-slate-100 border-0 font-extrabold shadow-lg shadow-black/10 rounded-xl px-5 py-3 text-sm"
+              className="bg-white text-indigo-700 hover:bg-slate-100 rounded-xl px-5 py-3 text-sm font-extrabold shadow-lg shadow-black/10"
             >
               + Create Classroom
-            </Button>
+            </MagneticButton>
             <Link href="/dashboard/chat">
-              <Button
+              <MagneticButton
                 variant="ghost"
-                className="bg-black/20 hover:bg-black/30 border border-white/30 text-white font-bold rounded-xl px-5 py-3 text-sm backdrop-blur-md"
+                className="bg-black/20 hover:bg-black/30 text-white border border-white/30 rounded-xl px-5 py-3 text-sm backdrop-blur-md"
               >
                 ✨ Ask MentorX Assistant
-              </Button>
+              </MagneticButton>
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Main Classrooms Section */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">My Active Classrooms</h2>
-            <span className="px-3 py-0.5 rounded-full text-xs font-extrabold bg-indigo-500/15 text-indigo-800 dark:text-indigo-400">
-              {classrooms.length} Total
-            </span>
+      {/* Quick Search & Command Palette Trigger */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <button
+          onClick={() => setIsCommandPaletteOpen(true)}
+          className="flex-1 max-w-lg flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-900/10 dark:border-white/10 bg-white/80 dark:bg-[#161622]/80 backdrop-blur-md text-slate-400 dark:text-gray-400 hover:border-indigo-500/50 hover:text-slate-600 dark:hover:text-white transition-all shadow-sm group"
+        >
+          <div className="flex items-center gap-2.5 font-bold text-xs sm:text-sm">
+            <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span>Search classrooms, actions, or tools...</span>
           </div>
+          <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/10 text-[11px] font-black text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-white/10">
+            <span>⌘</span><span>K</span>
+          </kbd>
+        </button>
+
+        <div className="flex items-center justify-between sm:justify-end gap-3">
+          <span className="px-3.5 py-1 rounded-full text-xs font-black bg-indigo-500/15 text-indigo-800 dark:text-indigo-400">
+            {classrooms.length} Active Classrooms
+          </span>
           <button
             onClick={() => fetchClassrooms()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-xl border border-indigo-500/20 transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3.5 py-2 rounded-xl border border-indigo-500/20 transition-all disabled:opacity-50"
             title="Refresh classrooms"
           >
             <svg className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,26 +129,33 @@ export default function TeacherDashboard() {
             Refresh
           </button>
         </div>
+      </div>
 
+      {/* Main Classrooms Section */}
+      <div className="space-y-6">
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
           </div>
         ) : classrooms.length === 0 ? (
-          <div className="glass-card-light dark:glass-card flex h-64 flex-col items-center justify-center space-y-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/20 p-8 text-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card-light dark:glass-card flex h-64 flex-col items-center justify-center space-y-4 rounded-3xl border border-dashed border-slate-300 dark:border-white/20 p-8 text-center"
+          >
             <div className="rounded-2xl bg-indigo-500/10 p-4 text-indigo-700 dark:text-indigo-400">
               <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">No classrooms created yet</h3>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white">No classrooms created yet</h3>
             <p className="text-sm font-semibold text-slate-700 dark:text-gray-400 max-w-md">
               Create your first classroom to share your join code and start tracking real-time student activity.
             </p>
-            <Button onClick={() => setIsModalOpen(true)} className="mt-2 rounded-xl font-bold">
+            <MagneticButton onClick={() => setIsModalOpen(true)} className="mt-2 rounded-xl px-5 py-2.5 text-sm font-bold">
               Create Your First Classroom
-            </Button>
-          </div>
+            </MagneticButton>
+          </motion.div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {classrooms.map((classroom) => (
@@ -148,6 +174,13 @@ export default function TeacherDashboard() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onCreated={fetchClassrooms} 
+      />
+
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        classrooms={classrooms}
+        onOpenCreateModal={() => setIsModalOpen(true)}
       />
     </div>
   );
