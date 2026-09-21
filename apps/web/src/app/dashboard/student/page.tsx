@@ -10,6 +10,7 @@ import JoinClassroomModal from '../../../components/classroom/JoinClassroomModal
 import CommandPalette from '../../../components/ui/CommandPalette';
 import MagneticButton from '../../../components/ui/MagneticButton';
 import { TextEffect } from '../../../components/ui/TextEffect';
+import { FlyingRocket } from '../../../components/ui/FlyingRocket';
 
 export default function StudentDashboard() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
@@ -44,44 +45,46 @@ export default function StudentDashboard() {
 
   return (
     <div className="animate-fade-in space-y-8">
-      {/* Neo-Brutalist Hero Banner with Bold Animated Gradient */}
+      {/* Minimal Refined Hero Banner with Flying Rocket & Smoke Trail */}
       <motion.div 
-        initial={{ opacity: 0, y: 15, rotate: -0.5 }}
-        animate={{ opacity: 1, y: 0, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 border-4 border-slate-950 dark:border-white bg-gradient-to-r from-violet-700 via-rose-600 via-indigo-600 to-purple-800 animate-bold-gradient text-white shadow-[10px_10px_0px_0px_#0f172a] dark:shadow-[10px_10px_0px_0px_#818cf8]"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 border border-slate-800 dark:border-white/10 bg-slate-900/95 dark:bg-[#12121e]/95 text-white shadow-2xl backdrop-blur-xl"
       >
-        {/* Decorative Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        {/* Subtle Ambient Background Mesh */}
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
 
-        {/* Neo Brutalist Floating Corner Sticker */}
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#FF0055] text-white text-[11px] font-black uppercase tracking-wider border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[3deg] z-20">
-          <span>★</span> STUDENT MODE
+        {/* Minimal Corner Badge */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 hidden sm:flex items-center gap-1.5 px-3 py-1 bg-slate-800/80 text-slate-300 border border-slate-700/60 rounded-full text-xs font-semibold backdrop-blur-md">
+          <span>★</span> Student Hub
         </div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-xl">
-            {/* Neo Status Sticker Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#CCFF00] text-slate-950 text-xs font-black border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[-1deg] w-fit">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse border border-slate-950" />
+            {/* Minimal Status Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold backdrop-blur-md w-fit">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>MentorX Assistant Ready ⚡</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#0f172a] min-h-[48px] flex items-center">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center flex-wrap gap-2">
               <TextEffect per="char">
-                Ready to code today? 💻
+                Ready to code today?
               </TextEffect>
+              <FlyingRocket />
             </h1>
 
-            <p className="text-sm sm:text-base text-indigo-50 font-extrabold leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-300 font-semibold leading-relaxed">
               Join your classes, complete MentorX-assisted assignments, and get 24/7 guidance from your MentorX Assistant.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <MagneticButton
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#FFE600] text-slate-950 hover:bg-[#ffd700] border-3 border-slate-950 font-black rounded-2xl px-6 py-3.5 text-sm shadow-[5px_5px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-5 py-3 text-sm shadow-md"
             >
               🤝 Join Class
             </MagneticButton>
@@ -89,7 +92,7 @@ export default function StudentDashboard() {
             <Link href="/dashboard/chat">
               <MagneticButton
                 variant="ghost"
-                className="bg-white text-slate-950 hover:bg-slate-100 border-3 border-slate-950 font-black rounded-2xl px-6 py-3.5 text-sm shadow-[5px_5px_0px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
+                className="bg-slate-800/80 hover:bg-slate-800 text-slate-100 border border-slate-700/80 font-bold rounded-xl px-5 py-3 text-sm backdrop-blur-md"
               >
                 ✨ Chat with MentorX Assistant
               </MagneticButton>
