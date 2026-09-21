@@ -16,14 +16,6 @@ export default function TeacherDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [textTrigger, setTextTrigger] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTextTrigger((prev) => !prev);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   const fetchClassrooms = useCallback(async () => {
     setIsLoading(true);
@@ -64,15 +56,15 @@ export default function TeacherDashboard() {
 
   return (
     <div className="animate-fade-in space-y-8">
-      {/* Neo-Brutalist Hero Banner */}
+      {/* Neo-Brutalist Hero Banner with Bold Animated Gradient */}
       <motion.div 
         initial={{ opacity: 0, y: 15, rotate: -0.5 }}
         animate={{ opacity: 1, y: 0, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 border-4 border-slate-950 dark:border-white bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 text-white shadow-[10px_10px_0px_0px_#0f172a] dark:shadow-[10px_10px_0px_0px_#818cf8]"
+        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 border-4 border-slate-950 dark:border-white bg-gradient-to-r from-violet-700 via-rose-600 via-indigo-600 to-purple-800 animate-bold-gradient text-white shadow-[10px_10px_0px_0px_#0f172a] dark:shadow-[10px_10px_0px_0px_#818cf8]"
       >
         {/* Decorative Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
         {/* Neo Brutalist Floating Corner Sticker */}
         <div className="absolute top-4 right-4 sm:top-6 sm:right-6 hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#FF0055] text-white text-[11px] font-black uppercase tracking-wider border-2 border-slate-950 shadow-[3px_3px_0px_0px_#0f172a] rotate-[3deg] z-20">
@@ -88,7 +80,7 @@ export default function TeacherDashboard() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#0f172a] min-h-[48px] flex items-center">
-              <TextEffect per="char" trigger={textTrigger}>
+              <TextEffect per="char">
                 Welcome to Your Teaching Hub! 🚀
               </TextEffect>
             </h1>
