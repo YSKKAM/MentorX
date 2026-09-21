@@ -59,14 +59,14 @@ export default function ChatLobbyPage() {
       {/* Header Badge */}
       <div className="relative z-10 text-center mb-10 space-y-3">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 text-indigo-800 dark:text-indigo-400 text-xs font-black border border-indigo-500/20">
-          <span>🤖 AI Classroom Lounge</span>
+          <span>🤖 MentorX Classroom Lounge</span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white">
-          Multiplayer AI Chat Hub
+          Multiplayer MentorX Chat Hub
         </h1>
         <p className="text-slate-800 dark:text-gray-400 text-sm font-semibold max-w-lg mx-auto leading-relaxed">
-          Create a private lounge or join an existing room to chat with peers and invoke the AI Assistant on demand!
+          Create a private lounge or join an existing room to chat with peers and invoke MentorX Assistant on demand!
         </p>
       </div>
 
@@ -79,7 +79,7 @@ export default function ChatLobbyPage() {
               ✨
             </div>
             <h2 className="text-xl font-black text-slate-950 dark:text-white mb-1.5 tracking-tight">Create a New Room</h2>
-            <p className="text-xs font-semibold text-slate-700 dark:text-gray-400 leading-relaxed">Start a fresh AI multiplayer workspace and invite your classmates or team.</p>
+            <p className="text-xs font-semibold text-slate-700 dark:text-gray-400 leading-relaxed">Start a fresh MentorX multiplayer workspace and invite your classmates or team.</p>
           </div>
 
           <div className="flex-1 flex flex-col gap-4">
@@ -89,7 +89,7 @@ export default function ChatLobbyPage() {
                 type="text"
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
-                placeholder="E.g., Algorithms & AI Study Room"
+                placeholder="E.g., Algorithms & MentorX Study Room"
                 className="w-full rounded-xl border border-slate-900/15 dark:border-white/10 bg-white/90 dark:bg-[#161622] px-4 py-3 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-sm"
               />
             </div>

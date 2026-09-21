@@ -211,7 +211,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
               </div>
               <h2 className="text-xl font-black text-slate-950 dark:text-white mb-2">{room?.name || 'Your Room'}</h2>
               <p className="text-xs sm:text-sm font-semibold max-w-md leading-relaxed text-slate-800 dark:text-gray-400 mb-6">
-                This room is ready. Share Room Code <strong className="text-indigo-700 dark:text-emerald-400 font-mono font-extrabold">{room?.join_code}</strong> to start chatting with peers and AI Assistant.
+                This room is ready. Share Room Code <strong className="text-indigo-700 dark:text-emerald-400 font-mono font-extrabold">{room?.join_code}</strong> to start chatting with peers and MentorX Assistant.
               </p>
               <button 
                 onClick={() => setShowShareModal(true)}
@@ -230,7 +230,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
                   {isMe ? (
                     <>You <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span></>
                   ) : msg.is_ai_response ? (
-                    <><span className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span> AI Assistant (requested by {msg.ai_requested_by})</>
+                    <><span className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span> MentorX Assistant (requested by {msg.ai_requested_by})</>
                   ) : (
                     <><span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span> {msg.sender_name}</>
                   )}
@@ -256,7 +256,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
                     <button
                       onClick={() => handleAskAI(msg)}
                       className="absolute -right-11 top-1/2 -translate-y-1/2 opacity-0 group-hover/msg:opacity-100 transition-all p-2 rounded-full bg-white dark:bg-white/10 border border-slate-300 dark:border-white/20 shadow-lg text-xs hover:scale-110"
-                      title={`Invoke AI Assistant to reply to ${msg.sender_name}`}
+                      title={`Invoke MentorX Assistant to reply to ${msg.sender_name}`}
                     >
                       ✨
                     </button>
@@ -269,7 +269,7 @@ export default function PrivateChatRoomPage({ params }: { params: Promise<{ room
           {isAiTyping && (
             <div className="flex flex-col items-start w-full">
               <div className="mb-1 text-[11px] font-black tracking-wider text-slate-700 dark:text-gray-400 uppercase px-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> AI Assistant Thinking...
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> MentorX Assistant Thinking...
               </div>
               <div className="rounded-2xl rounded-tl-sm border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1e1e2d] p-4 shadow-md backdrop-blur-md flex items-center gap-2">
                 <div className="h-2 w-2 animate-bounce rounded-full bg-indigo-600 [animation-delay:-0.3s]"></div>
