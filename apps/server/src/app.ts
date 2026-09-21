@@ -23,20 +23,20 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// Global API Rate Limiter (200 requests per 15 minutes)
+// Global API Rate Limiter (1000 requests per 15 minutes)
 const globalApiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 1000,
   message: { error: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Auth Rate Limiter for Login/Register (10 requests per 15 minutes)
+// Auth Rate Limiter for Login/Register (60 requests per 15 minutes)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Too many authentication attempts, please try again after 15 minutes.' },
+  max: 60,
+  message: { error: 'Too many authentication attempts, please try again after a few minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
