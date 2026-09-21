@@ -3,13 +3,52 @@ import { env } from './env';
 import fs from 'fs/promises';
 import path from 'path';
 
+export const sanitizeDatabaseUrl = (rawUrl: string): string => {
+  if (!rawUrl) return rawUrl;
+  let url = rawUrl.trim();
+
+  // Strip wrapping single or double quotes
+  if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+    url = url.slice(1, -1).trim();
+  }
+
+  // Strip leading "DATABASE_URL=" if mistakenly included in Render environment variable value
+  if (url.startsWith('DATABASE_URL=')) {
+    url = url.slice('DATABASE_URL='.length).trim();
+    if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+      url = url.slice(1, -1).trim();
+    }
+  }
+
+  // Strip leading "psql " or "$ psql " if copied from CLI snippet
+  url = url.replace(/^(\$\s*)?psql\s+/, '').trim();
+  if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+    url = url.slice(1, -1).trim();
+  }
+
+  // Handle unencoded special characters (e.g. #, ?, %) in password
+  // postgresql://[user]:[password]@[host]:[port]/[database]
+  const regex = /^(postgres(?:ql)?:\/\/)([^:]+):([^@]+)@(.+)$/i;
+  const match = url.match(regex);
+  if (match) {
+    const [, protocol, username, password, hostAndRest] = match;
+    const safeUser = encodeURIComponent(decodeURIComponent(username));
+    const safePass = encodeURIComponent(decodeURIComponent(password));
+    url = `${protocol}${safeUser}:${safePass}@${hostAndRest}`;
+  }
+
+  return url;
+};
+
+const sanitizedDatabaseUrl = sanitizeDatabaseUrl(env.DATABASE_URL);
+
 const useSsl =
-  env.DATABASE_URL.includes('neon.tech') ||
-  env.DATABASE_URL.includes('sslmode=require') ||
-  (env.NODE_ENV === 'production' && !env.DATABASE_URL.includes('localhost') && !env.DATABASE_URL.includes('127.0.0.1'));
+  sanitizedDatabaseUrl.includes('neon.tech') ||
+  sanitizedDatabaseUrl.includes('sslmode=require') ||
+  (env.NODE_ENV === 'production' && !sanitizedDatabaseUrl.includes('localhost') && !sanitizedDatabaseUrl.includes('127.0.0.1'));
 
 const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: sanitizedDatabaseUrl,
   ssl: useSsl ? { rejectUnauthorized: false } : undefined,
 });
 
