@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: mentorx-backend
+    runtime: node
+    plan: free
+    rootDir: apps/server
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false

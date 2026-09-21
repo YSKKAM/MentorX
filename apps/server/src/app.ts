@@ -12,11 +12,12 @@ import { assignmentRoutes } from './modules/assignment/assignment.routes';
 import { plagiarismRoutes } from './modules/plagiarism/plagiarism.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { env } from './config/env';
+import { corsOptions } from './config/cors';
 
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+app.use(cors(corsOptions));
 
 // Reduced limit from 50MB to 10MB for DoS prevention
 app.use(express.json({ limit: '10mb' }));

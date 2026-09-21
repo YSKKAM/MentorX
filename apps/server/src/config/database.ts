@@ -3,11 +3,14 @@ import { env } from './env';
 import fs from 'fs/promises';
 import path from 'path';
 
-const isNeon = env.DATABASE_URL.includes('neon.tech');
+const useSsl =
+  env.DATABASE_URL.includes('neon.tech') ||
+  env.DATABASE_URL.includes('sslmode=require') ||
+  (env.NODE_ENV === 'production' && !env.DATABASE_URL.includes('localhost') && !env.DATABASE_URL.includes('127.0.0.1'));
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
-  ssl: isNeon ? { rejectUnauthorized: false } : undefined,
+  ssl: useSsl ? { rejectUnauthorized: false } : undefined,
 });
 
 /**

@@ -2,22 +2,17 @@ import { Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
+import { isOriginAllowed } from '../config/cors';
 import { registerClassroomHandlers } from './classroom.handler';
 
 /**
  * Initialize Socket.IO server with authentication and flexible CORS
  */
 export const initSocket = (httpServer: HttpServer) => {
-  const allowedOrigins = [
-    env.CLIENT_URL,
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
-  ];
-
   const io = new SocketIOServer(httpServer, {
     cors: {
       origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+        if (isOriginAllowed(origin)) {
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'), false);

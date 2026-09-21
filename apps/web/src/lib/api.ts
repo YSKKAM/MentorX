@@ -1,4 +1,8 @@
 const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    const url = process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+    return url.endsWith('/api') ? url : `${url}/api`;
+  }
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname || "localhost";
     return `http://${hostname}:3001/api`;
