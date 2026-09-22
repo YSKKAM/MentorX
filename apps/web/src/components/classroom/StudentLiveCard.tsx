@@ -59,12 +59,12 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
         : hasErrors 
           ? 'border-red-500/30 bg-[#1a1212]/80' 
           : restrictedAction
-            ? 'border-amber-500/30 bg-[#1a1812]/80'
+            ? 'border-indigo-500/40 bg-[#12121a]/80 shadow-[0_0_12px_rgba(99,102,241,0.15)]'
             : 'border-white/10 bg-[#12121a]/80 hover:border-blue-500/30 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)]'
     }`}>
       
       {/* Status indicator line at top */}
-      <div className={`absolute left-0 top-0 h-1 w-full ${isOffline ? 'bg-gray-700' : hasErrors ? 'bg-red-500' : restrictedAction ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+      <div className={`absolute left-0 top-0 h-1 w-full ${isOffline ? 'bg-gray-700' : hasErrors ? 'bg-red-500' : restrictedAction ? 'bg-indigo-500' : 'bg-emerald-500'}`} />
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
@@ -73,6 +73,10 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
               {activity.displayName.charAt(0).toUpperCase()}
             </div>
             <div className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-[#12121a] ${getStatusColor(activity.status)}`} />
+            {/* Copy/paste notification dot on avatar */}
+            {restrictedAction && (
+              <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-indigo-500 border-2 border-[#12121a] animate-pulse" title="Copy/paste activity detected" />
+            )}
           </div>
           <div>
             <h3 className="font-semibold text-white">{activity.displayName}</h3>
@@ -91,8 +95,13 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
           )}
 
           {restrictedAction && (
-            <div className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium border ${getRestrictedBadge(restrictedAction.eventType).style}`}>
-              🛡️ {getRestrictedBadge(restrictedAction.eventType).label}
+            <div className="flex flex-col items-end gap-0.5">
+              <div className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium border ${getRestrictedBadge(restrictedAction.eventType).style}`}>
+                {getRestrictedBadge(restrictedAction.eventType).label}
+              </div>
+              <span className="text-[10px] text-gray-500 font-mono">
+                {new Date(restrictedAction.timestamp).toLocaleTimeString()}
+              </span>
             </div>
           )}
         </div>
@@ -121,25 +130,8 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
         </div>
       </div>
       
-      {restrictedAction && (
-        <div className="mt-3 rounded-lg bg-amber-500/10 p-2.5 border border-amber-500/30 text-xs animate-fade-in">
-          <div className="flex items-center justify-between font-bold text-amber-400 mb-0.5">
-            <span className="flex items-center gap-1">
-              ⚠️ Copy/Paste Alert
-            </span>
-            <span className="text-[10px] text-amber-300/80 font-mono">
-              {new Date(restrictedAction.timestamp).toLocaleTimeString()}
-            </span>
-          </div>
-          <div className="text-gray-300 text-[11px] font-medium">
-            {restrictedAction.eventType === 'paste_used' || restrictedAction.eventType === 'blocked_paste'
-              ? `Paste activity recorded in ${restrictedAction.currentFile || 'active editor'}`
-              : restrictedAction.eventType === 'copy_used' || restrictedAction.eventType === 'blocked_copy'
-                ? `Copy activity recorded in ${restrictedAction.currentFile || 'active editor'}`
-                : `Restricted action detected (${restrictedAction.eventType})`}
-          </div>
-        </div>
-      )}
+
+
 
       {hasErrors && (
         <button 

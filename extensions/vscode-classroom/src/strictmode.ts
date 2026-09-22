@@ -27,51 +27,34 @@ let recentAttempts: number[] = [];
  */
 export function initStrictMode(context: vscode.ExtensionContext) {
   // Overrides VS Code Paste command (Ctrl+V / Cmd+V / Context Menu Paste)
+  // MONITOR-ONLY: always allows the paste, always notifies teacher when in a classroom.
   disposables.push(
     vscode.commands.registerCommand('editor.action.clipboardPasteAction', async () => {
-      if (activeSettings.strict_mode_enabled && currentClassroomId) {
-        if (activeSettings.block_paste) {
-          handleRestrictedAction('blocked_paste', 'Paste is disabled during this assignment because Strict Mode is enabled.');
-        } else {
-          // Monitor-only mode: Allow paste seamlessly, notify teacher dashboard
-          await vscode.commands.executeCommand('default:editor.action.clipboardPasteAction');
-          handleRestrictedAction('paste_used', null);
-        }
-      } else {
-        // Execute default paste command when Strict Mode is OFF
-        await vscode.commands.executeCommand('default:editor.action.clipboardPasteAction');
+      await vscode.commands.executeCommand('default:editor.action.clipboardPasteAction');
+      if (currentClassroomId) {
+        handleRestrictedAction('paste_used');
       }
     })
   );
 
   // Overrides VS Code Copy command (Ctrl+C / Cmd+C / Context Menu Copy)
+  // MONITOR-ONLY: always allows the copy, always notifies teacher when in a classroom.
   disposables.push(
     vscode.commands.registerCommand('editor.action.clipboardCopyAction', async () => {
-      if (activeSettings.strict_mode_enabled && currentClassroomId) {
-        if (activeSettings.block_copy) {
-          handleRestrictedAction('blocked_copy', 'Copy is restricted inside the controlled workspace because Strict Mode is enabled.');
-        } else {
-          await vscode.commands.executeCommand('default:editor.action.clipboardCopyAction');
-          handleRestrictedAction('copy_used', null);
-        }
-      } else {
-        await vscode.commands.executeCommand('default:editor.action.clipboardCopyAction');
+      await vscode.commands.executeCommand('default:editor.action.clipboardCopyAction');
+      if (currentClassroomId) {
+        handleRestrictedAction('copy_used');
       }
     })
   );
 
   // Overrides VS Code Cut command (Ctrl+X / Cmd+X / Context Menu Cut)
+  // MONITOR-ONLY: always allows the cut, always notifies teacher when in a classroom.
   disposables.push(
     vscode.commands.registerCommand('editor.action.clipboardCutAction', async () => {
-      if (activeSettings.strict_mode_enabled && currentClassroomId) {
-        if (activeSettings.block_cut) {
-          handleRestrictedAction('blocked_cut', 'Cut is restricted inside the controlled workspace because Strict Mode is enabled.');
-        } else {
-          await vscode.commands.executeCommand('default:editor.action.clipboardCutAction');
-          handleRestrictedAction('cut_used', null);
-        }
-      } else {
-        await vscode.commands.executeCommand('default:editor.action.clipboardCutAction');
+      await vscode.commands.executeCommand('default:editor.action.clipboardCutAction');
+      if (currentClassroomId) {
+        handleRestrictedAction('cut_used');
       }
     })
   );
@@ -120,14 +103,8 @@ export function setClassroom(classroomId: string | null) {
  * the DB default differs from the extension default.
  */
 function handleRestrictedAction(
-  eventType: 'blocked_paste' | 'blocked_copy' | 'blocked_cut' | 'paste_used' | 'copy_used' | 'cut_used',
-  message?: string | null
+  eventType: 'paste_used' | 'copy_used' | 'cut_used' | 'multiple_attempts'
 ) {
-  // Show clear warning to student ONLY if blocking message is provided
-  if (message) {
-    vscode.window.showWarningMessage(message);
-  }
-
   const now = Date.now();
   recentAttempts = recentAttempts.filter((t) => now - t < 30000); // 30 second window
   recentAttempts.push(now);
@@ -135,19 +112,17 @@ function handleRestrictedAction(
   const attemptCount = recentAttempts.length;
   const finalEventType = attemptCount >= 3 ? 'multiple_attempts' : eventType;
 
-  // Get current active file path (minimum required context)
+  // Get current active file path
   let currentFile = 'unknown';
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
-    if (workspaceFolder) {
-      currentFile = vscode.workspace.asRelativePath(editor.document.uri);
-    } else {
-      currentFile = editor.document.fileName;
-    }
+    currentFile = workspaceFolder
+      ? vscode.workspace.asRelativePath(editor.document.uri)
+      : editor.document.fileName;
   }
 
-  // Always emit if connected and in a classroom — server handles persistence decision
+  // Emit to server — no clipboard content collected, monitor-only
   if (currentClassroomId && socket.isConnected()) {
     socket.emit('student:restricted-action', {
       classroomId: currentClassroomId,
