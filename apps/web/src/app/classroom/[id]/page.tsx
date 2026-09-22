@@ -129,43 +129,43 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
         Back to Dashboard
       </button>
 
-      {/* Classroom Header Banner */}
-      <div className="hero-gradient-card overflow-hidden rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative">
-        <h1 className="text-3xl font-black sm:text-4xl tracking-tight">{classroom.name}</h1>
+      {/* Neo-Brutalist Classroom Header Banner (Electric Indigo to Royal Violet Gradient) */}
+      <div className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] dark:from-[#3730A3] dark:via-[#4338CA] dark:to-[#6D28D9] rounded-3xl p-8 sm:p-10 text-white border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.9)] relative overflow-hidden transition-all">
+        <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] uppercase">{classroom.name}</h1>
         {classroom.description && (
-          <p className="mt-3 text-base text-white/95 max-w-3xl font-semibold leading-relaxed">{classroom.description}</p>
+          <p className="mt-3 text-base text-white/95 max-w-3xl font-bold leading-relaxed drop-shadow-[1px_1px_0px_rgba(0,0,0,0.8)]">{classroom.description}</p>
         )}
         
         <div className="mt-8 flex flex-wrap items-center gap-6">
           {isTeacher ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-black/30 p-3.5 backdrop-blur-md border border-white/20">
+            <div className="flex items-center gap-3 rounded-2xl bg-black text-white p-3.5 border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)]">
               <div>
-                <div className="text-[10px] font-bold text-white/80 uppercase tracking-wider">Join Code</div>
-                <div className="font-mono text-xl font-black tracking-widest text-emerald-300">{classroom.joinCode}</div>
+                <div className="text-[10px] font-black text-gray-300 uppercase tracking-wider">Join Code</div>
+                <div className="font-mono text-2xl font-black tracking-widest text-[#00FF66]">{classroom.joinCode}</div>
               </div>
               <button 
                 onClick={copyJoinCode}
-                className="ml-2 rounded-xl bg-white/20 p-2 text-white hover:bg-white/30 transition-all"
+                className="ml-2 rounded-xl bg-[#FFDE59] text-black border-2 border-black p-2.5 font-black hover:bg-[#FFE57F] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center"
                 title="Copy Code"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                <svg className="h-5 w-5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white font-bold">
+            <div className="flex items-center gap-3 rounded-2xl bg-black text-white p-3 border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)]">
+              <div className="h-10 w-10 rounded-xl bg-[#FF66C4] border-2 border-black flex items-center justify-center text-black font-black text-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 {classroom.teacherName?.charAt(0) || 'T'}
               </div>
               <div>
-                <div className="text-[10px] font-bold text-white/80 uppercase tracking-wider">Instructor</div>
-                <div className="text-base font-bold text-white">{classroom.teacherName || 'Unknown'}</div>
+                <div className="text-[10px] font-black text-gray-300 uppercase tracking-wider">Instructor</div>
+                <div className="text-base font-black text-white">{classroom.teacherName || 'Unknown'}</div>
               </div>
             </div>
           )}
           
-          <div className="ml-auto flex items-center gap-2 rounded-2xl bg-white/20 px-4 py-2 border border-white/20 backdrop-blur-md font-bold text-sm">
+          <div className="ml-auto flex items-center gap-2 rounded-2xl bg-[#FF66C4] text-black px-5 py-2.5 border-3 border-black dark:border-white font-black text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] tracking-wide uppercase">
             <span>👥 {students.length} Enrolled Students</span>
           </div>
         </div>
