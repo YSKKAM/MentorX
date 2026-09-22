@@ -91,50 +91,54 @@ export default function StrictModeControlCard({ classroomId, initialSettings }: 
   };
 
   return (
-    <div className="glass-card overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 p-6 shadow-xl bg-white/80 dark:bg-[#12121a]/80 backdrop-blur-xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
+    <div className="rounded-3xl border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.9)] p-6 bg-[#FDFBF7] dark:bg-[#181824] text-slate-950 dark:text-white transition-all overflow-hidden">
+      
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-3 border-black dark:border-white pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🛡️</span>
-            <h3 className="text-xl font-black text-slate-950 dark:text-white">MentorX Strict Mode</h3>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🛡️</span>
+            <h3 className="text-2xl font-black text-slate-950 dark:text-white uppercase tracking-tight">MentorX Strict Mode</h3>
+            <span className={`px-3.5 py-1 rounded-xl text-xs font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${
               strictModeEnabled 
-                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse' 
-                : 'bg-slate-200 dark:bg-gray-800 text-slate-600 dark:text-gray-400'
+                ? 'bg-[#00FF66] text-black animate-pulse' 
+                : 'bg-[#FF6666] text-black'
             }`}>
               {strictModeEnabled ? 'ACTIVE' : 'OFF'}
             </span>
           </div>
-          <p className="text-xs font-medium text-slate-600 dark:text-gray-400 mt-1">
+          <p className="text-xs font-bold text-slate-700 dark:text-gray-300 mt-1">
             Enforce editor-level copy/paste restriction and receive real-time monitoring alerts.
           </p>
         </div>
 
         {/* Master Toggle Switch */}
         <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-slate-700 dark:text-gray-300">
+          <span className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">
             {strictModeEnabled ? 'Strict Mode Enabled' : 'Strict Mode Disabled'}
           </span>
           <button
             type="button"
             onClick={() => toggleMasterSwitch(!strictModeEnabled)}
-            className={`relative inline-flex h-7 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              strictModeEnabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-gray-700'
+            className={`relative inline-flex h-8 w-16 flex-shrink-0 cursor-pointer rounded-full border-3 border-black dark:border-white transition-colors duration-200 ease-in-out focus:outline-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.9)] ${
+              strictModeEnabled ? 'bg-[#5800FF]' : 'bg-slate-300 dark:bg-gray-700'
             }`}
           >
             <span
-              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                strictModeEnabled ? 'translate-x-7' : 'translate-x-0'
+              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-[#FFDE59] border-2 border-black shadow ring-0 transition duration-200 ease-in-out mt-0.5 ${
+                strictModeEnabled ? 'translate-x-8' : 'translate-x-1'
               }`}
             />
           </button>
         </div>
       </div>
 
-      {/* Checkbox Options */}
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <label className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all ${
-          strictModeEnabled ? 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-800/40' : 'bg-slate-50 dark:bg-gray-900/30 border-slate-200 dark:border-white/5 opacity-60'
+      {/* Checkbox Option Cards */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <label className={`flex items-start gap-3 p-4 rounded-2xl border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] transition-all ${
+          strictModeEnabled 
+            ? 'bg-white dark:bg-[#222234] text-slate-950 dark:text-white cursor-pointer hover:-translate-y-0.5' 
+            : 'bg-gray-100 dark:bg-gray-800/60 opacity-60 text-gray-500 cursor-not-allowed'
         }`}>
           <input
             type="checkbox"
@@ -144,16 +148,18 @@ export default function StrictModeControlCard({ classroomId, initialSettings }: 
               setBlockPaste(e.target.checked);
               handleSave({ blockPaste: e.target.checked });
             }}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="mt-1 h-5 w-5 rounded-md border-2 border-black text-[#5800FF] focus:ring-0 accent-[#5800FF] cursor-pointer"
           />
           <div>
-            <div className="text-sm font-bold text-slate-900 dark:text-white">Block Paste (Ctrl+V)</div>
-            <div className="text-xs text-slate-600 dark:text-gray-400">Restricts pasting external code inside VS Code</div>
+            <div className="text-sm font-black text-slate-950 dark:text-white">Block Paste (Ctrl+V)</div>
+            <div className="text-xs font-bold text-slate-700 dark:text-gray-300 mt-0.5">Restricts pasting external code inside VS Code</div>
           </div>
         </label>
 
-        <label className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all ${
-          strictModeEnabled ? 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-800/40' : 'bg-slate-50 dark:bg-gray-900/30 border-slate-200 dark:border-white/5 opacity-60'
+        <label className={`flex items-start gap-3 p-4 rounded-2xl border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] transition-all ${
+          strictModeEnabled 
+            ? 'bg-white dark:bg-[#222234] text-slate-950 dark:text-white cursor-pointer hover:-translate-y-0.5' 
+            : 'bg-gray-100 dark:bg-gray-800/60 opacity-60 text-gray-500 cursor-not-allowed'
         }`}>
           <input
             type="checkbox"
@@ -163,16 +169,18 @@ export default function StrictModeControlCard({ classroomId, initialSettings }: 
               setBlockCopy(e.target.checked);
               handleSave({ blockCopy: e.target.checked });
             }}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="mt-1 h-5 w-5 rounded-md border-2 border-black text-[#5800FF] focus:ring-0 accent-[#5800FF] cursor-pointer"
           />
           <div>
-            <div className="text-sm font-bold text-slate-900 dark:text-white">Block Copy (Ctrl+C)</div>
-            <div className="text-xs text-slate-600 dark:text-gray-400">Restricts copying code out of active editor</div>
+            <div className="text-sm font-black text-slate-950 dark:text-white">Block Copy (Ctrl+C)</div>
+            <div className="text-xs font-bold text-slate-700 dark:text-gray-300 mt-0.5">Restricts copying code out of active editor</div>
           </div>
         </label>
 
-        <label className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all ${
-          strictModeEnabled ? 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-800/40' : 'bg-slate-50 dark:bg-gray-900/30 border-slate-200 dark:border-white/5 opacity-60'
+        <label className={`flex items-start gap-3 p-4 rounded-2xl border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] transition-all ${
+          strictModeEnabled 
+            ? 'bg-white dark:bg-[#222234] text-slate-950 dark:text-white cursor-pointer hover:-translate-y-0.5' 
+            : 'bg-gray-100 dark:bg-gray-800/60 opacity-60 text-gray-500 cursor-not-allowed'
         }`}>
           <input
             type="checkbox"
@@ -182,16 +190,18 @@ export default function StrictModeControlCard({ classroomId, initialSettings }: 
               setBlockCut(e.target.checked);
               handleSave({ blockCut: e.target.checked });
             }}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="mt-1 h-5 w-5 rounded-md border-2 border-black text-[#5800FF] focus:ring-0 accent-[#5800FF] cursor-pointer"
           />
           <div>
-            <div className="text-sm font-bold text-slate-900 dark:text-white">Block Cut (Ctrl+X)</div>
-            <div className="text-xs text-slate-600 dark:text-gray-400">Restricts cutting code lines within editor</div>
+            <div className="text-sm font-black text-slate-950 dark:text-white">Block Cut (Ctrl+X)</div>
+            <div className="text-xs font-bold text-slate-700 dark:text-gray-300 mt-0.5">Restricts cutting code lines within editor</div>
           </div>
         </label>
 
-        <label className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all ${
-          strictModeEnabled ? 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-800/40' : 'bg-slate-50 dark:bg-gray-900/30 border-slate-200 dark:border-white/5 opacity-60'
+        <label className={`flex items-start gap-3 p-4 rounded-2xl border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] transition-all ${
+          strictModeEnabled 
+            ? 'bg-white dark:bg-[#222234] text-slate-950 dark:text-white cursor-pointer hover:-translate-y-0.5' 
+            : 'bg-gray-100 dark:bg-gray-800/60 opacity-60 text-gray-500 cursor-not-allowed'
         }`}>
           <input
             type="checkbox"
@@ -201,29 +211,29 @@ export default function StrictModeControlCard({ classroomId, initialSettings }: 
               setRecordEvents(e.target.checked);
               handleSave({ recordEvents: e.target.checked });
             }}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="mt-1 h-5 w-5 rounded-md border-2 border-black text-[#5800FF] focus:ring-0 accent-[#5800FF] cursor-pointer"
           />
           <div>
-            <div className="text-sm font-bold text-slate-900 dark:text-white">Record Restricted Events</div>
-            <div className="text-xs text-slate-600 dark:text-gray-400">Logs event alerts to the live dashboard</div>
+            <div className="text-sm font-black text-slate-950 dark:text-white">Record Restricted Events</div>
+            <div className="text-xs font-bold text-slate-700 dark:text-gray-300 mt-0.5">Logs event alerts to the live dashboard</div>
           </div>
         </label>
       </div>
 
       {saveSuccess && (
-        <div className="mt-4 text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 animate-fade-in">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <div className="mt-4 p-3 rounded-xl bg-[#00FF66] text-black border-2 border-black font-black text-xs flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] animate-fade-in">
+          <svg className="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
           Strict Mode settings saved and synced to student environments!
         </div>
       )}
 
-      {/* Mandatory Technical Limitation & Security Disclaimer */}
-      <div className="mt-6 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 text-xs leading-relaxed text-amber-900 dark:text-amber-300">
-        <div className="font-bold flex items-center gap-1.5 mb-1 text-amber-800 dark:text-amber-200">
-          <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      {/* Technical Limitation & Security Disclaimer */}
+      <div className="mt-6 rounded-2xl bg-[#FFE566] text-black border-3 border-black p-4 text-xs font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] leading-relaxed">
+        <div className="font-black text-sm uppercase flex items-center gap-1.5 mb-1 text-black">
+          <svg className="h-4 w-4 flex-shrink-0 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           Technical Enforcement Disclaimer
         </div>
