@@ -1,73 +1,76 @@
 'use client';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// StrictModeControlCard — COMING SOON
-// The copy/paste monitoring feature is under development.
-// The card is rendered but fully blocked with a "Coming Soon" overlay stamp.
-// ─────────────────────────────────────────────────────────────────────────────
-
 export default function StrictModeControlCard() {
+  const features = [
+    { icon: '📋', label: 'Block Paste', desc: 'Ctrl+V restriction in editor' },
+    { icon: '📄', label: 'Block Copy', desc: 'Ctrl+C restriction in editor' },
+    { icon: '✂️', label: 'Block Cut', desc: 'Ctrl+X restriction in editor' },
+    { icon: '📊', label: 'Event Logging', desc: 'Full activity audit trail' },
+  ];
+
   return (
-    <div className="relative rounded-3xl border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.9)] overflow-hidden select-none">
+    <div className="relative rounded-3xl border-4 border-black dark:border-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.9)]">
 
-      {/* ── Ghost preview of the card (blurred + dimmed) ── */}
-      <div className="p-6 bg-[#FDFBF7] dark:bg-[#181824] blur-[3px] opacity-40 pointer-events-none" aria-hidden>
+      {/* Background gradient */}
+      <div className="bg-gradient-to-br from-[#0f0f1a] via-[#15152b] to-[#1a1030] p-6 sm:p-8">
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black dark:border-white pb-5">
+        {/* Top row — title + badge */}
+        <div className="flex items-start justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">🛡️</span>
-            <h3 className="text-2xl font-black text-slate-950 dark:text-white uppercase tracking-tight">
-              MentorX Strict Mode
-            </h3>
-            <span className="px-3.5 py-1 rounded-xl text-xs font-black border-2 border-black bg-[#FF6666] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              OFF
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-950 dark:text-white">
-              Strict Mode Disabled
-            </span>
-            <div className="relative inline-flex h-8 w-16 rounded-full border-3 border-black bg-slate-300 dark:bg-gray-700 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-              <span className="inline-block h-6 w-6 rounded-full bg-[#FFDE59] border-2 border-black mt-0.5 translate-x-1" />
+            <div className="h-12 w-12 rounded-2xl bg-[#5800FF]/20 border-2 border-[#5800FF]/40 flex items-center justify-center text-2xl flex-shrink-0">
+              🛡️
             </div>
+            <div>
+              <h3 className="text-xl font-black text-white uppercase tracking-tight leading-tight">
+                MentorX Strict Mode
+              </h3>
+              <p className="text-xs font-bold text-gray-400 mt-0.5">
+                Copy / Paste Enforcement Engine
+              </p>
+            </div>
+          </div>
+
+          {/* In Development pill */}
+          <div className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#5800FF]/20 border-2 border-[#5800FF]/50 text-[#a78bfa] text-xs font-black uppercase tracking-wider">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#a78bfa] animate-pulse inline-block" />
+            In Dev
           </div>
         </div>
 
-        {/* Fake checkbox grid */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {['Block Paste (Ctrl+V)', 'Block Copy (Ctrl+C)', 'Block Cut (Ctrl+X)', 'Record Restricted Events'].map(label => (
-            <div key={label} className="flex items-start gap-3 p-4 rounded-2xl border-3 border-black bg-gray-100 dark:bg-gray-800/60 opacity-60">
-              <div className="mt-1 h-5 w-5 rounded-md border-2 border-black bg-white" />
-              <div className="text-sm font-black text-slate-950 dark:text-white">{label}</div>
+        {/* Feature grid — locked icons */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {features.map((f) => (
+            <div
+              key={f.label}
+              className="flex items-center gap-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 opacity-60"
+            >
+              <span className="text-lg grayscale">{f.icon}</span>
+              <div className="min-w-0">
+                <div className="text-xs font-black text-white truncate">{f.label}</div>
+                <div className="text-[10px] text-gray-500 font-medium truncate">{f.desc}</div>
+              </div>
+              {/* Lock */}
+              <svg className="h-3.5 w-3.5 text-gray-600 flex-shrink-0 ml-auto" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 1a5 5 0 0 0-5 5v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v2H9V6a3 3 0 0 1 3-3zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
+              </svg>
             </div>
           ))}
         </div>
 
-        {/* Fake disclaimer */}
-        <div className="mt-6 rounded-2xl bg-[#FFE566] border-3 border-black p-4 text-xs font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div className="font-black text-sm uppercase mb-1">Technical Enforcement Disclaimer</div>
-          MentorX Strict Mode restricts copy/paste operations within the VS Code environment.
-        </div>
-      </div>
-
-      {/* ── Coming Soon Overlay ── */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px] z-10">
-
-        {/* Rotated stamp */}
-        <div className="-rotate-12 flex flex-col items-center gap-3">
-          <div className="rounded-2xl border-[5px] border-[#FFE566] px-8 py-5 shadow-[6px_6px_0px_0px_rgba(255,229,102,0.6)] bg-black/80">
-            <div className="text-[#FFE566] font-black text-4xl sm:text-5xl uppercase tracking-[0.15em] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-              Coming Soon
-            </div>
-            <div className="text-center text-[#FFE566]/70 font-bold text-xs sm:text-sm uppercase tracking-widest mt-1">
-              Copy / Paste Monitoring
-            </div>
+        {/* Progress bar section */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-black text-gray-300 uppercase tracking-wider">Development Progress</span>
+            <span className="text-xs font-black text-[#a78bfa]">68%</span>
           </div>
-
-          {/* Subtle sub-label */}
-          <p className="rotate-0 text-center text-white/70 text-xs font-bold max-w-[220px] leading-relaxed">
-            This feature is under development and will be available in a future release.
+          <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#5800FF] to-[#a78bfa]"
+              style={{ width: '68%' }}
+            />
+          </div>
+          <p className="text-[11px] text-gray-500 font-medium mt-2">
+            Backend &amp; extension layer complete · Dashboard UI coming soon
           </p>
         </div>
 
