@@ -35,36 +35,40 @@ export function useClassroomActivity(classroomId: string) {
   const [recentAlerts, setRecentAlerts] = useState<ClassroomAlert[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Initial fetch of activity history
-  const fetchInitialActivity = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await api.get(`/activity/classroom/${classroomId}`);
-      
-      const activityMap: Record<string, StudentActivity> = {};
-      data.forEach((act: any) => {
-        activityMap[act.student_id] = {
-          studentId: act.student_id,
-          displayName: act.display_name,
-          email: act.email,
-          language: act.language,
-          status: act.status,
-          currentFile: act.current_file,
-          errors: act.errors,
-          timestamp: act.timestamp
-        };
-      });
-      setActivities(activityMap);
-    } catch (error: any) {
-      console.warn('Classroom activity fetch warning:', error?.message || error);
-    } finally {
-      setLoading(false);
-    }
-  }, [classroomId]);
-
   useEffect(() => {
-    fetchInitialActivity();
-  }, [fetchInitialActivity]);
+    let isMounted = true;
+    async function loadInitialData() {
+      try {
+        setLoading(true);
+        const data = await api.get(`/activity/classroom/${classroomId}`);
+        
+        if (!isMounted) return;
+        const activityMap: Record<string, StudentActivity> = {};
+        data.forEach((act: any) => {
+          activityMap[act.student_id] = {
+            studentId: act.student_id,
+            displayName: act.display_name,
+            email: act.email,
+            language: act.language,
+            status: act.status,
+            currentFile: act.current_file,
+            errors: act.errors,
+            timestamp: act.timestamp
+          };
+        });
+        setActivities(activityMap);
+      } catch (error: any) {
+        console.warn('Classroom activity fetch warning:', error?.message || error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadInitialData();
+    return () => {
+      isMounted = false;
+    };
+  }, [classroomId]);
 
   // Socket.IO real-time updates
   useEffect(() => {
