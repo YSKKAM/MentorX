@@ -81,10 +81,10 @@ export default function StudentDashboard() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-4">
             <MagneticButton
               onClick={() => setIsModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-5 py-3 text-sm shadow-md"
+              className="bg-[#FFE600] text-slate-950 hover:bg-[#ffd700] border-3 border-slate-950 font-black rounded-2xl px-6 py-3.5 text-sm shadow-[5px_5px_0px_0px_#0f172a] dark:shadow-[5px_5px_0px_0px_#818cf8] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
             >
               🤝 Join Class
             </MagneticButton>
@@ -92,7 +92,7 @@ export default function StudentDashboard() {
             <Link href="/dashboard/chat">
               <MagneticButton
                 variant="ghost"
-                className="bg-slate-800/80 hover:bg-slate-800 text-slate-100 border border-slate-700/80 font-bold rounded-xl px-5 py-3 text-sm backdrop-blur-md"
+                className="bg-white text-slate-950 hover:bg-slate-100 border-3 border-slate-950 font-black rounded-2xl px-6 py-3.5 text-sm shadow-[5px_5px_0px_0px_#0f172a] dark:shadow-[5px_5px_0px_0px_#818cf8] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#0f172a]"
               >
                 ✨ Chat with MentorX Assistant
               </MagneticButton>
