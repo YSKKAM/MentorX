@@ -126,26 +126,28 @@ export function useClassroomActivity(classroomId: string) {
     // Listen for restricted action alerts (copy/paste attempts)
     const handleRestrictedActionAlert = (data: {
       studentId: string;
+      studentName?: string;
       eventType: string;
+      fileContext?: string;
       currentFile?: string;
       attemptCount?: number;
       timestamp?: string;
     }) => {
-      let studentName = 'Student';
+      // Use studentName from server payload directly — avoids stale closure issue
+      const studentName = data.studentName || 'Student';
+      const currentFile = data.fileContext || data.currentFile;
 
       setActivities(prev => {
         const existing = prev[data.studentId] || {
           studentId: data.studentId,
-          displayName: 'Student',
+          displayName: studentName,
           email: '',
           language: null,
           status: 'coding',
-          currentFile: data.currentFile || null,
+          currentFile: currentFile || null,
           errors: null,
           timestamp: new Date().toISOString()
         };
-
-        studentName = existing.displayName || 'Student';
 
         return {
           ...prev,
@@ -154,20 +156,20 @@ export function useClassroomActivity(classroomId: string) {
             lastRestrictedAction: {
               eventType: data.eventType,
               timestamp: data.timestamp || new Date().toISOString(),
-              currentFile: data.currentFile,
+              currentFile: currentFile,
               attemptCount: data.attemptCount || 1
             }
           }
         };
       });
 
-      // Add to recent alerts feed
+      // Add to recent alerts feed — studentName from server payload, not from state
       const newAlert: ClassroomAlert = {
         id: Math.random().toString(36).substring(2, 9),
         studentId: data.studentId,
         studentName,
         eventType: data.eventType,
-        currentFile: data.currentFile,
+        currentFile,
         timestamp: data.timestamp || new Date().toISOString()
       };
 

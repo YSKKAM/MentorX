@@ -76,8 +76,10 @@ export function initStrictMode(context: vscode.ExtensionContext) {
     })
   );
 
-  // Listen for real-time Strict Mode configuration toggles from the teacher dashboard
-  socket.onEvent('classroom:strict-mode-toggle', (data: StrictModeSettings) => {
+  // Listen for real-time Strict Mode configuration toggles from the teacher dashboard.
+  // NOTE: onEventWhenReady defers registration until the socket is connected, preventing
+  // silent drops when initStrictMode() runs before the student logs in.
+  socket.onEventWhenReady('classroom:strict-mode-toggle', (data: StrictModeSettings) => {
     if (data && (!data.classroomId || data.classroomId === currentClassroomId)) {
       updateSettings(data);
     }
@@ -112,7 +114,10 @@ export function setClassroom(classroomId: string | null) {
 }
 
 /**
- * Handle restricted copy/paste action, notify student, track attempts, and emit socket event
+ * Handle restricted copy/paste action, notify student, track attempts, and emit socket event.
+ * We always emit when connected — the server decides whether to persist based on
+ * record_restricted_events. Gating emission client-side caused silent data loss because
+ * the DB default differs from the extension default.
  */
 function handleRestrictedAction(
   eventType: 'blocked_paste' | 'blocked_copy' | 'blocked_cut' | 'paste_used' | 'copy_used' | 'cut_used',
@@ -142,8 +147,8 @@ function handleRestrictedAction(
     }
   }
 
-  // Emit event over WebSocket (No clipboard text contents collected!)
-  if (currentClassroomId && socket.isConnected() && activeSettings.record_restricted_events) {
+  // Always emit if connected and in a classroom — server handles persistence decision
+  if (currentClassroomId && socket.isConnected()) {
     socket.emit('student:restricted-action', {
       classroomId: currentClassroomId,
       eventType: finalEventType,

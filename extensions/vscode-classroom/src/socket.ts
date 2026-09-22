@@ -5,6 +5,8 @@ let socket: Socket | null = null;
 let activeClassroomId: string | null = null;
 let savedToken: string | null = null;
 let savedServerUrl: string | null = null;
+// Listeners registered via onEventWhenReady() before a socket exists are queued here
+let pendingListeners: Array<{ event: string; callback: (...args: any[]) => void }> = [];
 
 export function connect(serverUrl: string, token: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -54,6 +56,13 @@ export function connect(serverUrl: string, token: string): Promise<void> {
         socket.on('connect', () => {
             console.log('Connected to Classroom Server');
             vscode.commands.executeCommand('setContext', 'classroom:connected', true);
+            // Flush any listeners registered via onEventWhenReady() before socket existed
+            if (pendingListeners.length > 0) {
+                pendingListeners.forEach(({ event, callback }) => {
+                    socket?.on(event, callback);
+                });
+                pendingListeners = [];
+            }
             // Self-healing: if we were tracking a classroom, re-join it on reconnect!
             if (activeClassroomId) {
                 console.log(`Re-joining classroom: ${activeClassroomId}`);
@@ -114,5 +123,28 @@ export function isConnected(): boolean {
 export function onEvent(event: string, callback: (...args: any[]) => void) {
     if (socket) {
         socket.on(event, callback);
+    }
+}
+
+/**
+ * Register an event listener that will be applied as soon as the socket is connected.
+ * If the socket is already connected, registers immediately. If not yet connected,
+ * the listener is queued and applied on the next 'connect' event (including reconnects).
+ * This prevents silent drops when listeners are registered before login/connection.
+ */
+export function onEventWhenReady(event: string, callback: (...args: any[]) => void) {
+    if (socket) {
+        // Already have a socket instance — register immediately if connected,
+        // otherwise queue it on the connect event
+        if (socket.connected) {
+            socket.on(event, callback);
+        } else {
+            socket.once('connect', () => {
+                socket?.on(event, callback);
+            });
+        }
+    } else {
+        // No socket yet — store pending listeners, applied inside connect() call
+        pendingListeners.push({ event, callback });
     }
 }
