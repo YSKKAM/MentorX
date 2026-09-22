@@ -11,6 +11,7 @@ import AssignmentsList from '../../../components/classroom/AssignmentsList';
 import Button from '../../../components/ui/Button';
 import ClassroomChat from '../../../components/chat/ClassroomChat';
 import { useClassroomActivity } from '../../../hooks/useClassroomActivity';
+import StrictModeControlCard from '../../../components/classroom/StrictModeControlCard';
 
 import ClassroomConfusionRadar from '../../../components/classroom/ClassroomConfusionRadar';
 
@@ -21,6 +22,7 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
 
   const [classroom, setClassroom] = useState<Classroom | null>(null);
   const [students, setStudents] = useState<ClassroomStudent[]>([]);
+  const [strictModeSettings, setStrictModeSettings] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'live' | 'assignments'>('live');
 
@@ -44,6 +46,14 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
         studentCount: parseInt(roomData.student_count) || (roomData.students?.length ?? 0),
         createdAt: roomData.created_at,
         updatedAt: roomData.updated_at
+      });
+
+      setStrictModeSettings({
+        strict_mode_enabled: roomData.strict_mode_enabled,
+        block_paste: roomData.block_paste,
+        block_copy: roomData.block_copy,
+        block_cut: roomData.block_cut,
+        record_restricted_events: roomData.record_restricted_events,
       });
 
       // Students are already included in the getById response
@@ -203,6 +213,10 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
                   <ClassroomConfusionRadar classroomId={id} />
                 </div>
                 <ActivityCharts activities={activities} />
+                </div>
+
+                <div className="mb-8">
+                  <StrictModeControlCard classroomId={id} initialSettings={strictModeSettings} />
                 </div>
 
                 <div className="space-y-4">

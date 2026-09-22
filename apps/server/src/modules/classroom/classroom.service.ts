@@ -107,5 +107,34 @@ export const classroomService = {
       [classroomId]
     );
     return { success: true };
+  },
+
+  async updateStrictMode(classroomId: string, settings: {
+    strict_mode_enabled?: boolean;
+    block_paste?: boolean;
+    block_copy?: boolean;
+    block_cut?: boolean;
+    record_restricted_events?: boolean;
+  }) {
+    const result = await query(
+      `UPDATE classrooms
+       SET strict_mode_enabled = COALESCE($2, strict_mode_enabled),
+           block_paste = COALESCE($3, block_paste),
+           block_copy = COALESCE($4, block_copy),
+           block_cut = COALESCE($5, block_cut),
+           record_restricted_events = COALESCE($6, record_restricted_events),
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, strict_mode_enabled, block_paste, block_copy, block_cut, record_restricted_events`,
+      [
+        classroomId,
+        settings.strict_mode_enabled !== undefined ? settings.strict_mode_enabled : null,
+        settings.block_paste !== undefined ? settings.block_paste : null,
+        settings.block_copy !== undefined ? settings.block_copy : null,
+        settings.block_cut !== undefined ? settings.block_cut : null,
+        settings.record_restricted_events !== undefined ? settings.record_restricted_events : null,
+      ]
+    );
+    return result.rows[0];
   }
 };

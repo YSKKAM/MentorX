@@ -136,5 +136,33 @@ export const classroomController = {
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
     }
+  },
+
+  async updateStrictMode(req: Request, res: Response) {
+    try {
+      const user = (req as any).user;
+      const { id } = req.params;
+
+      if (user.role !== 'teacher') {
+        res.status(403).json({ message: 'Only teachers can update strict mode settings' });
+        return;
+      }
+
+      const classroom = await classroomService.getClassroomById(id);
+      if (!classroom) {
+        res.status(404).json({ message: 'Classroom not found' });
+        return;
+      }
+
+      if (classroom.teacher_id !== user.userId) {
+        res.status(403).json({ message: 'Forbidden: You do not own this classroom' });
+        return;
+      }
+
+      const updatedSettings = await classroomService.updateStrictMode(id, req.body);
+      res.status(200).json(updatedSettings);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
   }
 };

@@ -12,6 +12,12 @@ export interface StudentActivity {
   currentFile: string | null;
   errors: any[] | null;
   timestamp: string;
+  lastRestrictedAction?: {
+    eventType: string;
+    timestamp: string;
+    currentFile?: string;
+    attemptCount?: number;
+  };
 }
 
 export function useClassroomActivity(classroomId: string) {
@@ -103,13 +109,50 @@ export function useClassroomActivity(classroomId: string) {
       });
     };
 
+    // Listen for restricted action alerts (copy/paste attempts)
+    const handleRestrictedActionAlert = (data: {
+      studentId: string;
+      eventType: string;
+      currentFile?: string;
+      attemptCount?: number;
+      timestamp?: string;
+    }) => {
+      setActivities(prev => {
+        const existing = prev[data.studentId] || {
+          studentId: data.studentId,
+          displayName: 'Student',
+          email: '',
+          language: null,
+          status: 'coding',
+          currentFile: data.currentFile || null,
+          errors: null,
+          timestamp: new Date().toISOString()
+        };
+
+        return {
+          ...prev,
+          [data.studentId]: {
+            ...existing,
+            lastRestrictedAction: {
+              eventType: data.eventType,
+              timestamp: data.timestamp || new Date().toISOString(),
+              currentFile: data.currentFile,
+              attemptCount: data.attemptCount || 1
+            }
+          }
+        };
+      });
+    };
+
     socket.on('student:status-change', handleStatusChange);
     socket.on('classroom:activity-update', handleActivityUpdate);
+    socket.on('classroom:restricted-action-alert', handleRestrictedActionAlert);
 
     return () => {
       socket.emit('classroom:leave', { classroomId });
       socket.off('student:status-change', handleStatusChange);
       socket.off('classroom:activity-update', handleActivityUpdate);
+      socket.off('classroom:restricted-action-alert', handleRestrictedActionAlert);
       // We don't disconnect the entire socket service here in case other components use it,
       // but we could if this is the only page using sockets.
     };

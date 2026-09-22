@@ -29,6 +29,22 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
 
   const hasErrors = activity.errors && activity.errors.length > 0;
   const isOffline = activity.status === 'offline' || !activity.status;
+  const restrictedAction = activity.lastRestrictedAction;
+
+  const getRestrictedBadge = (eventType?: string) => {
+    switch (eventType) {
+      case 'multiple_attempts':
+        return { label: 'Multiple Attempts', style: 'bg-red-500/20 text-red-400 border-red-500/30' };
+      case 'blocked_paste':
+        return { label: 'Paste Attempt', style: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+      case 'blocked_copy':
+        return { label: 'Blocked Copy', style: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+      case 'blocked_cut':
+        return { label: 'Blocked Cut', style: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
+      default:
+        return { label: 'Restricted Action', style: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+    }
+  };
 
   return (
     <div className={`glass-card relative overflow-hidden rounded-xl border p-5 transition-all duration-300 ${
@@ -36,11 +52,13 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
         ? 'border-white/5 bg-[#12121a]/40 opacity-75' 
         : hasErrors 
           ? 'border-red-500/30 bg-[#1a1212]/80' 
-          : 'border-white/10 bg-[#12121a]/80 hover:border-blue-500/30 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)]'
+          : restrictedAction
+            ? 'border-amber-500/30 bg-[#1a1812]/80'
+            : 'border-white/10 bg-[#12121a]/80 hover:border-blue-500/30 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)]'
     }`}>
       
       {/* Status indicator line at top */}
-      <div className={`absolute left-0 top-0 h-1 w-full ${isOffline ? 'bg-gray-700' : hasErrors ? 'bg-red-500' : 'bg-emerald-500'}`} />
+      <div className={`absolute left-0 top-0 h-1 w-full ${isOffline ? 'bg-gray-700' : hasErrors ? 'bg-red-500' : restrictedAction ? 'bg-amber-500' : 'bg-emerald-500'}`} />
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
@@ -56,14 +74,22 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
           </div>
         </div>
         
-        {hasErrors && (
-          <div className="flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 border border-red-500/20 animate-pulse">
-            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            {activity.errors!.length} Error{activity.errors!.length > 1 ? 's' : ''}
-          </div>
-        )}
+        <div className="flex flex-col items-end gap-1">
+          {hasErrors && (
+            <div className="flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 border border-red-500/20 animate-pulse">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {activity.errors!.length} Error{activity.errors!.length > 1 ? 's' : ''}
+            </div>
+          )}
+
+          {restrictedAction && (
+            <div className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium border ${getRestrictedBadge(restrictedAction.eventType).style}`}>
+              🛡️ {getRestrictedBadge(restrictedAction.eventType).label}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 space-y-3">

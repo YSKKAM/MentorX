@@ -10,5 +10,6 @@ router.get('/', authenticate, classroomController.list);
 router.post('/join', authenticate, authorize(['student']), classroomController.join);
 router.get('/:id', authenticate, classroomController.getById);
 router.delete('/:id', authenticate, authorize(['teacher']), classroomController.delete);
+router.put('/:id/strict-mode', authenticate, authorize(['teacher']), classroomController.updateStrictMode);
 
 export default router;

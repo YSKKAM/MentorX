@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { initAuth, login, logout, getToken, getServerUrl } from './auth';
 import { initStatusBar, update as updateStatus } from './statusbar';
 import { initSuggestions } from './suggestions';
+import { initStrictMode } from './strictmode';
 import * as socket from './socket';
 import * as tracker from './tracker';
 import { AssignmentSidebarProvider } from './sidebar';
@@ -12,6 +13,7 @@ export async function activate(context: vscode.ExtensionContext) {
     initAuth(context);
     initStatusBar(context);
     initSuggestions(context);
+    initStrictMode(context);
 
     // Dynamically update VS Code status bar based on Socket.IO connection status
     socket.onEvent('connect', () => {

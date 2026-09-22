@@ -3,6 +3,7 @@ import * as socket from './socket';
 import { getDiagnosticsForActiveFile } from './diagnostics';
 import { getActivitySendInterval, getIdleTimeout } from './config';
 import { disableSuggestions, restoreSuggestions } from './suggestions';
+import { setClassroom } from './strictmode';
 
 let isTracking = false;
 let currentClassroomId: string | null = null;
@@ -17,6 +18,7 @@ export function start(classroomId: string) {
     }
     
     currentClassroomId = classroomId;
+    setClassroom(classroomId);
     isTracking = true;
     lastTypeTime = Date.now();
     status = 'coding';
@@ -65,6 +67,7 @@ export function stop() {
     
     isTracking = false;
     currentClassroomId = null;
+    setClassroom(null);
     status = 'idle';
     
     // Restore student suggestion settings when leaving classroom
