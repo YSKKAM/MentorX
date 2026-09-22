@@ -20,9 +20,19 @@ export interface StudentActivity {
   };
 }
 
+export interface ClassroomAlert {
+  id: string;
+  studentId: string;
+  studentName?: string;
+  eventType: string;
+  currentFile?: string;
+  timestamp: string;
+}
+
 export function useClassroomActivity(classroomId: string) {
   const { user } = useAuth();
   const [activities, setActivities] = useState<Record<string, StudentActivity>>({});
+  const [recentAlerts, setRecentAlerts] = useState<ClassroomAlert[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Initial fetch of activity history
@@ -117,6 +127,8 @@ export function useClassroomActivity(classroomId: string) {
       attemptCount?: number;
       timestamp?: string;
     }) => {
+      let studentName = 'Student';
+
       setActivities(prev => {
         const existing = prev[data.studentId] || {
           studentId: data.studentId,
@@ -128,6 +140,8 @@ export function useClassroomActivity(classroomId: string) {
           errors: null,
           timestamp: new Date().toISOString()
         };
+
+        studentName = existing.displayName || 'Student';
 
         return {
           ...prev,
@@ -142,6 +156,18 @@ export function useClassroomActivity(classroomId: string) {
           }
         };
       });
+
+      // Add to recent alerts feed
+      const newAlert: ClassroomAlert = {
+        id: Math.random().toString(36).substring(2, 9),
+        studentId: data.studentId,
+        studentName,
+        eventType: data.eventType,
+        currentFile: data.currentFile,
+        timestamp: data.timestamp || new Date().toISOString()
+      };
+
+      setRecentAlerts(prev => [newAlert, ...prev.slice(0, 4)]);
     };
 
     socket.on('student:status-change', handleStatusChange);
@@ -153,10 +179,8 @@ export function useClassroomActivity(classroomId: string) {
       socket.off('student:status-change', handleStatusChange);
       socket.off('classroom:activity-update', handleActivityUpdate);
       socket.off('classroom:restricted-action-alert', handleRestrictedActionAlert);
-      // We don't disconnect the entire socket service here in case other components use it,
-      // but we could if this is the only page using sockets.
     };
   }, [classroomId, user]);
 
-  return { activities: Object.values(activities), loading };
+  return { activities: Object.values(activities), recentAlerts, loading };
 }

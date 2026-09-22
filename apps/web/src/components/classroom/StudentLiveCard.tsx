@@ -35,14 +35,20 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
     switch (eventType) {
       case 'multiple_attempts':
         return { label: 'Multiple Attempts', style: 'bg-red-500/20 text-red-400 border-red-500/30' };
+      case 'paste_used':
+        return { label: '📋 Paste Detected', style: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' };
+      case 'copy_used':
+        return { label: '📄 Copy Detected', style: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' };
+      case 'cut_used':
+        return { label: '✂️ Cut Detected', style: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
       case 'blocked_paste':
-        return { label: 'Paste Attempt', style: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+        return { label: 'Paste Blocked', style: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
       case 'blocked_copy':
-        return { label: 'Blocked Copy', style: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+        return { label: 'Copy Blocked', style: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
       case 'blocked_cut':
-        return { label: 'Blocked Cut', style: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
+        return { label: 'Cut Blocked', style: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
       default:
-        return { label: 'Restricted Action', style: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+        return { label: 'Activity Alert', style: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
     }
   };
 
@@ -115,6 +121,26 @@ export default function StudentLiveCard({ activity }: { activity: StudentActivit
         </div>
       </div>
       
+      {restrictedAction && (
+        <div className="mt-3 rounded-lg bg-amber-500/10 p-2.5 border border-amber-500/30 text-xs animate-fade-in">
+          <div className="flex items-center justify-between font-bold text-amber-400 mb-0.5">
+            <span className="flex items-center gap-1">
+              ⚠️ Copy/Paste Alert
+            </span>
+            <span className="text-[10px] text-amber-300/80 font-mono">
+              {new Date(restrictedAction.timestamp).toLocaleTimeString()}
+            </span>
+          </div>
+          <div className="text-gray-300 text-[11px] font-medium">
+            {restrictedAction.eventType === 'paste_used' || restrictedAction.eventType === 'blocked_paste'
+              ? `Paste activity recorded in ${restrictedAction.currentFile || 'active editor'}`
+              : restrictedAction.eventType === 'copy_used' || restrictedAction.eventType === 'blocked_copy'
+                ? `Copy activity recorded in ${restrictedAction.currentFile || 'active editor'}`
+                : `Restricted action detected (${restrictedAction.eventType})`}
+          </div>
+        </div>
+      )}
+
       {hasErrors && (
         <button 
           onClick={() => setIsErrorModalOpen(true)}

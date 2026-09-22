@@ -26,7 +26,7 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'live' | 'assignments'>('live');
 
-  const { activities, loading: activityLoading } = useClassroomActivity(id);
+  const { activities, recentAlerts, loading: activityLoading } = useClassroomActivity(id);
 
   const totalOnline = activities.filter(a => a.status === 'coding' || a.status === 'online').length;
   const activeLanguages = Array.from(new Set(activities.map(a => a.language).filter(Boolean))) as string[];
@@ -218,6 +218,28 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
                 <div className="mb-8">
                   <StrictModeControlCard classroomId={id} initialSettings={strictModeSettings} />
                 </div>
+
+                {recentAlerts && recentAlerts.length > 0 && (
+                  <div className="mb-8 rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 animate-pulse">
+                    <div className="flex items-center gap-2 text-sm font-black text-amber-600 dark:text-amber-400 mb-2">
+                      <span className="text-lg">🔔</span> LIVE COPY/PASTE ACTIVITY ALERTS
+                    </div>
+                    <div className="space-y-1.5">
+                      {recentAlerts.map(alert => (
+                        <div key={alert.id} className="flex items-center justify-between text-xs text-slate-800 dark:text-gray-200 font-medium bg-white/50 dark:bg-black/20 p-2 rounded-xl border border-amber-500/20">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-indigo-600 dark:text-indigo-400">{alert.studentName}</span>
+                            <span>performed {alert.eventType.replace('_', ' ')} in</span>
+                            <span className="font-mono bg-slate-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-[11px]">{alert.currentFile || 'active editor'}</span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 dark:text-gray-400 font-mono">
+                            {new Date(alert.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-black text-slate-950 dark:text-white">Student Real-Time Feeds</h3>
