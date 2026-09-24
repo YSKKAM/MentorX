@@ -6,6 +6,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
 import { UserRole } from "../../../types";
+import GoogleLoginButton from "../../../components/auth/GoogleLoginButton";
 
 export default function RegisterPage() {
   const { register, loading } = useAuth();
@@ -50,38 +51,51 @@ export default function RegisterPage() {
         </p>
       </div>
 
+      {/* Role Selector Pill */}
+      <div className="flex bg-slate-900/10 dark:bg-white/5 p-1 rounded-xl border border-slate-900/15 dark:border-white/10 mb-4">
+        <button
+          type="button"
+          onClick={() => setRole("student")}
+          className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
+            role === "student"
+              ? "bg-indigo-600 text-white shadow-md"
+              : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
+          }`}
+        >
+          🎓 Student
+        </button>
+        <button
+          type="button"
+          onClick={() => setRole("teacher")}
+          className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
+            role === "teacher"
+              ? "bg-violet-600 text-white shadow-md"
+              : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
+          }`}
+        >
+          👨‍🏫 Teacher
+        </button>
+      </div>
+
+      {/* Google Sign Up */}
+      <div className="space-y-4 mb-5">
+        <GoogleLoginButton role={role} buttonText={`Sign up as ${role === 'teacher' ? 'Teacher' : 'Student'} with Google`} />
+
+        <div className="relative flex items-center justify-center pt-1">
+          <div className="border-t border-slate-300 dark:border-white/10 w-full" />
+          <span className="bg-[#FDFBF7] dark:bg-[#181824] px-3 text-[11px] font-black uppercase text-slate-500 dark:text-gray-400 tracking-wider">
+            or register with email
+          </span>
+          <div className="border-t border-slate-300 dark:border-white/10 w-full" />
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-700 dark:text-red-400 text-xs font-bold">
             {error}
           </div>
         )}
-
-        {/* Role Selector Pill */}
-        <div className="flex bg-slate-900/10 dark:bg-white/5 p-1 rounded-xl border border-slate-900/15 dark:border-white/10 mb-4">
-          <button
-            type="button"
-            onClick={() => setRole("student")}
-            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
-              role === "student"
-                ? "bg-indigo-600 text-white shadow-md"
-                : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
-            }`}
-          >
-            🎓 Student
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole("teacher")}
-            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
-              role === "teacher"
-                ? "bg-violet-600 text-white shadow-md"
-                : "text-slate-800 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white"
-            }`}
-          >
-            👨‍🏫 Teacher
-          </button>
-        </div>
 
         <Input
           label="Full Name"
@@ -121,7 +135,7 @@ export default function RegisterPage() {
 
       <div className="mt-6 text-center text-xs font-bold text-slate-700 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/register" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
+        <Link href="/login" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
           Sign in
         </Link>
       </div>

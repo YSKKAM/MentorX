@@ -6,6 +6,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
 import { RocketCursor } from "../../../components/ui/RocketCursor";
+import GoogleLoginButton from "../../../components/auth/GoogleLoginButton";
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
@@ -35,7 +36,7 @@ export default function LoginPage() {
       <div className="glass-card-light dark:glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-900/10 dark:border-white/10 animate-slide-up relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500" />
 
-      <div className="text-center mb-8 space-y-2">
+      <div className="text-center mb-6 space-y-2">
         <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-rose-500 p-0.5 shadow-lg flex items-center justify-center mb-4">
           <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl">
             🎓
@@ -48,6 +49,19 @@ export default function LoginPage() {
         <p className="text-slate-700 dark:text-gray-400 text-xs sm:text-sm font-bold">
           Sign in to access your MentorX Platform
         </p>
+      </div>
+
+      {/* Google Sign In Button */}
+      <div className="space-y-4 mb-6">
+        <GoogleLoginButton buttonText="Continue with Google" />
+
+        <div className="relative flex items-center justify-center pt-2">
+          <div className="border-t border-slate-300 dark:border-white/10 w-full" />
+          <span className="bg-[#FDFBF7] dark:bg-[#181824] px-3 text-[11px] font-black uppercase text-slate-500 dark:text-gray-400 tracking-wider">
+            or continue with email
+          </span>
+          <div className="border-t border-slate-300 dark:border-white/10 w-full" />
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -85,7 +99,7 @@ export default function LoginPage() {
       </form>
 
       <div className="mt-8 text-center text-xs font-bold text-slate-700 dark:text-gray-400">
-        Don't have an account yet?{" "}
+        Don&apos;t have an account yet?{" "}
         <Link href="/register" className="text-indigo-700 dark:text-blue-400 hover:underline font-extrabold">
           Create account now
         </Link>

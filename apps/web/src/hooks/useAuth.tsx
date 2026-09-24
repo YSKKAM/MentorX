@@ -11,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (credential: string, role?: 'teacher' | 'student') => Promise<void>;
   register: (data: any) => Promise<void>;
   logout: () => void;
 }
@@ -39,6 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.email,
           displayName: data.display_name,
           role: data.role,
+          avatarUrl: data.avatar_url,
+          googleId: data.google_id,
           createdAt: data.created_at,
           updatedAt: data.updated_at,
         });
@@ -71,6 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.user.email,
           displayName: data.user.display_name,
           role: data.user.role,
+          avatarUrl: data.user.avatar_url,
+          googleId: data.user.google_id,
           createdAt: data.user.created_at,
           updatedAt: data.user.updated_at,
         };
@@ -91,6 +96,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (credential: string, role?: 'teacher' | 'student') => {
+    try {
+      setLoading(true);
+      const data = await api.post("/auth/google", { credential, role });
+      
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        const mappedUser = {
+          id: data.user.id,
+          email: data.user.email,
+          displayName: data.user.display_name,
+          role: data.user.role,
+          avatarUrl: data.user.avatar_url,
+          googleId: data.user.google_id,
+          createdAt: data.user.created_at,
+          updatedAt: data.user.updated_at,
+        };
+        setUser(mappedUser);
+        addToast(`Welcome to MentorX, ${mappedUser.displayName}!`, "success");
+        
+        if (mappedUser.role === "teacher") {
+          router.push("/dashboard/teacher");
+        } else {
+          router.push("/dashboard/student");
+        }
+      }
+    } catch (error: any) {
+      addToast(error.message || "Failed to sign in with Google", "error");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const register = async (userData: any) => {
     try {
       setLoading(true);
@@ -103,6 +142,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.user.email,
           displayName: data.user.display_name,
           role: data.user.role,
+          avatarUrl: data.user.avatar_url,
+          googleId: data.user.google_id,
           createdAt: data.user.created_at,
           updatedAt: data.user.updated_at,
         };
@@ -137,6 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         isAuthenticated: !!user,
         login,
+        loginWithGoogle,
         register,
         logout,
       }}

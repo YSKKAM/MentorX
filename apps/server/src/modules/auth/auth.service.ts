@@ -1,7 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import { query } from '../../config/database';
 import { env } from '../../config/env';
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 /**
  * Authentication service handling business logic
@@ -40,6 +43,95 @@ export class AuthService {
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       throw new Error('Invalid email or password');
+    }
+
+    delete user.password_hash;
+    const token = this.generateToken(user);
+
+    return { user, token };
+  }
+
+  static async loginWithGoogle(credential: string, requestedRole?: string) {
+    let email: string;
+    let displayName: string;
+    let googleId: string;
+    let avatarUrl: string | undefined;
+
+    // Support dev/demo token in non-production for instant local testing without Google Client ID
+    if (env.NODE_ENV !== 'production' && credential.startsWith('demo-google-token:')) {
+      const parts = credential.split(':');
+      email = parts[1] || 'google.demo@mentorx.edu';
+      displayName = parts[2] || 'Google Demo User';
+      googleId = 'demo-google-' + email;
+      avatarUrl = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(email);
+    } else {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken: credential,
+          audience: env.GOOGLE_CLIENT_ID ? env.GOOGLE_CLIENT_ID : undefined,
+        });
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+          throw new Error('Invalid Google token payload');
+        }
+        email = payload.email;
+        displayName = payload.name || payload.given_name || email.split('@')[0];
+        googleId = payload.sub;
+        avatarUrl = payload.picture;
+      } catch (err: any) {
+        // Fallback check against Google tokeninfo endpoint if verifyIdToken fails without audience
+        try {
+          const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+          if (!res.ok) {
+            throw new Error('Google token verification failed');
+          }
+          const data: any = await res.json();
+          if (!data.email) {
+            throw new Error('Google token missing email');
+          }
+          email = data.email;
+          displayName = data.name || data.given_name || email.split('@')[0];
+          googleId = data.sub;
+          avatarUrl = data.picture;
+        } catch {
+          throw new Error('Invalid Google credentials. Token verification failed.');
+        }
+      }
+    }
+
+    // 1. Check if user exists by google_id
+    const googleUserRes = await query('SELECT * FROM users WHERE google_id = $1', [googleId]);
+    let user = googleUserRes.rows[0];
+
+    if (user) {
+      // User found by google_id: sync avatar or display name if missing
+      if (avatarUrl && !user.avatar_url) {
+        await query('UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2', [avatarUrl, user.id]);
+        user.avatar_url = avatarUrl;
+      }
+    } else {
+      // 2. Check if user already exists by email (e.g. registered previously with email/password)
+      const emailUserRes = await query('SELECT * FROM users WHERE email = $1', [email]);
+      if (emailUserRes.rows.length > 0) {
+        user = emailUserRes.rows[0];
+        // Link google_id and avatar to the existing account
+        await query(
+          'UPDATE users SET google_id = $1, avatar_url = COALESCE(avatar_url, $2), updated_at = NOW() WHERE id = $3',
+          [googleId, avatarUrl, user.id]
+        );
+        user.google_id = googleId;
+        if (avatarUrl) user.avatar_url = avatarUrl;
+      } else {
+        // 3. Brand new user -> Register via Google
+        const role = requestedRole === 'teacher' ? 'teacher' : 'student';
+        const insertRes = await query(
+          `INSERT INTO users (email, display_name, role, google_id, avatar_url)
+           VALUES ($1, $2, $3, $4, $5)
+           RETURNING id, email, display_name, role, google_id, avatar_url, created_at, updated_at`,
+          [email, displayName, role, googleId, avatarUrl || null]
+        );
+        user = insertRes.rows[0];
+      }
     }
 
     delete user.password_hash;

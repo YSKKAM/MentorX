@@ -9,6 +9,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   CLIENT_URL: z.string().default('http://localhost:3000'),
   ENCRYPTION_KEY: z.string().default('0123456789abcdef0123456789abcdef'),
+  GOOGLE_CLIENT_ID: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development')
 });
 

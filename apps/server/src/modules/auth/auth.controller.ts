@@ -14,6 +14,11 @@ const loginSchema = z.object({
   password: z.string()
 });
 
+const googleLoginSchema = z.object({
+  credential: z.string().min(1, 'Google credential is required'),
+  role: z.enum(['teacher', 'student']).optional()
+});
+
 /**
  * Authentication controller handling HTTP requests
  */
@@ -35,6 +40,16 @@ export class AuthController {
       res.status(200).json(result);
     } catch (error: any) {
       res.status(401).json({ error: error.message });
+    }
+  }
+
+  static async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = googleLoginSchema.parse(req.body);
+      const result = await AuthService.loginWithGoogle(data.credential, data.role);
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(401).json({ error: error.message || 'Google authentication failed' });
     }
   }
 
