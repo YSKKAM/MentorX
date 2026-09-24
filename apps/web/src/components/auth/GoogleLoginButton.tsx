@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
 declare global {
@@ -26,21 +26,54 @@ export default function GoogleLoginButton({
   const [demoEmail, setDemoEmail] = useState('student.alex@gmail.com');
   const [demoName, setDemoName] = useState('Alex Rivera');
   const [selectedRole, setSelectedRole] = useState<'teacher' | 'student'>(role);
+  const hiddenBtnRef = useRef<HTMLDivElement>(null);
 
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const clientId =
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+    '954537465363-fa1fppi5kithntmajm3cj5849i7eip60.apps.googleusercontent.com';
 
   useEffect(() => {
     if (!clientId) return;
 
-    // Load Google Identity Services script if not already present
-    if (typeof window !== 'undefined' && !window.google) {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
+    const setupGoogle = () => {
+      if (typeof window !== 'undefined' && window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+          });
+
+          // Render an invisible native Google button over our custom Neo-Brutalist button
+          // This guarantees the official Google account chooser opens with 0 popup-blocking issues
+          if (hiddenBtnRef.current) {
+            window.google.accounts.id.renderButton(hiddenBtnRef.current, {
+              theme: 'outline',
+              size: 'large',
+              width: 360,
+              type: 'standard',
+            });
+          }
+        } catch (e) {
+          console.warn('Google Identity initialization notice:', e);
+        }
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = setupGoogle;
+        document.body.appendChild(script);
+      } else {
+        setupGoogle();
+      }
     }
-  }, [clientId]);
+  }, [clientId, selectedRole]);
 
   const handleCredentialResponse = async (response: any) => {
     if (!response || !response.credential) return;
@@ -55,27 +88,9 @@ export default function GoogleLoginButton({
   };
 
   const handleClick = () => {
-    if (!clientId) {
-      // Prompt modal with setup instructions + instant demo login
-      setShowConfigModal(true);
-      return;
-    }
-
     if (window.google?.accounts?.id) {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      });
-
-      // Render standard One Tap prompt or select account
-      window.google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // If prompt is suppressed, fall back to showing the config or standard flow
-          console.warn('Google prompt not displayed:', notification.getNotDisplayedReason());
-        }
-      });
+      // Trigger prompt
+      window.google.accounts.id.prompt();
     } else {
       setShowConfigModal(true);
     }
@@ -98,38 +113,48 @@ export default function GoogleLoginButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={isLoading}
-        className={`w-full py-3.5 px-4 rounded-xl border-3 border-black dark:border-white bg-white dark:bg-[#1E1E2E] text-slate-900 dark:text-white font-black text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.9)] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-      >
-        {isLoading ? (
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
-        ) : (
-          <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.665-5.17 3.665-9.12z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.27 21.43 7.33 24 12 24z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.13z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.57 1.25 6.58l4.03 3.13c.95-2.83 3.6-4.96 6.72-4.96z"
-            />
-          </svg>
-        )}
-        <span>{isLoading ? 'Connecting to Google...' : buttonText}</span>
-      </button>
+      <div className="relative w-full">
+        {/* Our Custom Neo-Brutalist Google Button */}
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={isLoading}
+          className={`w-full py-3.5 px-4 rounded-xl border-3 border-black dark:border-white bg-white dark:bg-[#1E1E2E] text-slate-900 dark:text-white font-black text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.9)] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        >
+          {isLoading ? (
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+          ) : (
+            <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.665-5.17 3.665-9.12z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.27 21.43 7.33 24 12 24z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.13z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.57 1.25 6.58l4.03 3.13c.95-2.83 3.6-4.96 6.72-4.96z"
+              />
+            </svg>
+          )}
+          <span>{isLoading ? 'Connecting to Google...' : buttonText}</span>
+        </button>
 
-      {/* Setup Guide & Demo Modal (shown when NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured yet) */}
+        {/* Seamless native Google iframe overlay for instant 1-click popup without blocking */}
+        <div
+          ref={hiddenBtnRef}
+          className="absolute inset-0 opacity-[0.001] overflow-hidden cursor-pointer pointer-events-auto"
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
+
+      {/* Manual Test & Fallback Modal */}
       {showConfigModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-fade-in">
           <div className="bg-[#FDFBF7] dark:bg-[#181824] rounded-3xl border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.9)] max-w-md w-full p-6 text-slate-950 dark:text-white space-y-5 animate-scale-up">
@@ -138,7 +163,7 @@ export default function GoogleLoginButton({
             <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-3">
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">🔑</span>
-                <h3 className="font-black text-lg uppercase tracking-tight">Google OAuth Setup</h3>
+                <h3 className="font-black text-lg uppercase tracking-tight">Google Sign In</h3>
               </div>
               <button
                 type="button"
@@ -149,24 +174,10 @@ export default function GoogleLoginButton({
               </button>
             </div>
 
-            {/* Instruction Notice */}
-            <div className="rounded-2xl bg-[#FFE566] text-black border-2 border-black p-3.5 text-xs font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] space-y-1.5">
-              <div className="font-black uppercase flex items-center gap-1.5">
-                <span>ℹ️</span> To enable official Google sign-in:
-              </div>
-              <ol className="list-decimal list-inside space-y-1 text-[11px] leading-relaxed">
-                <li>Create an OAuth Client ID in <strong>Google Cloud Console</strong></li>
-                <li>Add to your <code className="bg-black/10 px-1 py-0.5 rounded font-mono">apps/web/.env.local</code>:</li>
-                <pre className="bg-black text-white p-2 rounded-lg font-mono text-[10px] overflow-x-auto mt-1">
-                  NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-                </pre>
-              </ol>
-            </div>
-
             {/* Instant Demo/Mock Sign-in section */}
             <div className="space-y-3 pt-1">
               <div className="text-xs font-black uppercase text-gray-500 tracking-wider">
-                🧪 Test Google Sign-in Flow Now
+                🧪 Test Google Sign-in Flow
               </div>
 
               <div>
