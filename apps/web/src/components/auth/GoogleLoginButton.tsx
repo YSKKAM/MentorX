@@ -32,6 +32,21 @@ export default function GoogleLoginButton({
     process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
     '954537465363-fa1fppi5kithntmajm3cj5849i7eip60.apps.googleusercontent.com';
 
+  const handleCredentialResponse = React.useCallback(
+    async (response: any) => {
+      if (!response || !response.credential) return;
+      try {
+        setIsSubmitting(true);
+        await loginWithGoogle(response.credential, selectedRole);
+      } catch (err) {
+        console.error('Google login error:', err);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [loginWithGoogle, selectedRole]
+  );
+
   useEffect(() => {
     if (!clientId) return;
 
@@ -73,19 +88,7 @@ export default function GoogleLoginButton({
         setupGoogle();
       }
     }
-  }, [clientId, selectedRole]);
-
-  const handleCredentialResponse = async (response: any) => {
-    if (!response || !response.credential) return;
-    try {
-      setIsSubmitting(true);
-      await loginWithGoogle(response.credential, selectedRole);
-    } catch (err) {
-      console.error('Google login error:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  }, [clientId, handleCredentialResponse]);
 
   const handleClick = () => {
     if (window.google?.accounts?.id) {
