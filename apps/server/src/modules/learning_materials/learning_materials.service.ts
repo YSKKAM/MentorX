@@ -1,4 +1,3 @@
-import fs from 'fs/promises';
 import path from 'path';
 import { query } from '../../config/database';
 import { GoogleGenAI } from '@google/genai';
@@ -33,14 +32,15 @@ export const learningMaterialsService = {
         (classroom_id, title, file_name, file_path, file_type, file_size, processing_status)
        VALUES ($1, $2, $3, $4, $5, $6, 'Processing')
        RETURNING *`,
-      [classroomId, title, file.originalname, file.path, file.mimetype || ext.slice(1), file.size]
+      [classroomId, title, file.originalname, `memory://${file.originalname}`, file.mimetype || ext.slice(1), file.size]
     );
 
     const material = result.rows[0];
 
-    // Trigger processing asynchronously so upload responds immediately
+    // Process using the in-memory buffer directly (no disk I/O needed)
+    const buffer = file.buffer;
     setImmediate(() => {
-      this.processMaterial(material.id, file.path, ext).catch((err) => {
+      this.processMaterial(material.id, buffer, ext).catch((err) => {
         console.error(`Error processing material ${material.id}:`, err);
       });
     });
@@ -51,19 +51,29 @@ export const learningMaterialsService = {
   /**
    * Extract text and identify core topics using AI
    */
-  async processMaterial(materialId: string, filePath: string, ext: string) {
+  async processMaterial(materialId: string, buffer: Buffer, ext: string) {
     try {
       await query(
         `UPDATE learning_materials SET processing_status = 'Extracting Content' WHERE id = $1`,
         [materialId]
       );
 
-      const buffer = await fs.readFile(filePath);
       let extractedText = '';
 
       if (ext === '.pdf') {
-        const parsed = await pdfParse(buffer);
-        extractedText = parsed.text || '';
+        try {
+          const parsed = await pdfParse(buffer);
+          extractedText = parsed.text || '';
+        } catch (pdfErr: any) {
+          console.error(`pdf-parse failed for material ${materialId}:`, pdfErr.message);
+          // Fallback: try to extract any readable text from the buffer
+          const rawText = buffer.toString('utf-8').replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s{3,}/g, ' ').trim();
+          if (rawText.length > 50) {
+            extractedText = rawText;
+          } else {
+            throw new Error('Could not extract text from this PDF. It may be image-based or encrypted.');
+          }
+        }
       } else if (ext === '.docx') {
         const parsed = await mammoth.extractRawText({ buffer });
         extractedText = parsed.value || '';
@@ -71,7 +81,7 @@ export const learningMaterialsService = {
 
       extractedText = extractedText.trim();
       if (!extractedText || extractedText.length < 20) {
-        throw new Error('Unable to extract readable text from this document.');
+        throw new Error('Unable to extract readable text from this document. It may be image-based, empty, or encrypted.');
       }
 
       await query(
@@ -100,14 +110,15 @@ export const learningMaterialsService = {
         [materialId]
       );
     } catch (err: any) {
-      console.error(`Failed to process material ${materialId}:`, err);
+      const errorMsg = err.message || 'Unknown processing error';
+      console.error(`Failed to process material ${materialId}:`, errorMsg, err.stack);
       await query(
         `UPDATE learning_materials 
          SET processing_status = 'Failed', 
              error_message = $1, 
              updated_at = NOW() 
          WHERE id = $2`,
-        ['Unable to process this material. Please try again.', materialId]
+        [errorMsg, materialId]
       );
     }
   },
@@ -136,7 +147,7 @@ Material text:
 ${textSnippet}`;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-flash-latest',
+          model: 'gemini-2.0-flash',
           contents: prompt,
         });
 
@@ -232,14 +243,6 @@ ${textSnippet}`;
    * Delete material and associated file
    */
   async deleteMaterial(id: string) {
-    const matResult = await query(`SELECT file_path FROM learning_materials WHERE id = $1`, [id]);
-    if (matResult.rows.length > 0 && matResult.rows[0].file_path) {
-      try {
-        await fs.unlink(matResult.rows[0].file_path);
-      } catch {
-        // ignore if already deleted
-      }
-    }
     await query(`DELETE FROM learning_materials WHERE id = $1`, [id]);
     return { success: true };
   },
@@ -311,7 +314,7 @@ Output format:
 ]`;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-flash-latest',
+          model: 'gemini-2.0-flash',
           contents: prompt,
         });
 
@@ -514,7 +517,7 @@ Return ONLY a valid JSON object (no markdown, no arrays):
 }`;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-flash-latest',
+          model: 'gemini-2.0-flash',
           contents: prompt,
         });
 
