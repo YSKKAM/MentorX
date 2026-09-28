@@ -115,6 +115,22 @@ export const assignmentService = {
     if (assignResult.rows.length === 0) return null;
     const assignment = assignResult.rows[0];
 
+    if (assignment.assignment_type === 'quiz') {
+      const questionsResult = await query(
+        `SELECT id, question_text, question_type, options, correct_answer, explanation, topic_name, difficulty 
+         FROM generated_questions 
+         WHERE assignment_id = $1 
+         ORDER BY created_at ASC`,
+        [assignmentId]
+      );
+      return {
+        ...assignment,
+        questions: questionsResult.rows,
+        testCases: [],
+        hints: []
+      };
+    }
+
     const testCasesResult = await query(`SELECT id, input, expected_output, is_hidden FROM assignment_test_cases WHERE assignment_id = $1 ORDER BY created_at ASC`, [assignmentId]);
     const hintsResult = await query(`SELECT level, hint_text FROM assignment_hints WHERE assignment_id = $1 ORDER BY level ASC`, [assignmentId]);
 
@@ -123,6 +139,17 @@ export const assignmentService = {
       testCases: testCasesResult.rows,
       hints: hintsResult.rows
     };
+  },
+
+  async createQuizSubmission(assignmentId: string, studentId: string, answers: any, quizResults: any, score: number, status: string) {
+    const result = await query(
+      `INSERT INTO assignment_submissions 
+        (assignment_id, student_id, language, source_code, status, score, answers, quiz_results)
+       VALUES ($1, $2, 'Quiz', '', $3, $4, $5, $6)
+       RETURNING *`,
+      [assignmentId, studentId, status, score, JSON.stringify(answers), JSON.stringify(quizResults)]
+    );
+    return result.rows[0];
   },
 
   async createSubmission(assignmentId: string, studentId: string, language: string, sourceCode: string) {

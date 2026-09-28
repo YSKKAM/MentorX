@@ -8,6 +8,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import StudentLiveCard from '../../../components/classroom/StudentLiveCard';
 import ActivityCharts from '../../../components/classroom/ActivityCharts';
 import AssignmentsList from '../../../components/classroom/AssignmentsList';
+import LearningMaterialsList from '../../../components/materials/LearningMaterialsList';
 import Button from '../../../components/ui/Button';
 import ClassroomChat from '../../../components/chat/ClassroomChat';
 import { useClassroomActivity } from '../../../hooks/useClassroomActivity';
@@ -24,7 +25,7 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
   const [students, setStudents] = useState<ClassroomStudent[]>([]);
   const [strictModeSettings, setStrictModeSettings] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'live' | 'assignments'>('live');
+  const [activeTab, setActiveTab] = useState<'live' | 'assignments' | 'materials' | 'chat'>('live');
 
   const { activities, recentAlerts, loading: activityLoading } = useClassroomActivity(id);
 
@@ -176,23 +177,41 @@ export default function ClassroomDetailsPage({ params }: { params: Promise<{ id:
         <div className="lg:col-span-2 space-y-8">
           <div className="glass-card-light dark:glass-card overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 p-6 sm:p-8 shadow-xl">
             
-            <div className="flex space-x-6 mb-6 border-b border-slate-200 dark:border-white/10 pb-4">
+            <div className="flex space-x-3 sm:space-x-6 mb-6 border-b border-slate-200 dark:border-white/10 pb-4 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('live')}
-                className={`pb-2 text-lg font-black transition-all ${activeTab === 'live' ? 'text-indigo-600 dark:text-white border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-900 dark:text-gray-400'}`}
+                className={`pb-2 text-sm sm:text-base lg:text-lg font-black transition-all flex-shrink-0 ${activeTab === 'live' ? 'text-indigo-600 dark:text-white border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-900 dark:text-gray-400'}`}
               >
                 ⚡ Live Dashboard
               </button>
               <button
                 onClick={() => setActiveTab('assignments')}
-                className={`pb-2 text-lg font-black transition-all ${activeTab === 'assignments' ? 'text-indigo-600 dark:text-white border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-900 dark:text-gray-400'}`}
+                className={`pb-2 text-sm sm:text-base lg:text-lg font-black transition-all flex-shrink-0 ${activeTab === 'assignments' ? 'text-indigo-600 dark:text-white border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-900 dark:text-gray-400'}`}
               >
                 📚 Assignments
               </button>
+              <button
+                onClick={() => setActiveTab('materials')}
+                className={`pb-2 text-sm sm:text-base lg:text-lg font-black transition-all flex-shrink-0 ${activeTab === 'materials' ? 'text-indigo-600 dark:text-white border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-900 dark:text-gray-400'}`}
+              >
+                📖 Learning Materials
+              </button>
+              <button
+                onClick={() => setActiveTab('chat')}
+                className={`pb-2 text-sm sm:text-base lg:text-lg font-black transition-all flex-shrink-0 lg:hidden ${activeTab === 'chat' ? 'text-indigo-600 dark:text-white border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-900 dark:text-gray-400'}`}
+              >
+                💬 Classroom Chat
+              </button>
             </div>
 
-            {activeTab === 'assignments' ? (
+            {activeTab === 'materials' ? (
+              <LearningMaterialsList classroomId={classroom.id} isTeacher={isTeacher} />
+            ) : activeTab === 'assignments' ? (
               <AssignmentsList classroomId={classroom.id} isTeacher={isTeacher} />
+            ) : activeTab === 'chat' ? (
+              <div className="lg:hidden">
+                <ClassroomChat classroomId={classroom.id} currentUser={user} />
+              </div>
             ) : isTeacher ? (
               <>
                 <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">

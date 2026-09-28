@@ -12,6 +12,7 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
   const [assignments, setAssignments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [filter, setFilter] = useState<'all' | 'coding' | 'quiz'>('all');
 
   const fetchAssignments = useCallback(async () => {
     try {
@@ -53,10 +54,52 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
     return <div className="text-gray-400 py-8 text-center">Loading assignments...</div>;
   }
 
+  const codingCount = assignments.filter((a) => a.assignment_type !== 'quiz').length;
+  const quizCount = assignments.filter((a) => a.assignment_type === 'quiz').length;
+  const displayedAssignments = assignments.filter((a) => {
+    if (filter === 'coding') return a.assignment_type !== 'quiz';
+    if (filter === 'quiz') return a.assignment_type === 'quiz';
+    return true;
+  });
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-white">Assignments</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Assignments</h3>
+          <div className="flex items-center gap-2 mt-2">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all border ${
+                filter === 'all'
+                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+              }`}
+            >
+              All ({assignments.length})
+            </button>
+            <button
+              onClick={() => setFilter('coding')}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all border ${
+                filter === 'coding'
+                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+              }`}
+            >
+              💻 Coding ({codingCount})
+            </button>
+            <button
+              onClick={() => setFilter('quiz')}
+              className={`px-3 py-1 rounded-xl text-xs font-black transition-all border ${
+                filter === 'quiz'
+                  ? 'bg-amber-500 text-black border-amber-400 shadow-sm'
+                  : 'bg-amber-500/10 text-amber-300 border-amber-500/20 hover:bg-amber-500/20'
+              }`}
+            >
+              📝 Quizzes ({quizCount})
+            </button>
+          </div>
+        </div>
         {isTeacher && (
           <Button onClick={() => setShowCreateModal(true)} variant="primary">
             + Create Assignment
@@ -64,13 +107,19 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
         )}
       </div>
 
-      {assignments.length === 0 ? (
+      {displayedAssignments.length === 0 ? (
         <div className="rounded-xl border border-dashed border-white/10 p-12 text-center">
-          <p className="text-gray-400">No assignments have been created yet.</p>
+          <p className="text-gray-400">
+            {filter === 'quiz'
+              ? 'No quiz assessments found. Create one from the "Learning Materials" tab!'
+              : filter === 'coding'
+              ? 'No coding assignments created yet.'
+              : 'No assignments have been created yet.'}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {assignments.map(assignment => (
+          {displayedAssignments.map(assignment => (
             <div key={assignment.id} className="rounded-xl border border-white/10 bg-black/40 p-5 hover:bg-black/60 transition-colors">
               <div className="flex justify-between items-start mb-3">
                 <h4 className="text-lg font-medium text-white">{assignment.title}</h4>
@@ -93,9 +142,14 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
               </div>
               
               <div className="flex flex-wrap gap-2 mb-4">
-                <span className="text-xs text-gray-400 bg-white/5 px-2 py-1 rounded">{assignment.language}</span>
+                <span className={`text-xs px-2 py-1 rounded font-bold ${assignment.assignment_type === 'quiz' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-gray-400 bg-white/5'}`}>
+                  {assignment.assignment_type === 'quiz' ? '📝 Quiz' : `💻 ${assignment.language}`}
+                </span>
                 <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-1 rounded">{assignment.difficulty}</span>
                 <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded">{assignment.marks} Marks</span>
+                {assignment.total_questions > 0 && (
+                  <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">{assignment.total_questions} Questions</span>
+                )}
               </div>
 
               {isTeacher && !assignment.is_published && (
@@ -108,7 +162,7 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
                     variant="ghost" 
                     className="w-full text-xs text-slate-400 hover:text-white"
                   >
-                    Preview Web Sandbox 💻
+                    {assignment.assignment_type === 'quiz' ? 'Preview Quiz 📝' : 'Preview Web Sandbox 💻'}
                   </Button>
                 </div>
               )}
@@ -127,7 +181,7 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
                     variant="secondary" 
                     className="flex-1"
                   >
-                    Sandbox 💻
+                    {assignment.assignment_type === 'quiz' ? 'Quiz 📝' : 'Sandbox 💻'}
                   </Button>
                 </div>
               )}
@@ -138,7 +192,7 @@ export default function AssignmentsList({ classroomId, isTeacher }: AssignmentsL
                   variant="primary" 
                   className="w-full bg-emerald-600 hover:bg-emerald-700"
                 >
-                  Open Web Sandbox 💻
+                  {assignment.assignment_type === 'quiz' ? 'Start Quiz 📝' : 'Open Web Sandbox 💻'}
                 </Button>
               )}
             </div>

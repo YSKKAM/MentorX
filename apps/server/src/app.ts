@@ -10,6 +10,7 @@ import chatRoomsRoutes from './modules/chat/chat_rooms.routes';
 import aiRoutes from './modules/ai/ai.routes';
 import { assignmentRoutes } from './modules/assignment/assignment.routes';
 import { plagiarismRoutes } from './modules/plagiarism/plagiarism.routes';
+import { learningMaterialRoutes } from './modules/learning_materials/learning_materials.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { env } from './config/env';
 import { corsOptions } from './config/cors';
@@ -67,6 +68,7 @@ app.use('/api/chat-rooms', chatRoomsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/plagiarism', plagiarismRoutes);
+app.use('/api/learning-materials', learningMaterialRoutes);
 
 app.use(errorHandler);
 

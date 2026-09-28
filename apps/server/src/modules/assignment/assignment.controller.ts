@@ -281,6 +281,72 @@ export const assignmentController = {
         return;
       }
 
+      // Handle Quiz Submission
+      if (assignment.assignment_type === 'quiz') {
+        const { answers } = req.body;
+        const questions = assignment.questions || [];
+        let correctCount = 0;
+        const total = questions.length;
+        const results = [];
+
+        for (const q of questions) {
+          const studentAns = (answers && answers[q.id] ? String(answers[q.id]).trim().toLowerCase() : '');
+          const correctAns = String(q.correct_answer).trim().toLowerCase();
+          
+          let isCorrect = studentAns === correctAns;
+          if (!isCorrect && studentAns.length > 0) {
+            if (studentAns.startsWith(correctAns) || correctAns.startsWith(studentAns)) {
+              isCorrect = true;
+            }
+          }
+
+          if (isCorrect) correctCount++;
+
+          results.push({
+            questionId: q.id,
+            questionText: q.question_text,
+            topic: q.topic_name,
+            studentAnswer: answers ? answers[q.id] : '',
+            correctAnswer: q.correct_answer,
+            explanation: q.explanation,
+            isCorrect
+          });
+        }
+
+        const score = total > 0 ? Math.round((correctCount / total) * assignment.marks) : 0;
+        const status = correctCount === total ? 'Passed' : (score > 0 ? 'Passed' : 'Failed');
+
+        const submission = await assignmentService.createQuizSubmission(
+          id,
+          user.userId,
+          answers || {},
+          results,
+          score,
+          status
+        );
+
+        const { io } = require('../../server');
+        if (io) {
+          io.to(`classroom:${assignment.classroom_id}`).emit('classroom:activity-update', {
+            student_id: user.userId,
+            status: 'submitted',
+            score,
+            marks: assignment.marks
+          });
+        }
+
+        res.status(200).json({
+          submissionId: submission.id,
+          status,
+          score,
+          marks: assignment.marks,
+          correctCount,
+          totalQuestions: total,
+          results
+        });
+        return;
+      }
+
       // 1. Create submission
       const submission = await assignmentService.createSubmission(id, user.userId, language, sourceCode);
 

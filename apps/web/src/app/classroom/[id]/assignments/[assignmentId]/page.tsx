@@ -7,6 +7,7 @@ import WebCodeEditor from "../../../../../components/assignment/WebCodeEditor";
 import TestCaseResults, { TestCaseResultItem } from "../../../../../components/assignment/TestCaseResults";
 import HintPanel from "../../../../../components/assignment/HintPanel";
 import SubmissionConfirmModal from "../../../../../components/assignment/SubmissionConfirmModal";
+import StudentQuizWorkspace from "../../../../../components/assignment/StudentQuizWorkspace";
 import Button from "../../../../../components/ui/Button";
 
 export default function StudentAssignmentWorkspacePage({
@@ -106,6 +107,15 @@ export default function StudentAssignmentWorkspacePage({
         <Link href={`/classroom/${classroomId}`}>
           <Button variant="secondary">Back to Classroom</Button>
         </Link>
+      </div>
+    );
+  }
+
+  // Quiz Assignment Workflow
+  if (assignment.assignment_type === 'quiz') {
+    return (
+      <div className="min-h-screen bg-[#090a10] py-6 sm:py-8">
+        <StudentQuizWorkspace assignment={assignment} classroomId={classroomId} />
       </div>
     );
   }

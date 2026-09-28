@@ -69,7 +69,32 @@ export const api = {
     
   put: (endpoint: string, body: any, options?: RequestInit) => 
     fetchWithAuth(endpoint, { ...options, method: "PUT", body: JSON.stringify(body) }),
+
+  patch: (endpoint: string, body: any, options?: RequestInit) => 
+    fetchWithAuth(endpoint, { ...options, method: "PATCH", body: JSON.stringify(body) }),
     
   delete: (endpoint: string, options?: RequestInit) => 
     fetchWithAuth(endpoint, { ...options, method: "DELETE" }),
+
+  postFormData: async (endpoint: string, formData: FormData) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new ApiError(
+        response.status,
+        data?.error || data?.message || response.statusText || "Upload failed",
+        data
+      );
+    }
+    return data;
+  },
 };
