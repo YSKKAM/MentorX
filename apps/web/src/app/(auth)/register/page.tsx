@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("student");
+  const [role, setRole] = useState<"teacher" | "student">("student");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
