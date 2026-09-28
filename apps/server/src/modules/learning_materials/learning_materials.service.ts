@@ -3,7 +3,42 @@ import { query } from '../../config/database';
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 import mammoth from 'mammoth';
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
+
+const CANDIDATE_MODELS = [
+  'gemini-3.1-flash-lite',
+  'gemini-3.8-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-flash-latest',
+];
+
+/**
+ * Call Gemini with multi-model fallback to ensure resilience against rate-limits or deprecations
+ */
+async function callGemini(prompt: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn('[Gemini] GEMINI_API_KEY is not defined in environment variables.');
+    return '';
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+  for (const model of CANDIDATE_MODELS) {
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+      });
+      if (response?.text) {
+        return response.text;
+      }
+    } catch (err: any) {
+      console.warn(`[Gemini] Model ${model} error (${err?.message?.substring(0, 100) || err}), trying next model...`);
+    }
+  }
+  return '';
+}
 
 const questionSchema = z.object({
   question: z.string().min(3),
@@ -61,27 +96,32 @@ export const learningMaterialsService = {
       let extractedText = '';
 
       if (ext === '.pdf') {
+        let parser: any = null;
         try {
-          const parsed = await pdfParse(buffer);
-          extractedText = parsed.text || '';
+          parser = new PDFParse({ data: buffer });
+          const parsed = await parser.getText();
+          extractedText = (parsed?.text || '').trim();
         } catch (pdfErr: any) {
-          console.error(`pdf-parse failed for material ${materialId}:`, pdfErr.message);
-          // Fallback: try to extract any readable text from the buffer
-          const rawText = buffer.toString('utf-8').replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s{3,}/g, ' ').trim();
-          if (rawText.length > 50) {
-            extractedText = rawText;
-          } else {
-            throw new Error('Could not extract text from this PDF. It may be image-based or encrypted.');
+          console.error(`PDF text extraction error for material ${materialId}:`, pdfErr?.message || pdfErr);
+          throw new Error('Could not extract text from this PDF. Please ensure it contains selectable text.');
+        } finally {
+          if (parser?.destroy) {
+            try { await parser.destroy(); } catch {}
           }
         }
       } else if (ext === '.docx') {
         const parsed = await mammoth.extractRawText({ buffer });
-        extractedText = parsed.value || '';
+        extractedText = (parsed?.value || '').trim();
       }
 
       extractedText = extractedText.trim();
       if (!extractedText || extractedText.length < 20) {
-        throw new Error('Unable to extract readable text from this document. It may be image-based, empty, or encrypted.');
+        throw new Error('Unable to extract readable text from this document. It may be image-only, scanned, or empty.');
+      }
+
+      // Sanity check: Ensure extracted text is real human readable text and not raw PDF binary markers
+      if (extractedText.startsWith('%PDF-') || extractedText.includes('/FlateDecode') || extractedText.includes('endstream')) {
+        throw new Error('Document extraction returned raw binary stream markers rather than readable text.');
       }
 
       await query(
@@ -111,7 +151,7 @@ export const learningMaterialsService = {
       );
     } catch (err: any) {
       const errorMsg = err.message || 'Unknown processing error';
-      console.error(`Failed to process material ${materialId}:`, errorMsg, err.stack);
+      console.error(`Failed to process material ${materialId}:`, errorMsg);
       await query(
         `UPDATE learning_materials 
          SET processing_status = 'Failed', 
@@ -129,10 +169,7 @@ export const learningMaterialsService = {
   async extractTopicsWithAI(text: string): Promise<Array<{ name: string; description: string; conceptSummary: string }>> {
     const textSnippet = text.slice(0, 12000);
 
-    if (process.env.GEMINI_API_KEY) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const prompt = `You are an educational curriculum architect. Analyze the following learning material and extract 4 to 8 distinct, key concepts or topics covered in the text.
+    const prompt = `You are an educational curriculum architect. Analyze the following learning material and extract 4 to 8 distinct, key concepts or topics covered in the text.
 Return ONLY a valid JSON array of objects with the exact schema:
 [
   {
@@ -146,17 +183,13 @@ Do not include markdown or backticks. Return raw JSON.
 Material text:
 ${textSnippet}`;
 
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: prompt,
-        });
-
-        let responseText = response.text || '';
-        const start = responseText.indexOf('[');
-        const end = responseText.lastIndexOf(']');
-        if (start !== -1 && end !== -1) {
-          responseText = responseText.substring(start, end + 1);
-          const parsed = JSON.parse(responseText);
+    const responseText = await callGemini(prompt);
+    if (responseText) {
+      const start = responseText.indexOf('[');
+      const end = responseText.lastIndexOf(']');
+      if (start !== -1 && end !== -1) {
+        try {
+          const parsed = JSON.parse(responseText.substring(start, end + 1));
           if (Array.isArray(parsed) && parsed.length > 0) {
             return parsed.map((item: any) => ({
               name: String(item.name || 'Concept').trim(),
@@ -164,14 +197,16 @@ ${textSnippet}`;
               conceptSummary: String(item.conceptSummary || ''),
             }));
           }
+        } catch (parseErr) {
+          console.warn('Failed to parse Gemini topics JSON:', parseErr);
         }
-      } catch (err) {
-        console.warn('Gemini topic extraction failed, falling back to heuristic parsing:', err);
       }
     }
 
-    // Heuristic fallback if Gemini is not available or errors
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 3 && l.length < 50);
+    // Heuristic fallback if Gemini is not available or errors: extract meaningful clean lines
+    const lines = text.split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 4 && l.length < 50 && !l.includes('%') && !l.includes('<') && !l.includes('>') && !l.includes('{') && !l.includes('}'));
     const candidateTopics = Array.from(new Set(lines)).slice(0, 6);
     if (candidateTopics.length >= 2) {
       return candidateTopics.map((topic, idx) => ({
@@ -272,10 +307,7 @@ ${textSnippet}`;
 
     let rawQuestions: any[] = [];
 
-    if (process.env.GEMINI_API_KEY) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const prompt = `You are a high-level academic assessment generator for MentorX. 
+    const prompt = `You are a high-level academic assessment generator for MentorX. 
 Generate exactly ${count} structured assessment questions based STRICTLY on the extracted document content below.
 
 SOURCE DOCUMENT CONTENT:
@@ -313,20 +345,16 @@ Output format:
   }
 ]`;
 
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: prompt,
-        });
-
-        let responseText = response.text || '';
-        const start = responseText.indexOf('[');
-        const end = responseText.lastIndexOf(']');
-        if (start !== -1 && end !== -1) {
-          responseText = responseText.substring(start, end + 1);
-          rawQuestions = JSON.parse(responseText);
+    const responseText = await callGemini(prompt);
+    if (responseText) {
+      const start = responseText.indexOf('[');
+      const end = responseText.lastIndexOf(']');
+      if (start !== -1 && end !== -1) {
+        try {
+          rawQuestions = JSON.parse(responseText.substring(start, end + 1));
+        } catch (err) {
+          console.error('Failed to parse Gemini generated questions JSON:', err);
         }
-      } catch (err) {
-        console.error('Gemini question generation error:', err);
       }
     }
 
@@ -491,10 +519,7 @@ Output format:
 
     let newQ: any = null;
 
-    if (process.env.GEMINI_API_KEY) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const prompt = `Based strictly on the following text, generate ONE new and distinct educational assessment question.
+    const prompt = `Based strictly on the following text, generate ONE new and distinct educational assessment question.
 It MUST be different from this previous question: "${oldQ.question_text}".
 
 SOURCE TEXT:
@@ -516,19 +541,16 @@ Return ONLY a valid JSON object (no markdown, no arrays):
   "difficulty": "${difficulty}"
 }`;
 
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: prompt,
-        });
-
-        let responseText = response.text || '';
-        const start = responseText.indexOf('{');
-        const end = responseText.lastIndexOf('}');
-        if (start !== -1 && end !== -1) {
+    const responseText = await callGemini(prompt);
+    if (responseText) {
+      const start = responseText.indexOf('{');
+      const end = responseText.lastIndexOf('}');
+      if (start !== -1 && end !== -1) {
+        try {
           newQ = JSON.parse(responseText.substring(start, end + 1));
+        } catch (err) {
+          console.error('Failed to parse Gemini single question JSON:', err);
         }
-      } catch (err) {
-        console.error('Gemini single question regeneration error:', err);
       }
     }
 
